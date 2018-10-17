@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Loguin | Blog</title>
+    <title>Loguin | AIF</title>
     <!-- Favicon-->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
@@ -31,8 +31,8 @@
 <body class="login-page">
     <div class="login-box">
         <div class="logo">
-            <a href="javascript:void(0);">Acceso <b>BLOG</b></a>
-            <small>Administración del Blog</small>
+            <a href="javascript:void(0);">Acceso <b>AIF</b></a>
+            <small>Administración de Equipos, Countries, Jugadores y Datos Personales</small>
         </div>
         <div class="card">
             <div class="body">
@@ -42,24 +42,28 @@
                         <span class="input-group-addon">
                             <i class="material-icons">person</i>
                         </span>
-                        <div class="form-line">
+                        <div class="form-line emailInput">
                             <input type="email" class="form-control" name="email" id="email" placeholder="Email" required autofocus>
+                            
                         </div>
+   
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons">lock</i>
                         </span>
-                        <div class="form-line">
+                        <div class="form-line passInput">
                             <input type="password" class="form-control" name="pass" id="pass" placeholder="Password" required>
+                            
                         </div>
+   
                     </div>
                     <div class="row js-sweetalert">
                         <div class="col-xs-8 p-t-5">
                             
                         </div>
                         <div class="col-xs-4">
-                            <button class="btn btn-block bg-pink waves-effect" data-type="" type="button" id="login">INGRESAR</button>
+                            <button class="btn btn-block bg-pink waves-effect" data-type="" type="submit" id="login">INGRESAR</button>
                         </div>
                     </div>
                     <div class="row m-t-15 m-b--20">
@@ -100,66 +104,7 @@
     <script type="text/javascript">
 		
         $(document).ready(function(){
-            
-            
-                $("#email").click(function(event) {
-                $("#email").removeClass("alert alert-danger");
-                $("#email").attr('placeholder','Ingrese el email');
-                $("#error").removeClass("alert alert-danger");
-                $("#error").text('');
-                });
 
-                $("#email").change(function(event) {
-                $("#email").removeClass("alert alert-danger");
-                $("#email").attr('placeholder','Ingrese el email');
-                });
-                
-                
-                $("#pass").click(function(event) {
-                $("#pass").removeClass("alert alert-danger");
-                $("#pass").attr('placeholder','Ingrese el password');
-                });
-
-                $("#pass").change(function(event) {
-                $("#pass").removeClass("alert alert-danger");
-                $("#pass").attr('placeholder','Ingrese el password');
-                });
-                
-                
-            
-            function validador(){
-
-                    $error = "";
-    
-                    if ($("#email").val() == "") {
-                        $error = "Es obligatorio el campo E-Mail.";
-
-                        $("#error").addClass("alert alert-danger");
-                        $("#error").attr('placeholder',$error);
-                    }
-                    
-                    if ($("#pass").val() == "") {
-                        $error = "Es obligatorio el campo Password.";
-
-                        $("#pass").addClass("alert alert-danger");
-                        $("#pass").attr('placeholder',$error);
-                    }
-                    
-                    
-
-                    
-                    
-                    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-                    
-                    if( !emailReg.test( $("#email").val() ) ) {
-                        $error = "El E-Mail ingresado es inválido.";
-
-                        $("#error").addClass("alert alert-danger");
-                        $("#error").text($error);
-                      }
-
-                    return $error;
-            }
             
             $('body').keyup(function(e) {
                 if(e.keyCode == 13) {
@@ -168,39 +113,48 @@
             });
             
             
-            $("#login").click(function(event) {
-                
-                    if (validador() == "")
-                    {
-                            $.ajax({
-                            data:  {email:		$("#email").val(),
-                                    pass:		$("#pass").val(),
-                                    accion:		'login'},
-                            url:   'ajax/ajax.php',
-                            type:  'post',
-                            beforeSend: function () {
-                                    $("#load").html('<img src="imagenes/load13.gif" width="50" height="50" />');
-                            },
-                            success:  function (response) {
-                                      
-                                    if (response != '') {
-                                        
-                                        $("#error").removeClass("alert alert-danger");
+            $("#sign_in").submit(function(e){
+    
+                e.preventDefault();
+	
+                $.ajax({
+                    data:  {email:		$("#email").val(),
+                            pass:		$("#pass").val(),
+                            accion:		'login'},
+                    url:   'ajax/ajax.php',
+                    type:  'post',
+                    beforeSend: function () {
+                            $("#load").html('<img src="imagenes/load13.gif" width="50" height="50" />');
+                    },
+                    success:  function (response) {
+                                
+                            if (response != '') {
+                                
+                                swal({
+                                    title: "Respuesta",
+                                    text: "Usuario o Password Incorrectos",
+                                    type: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
 
-                                        $("#error").addClass("alert alert-danger");
-                                        $("#error").html('<strong>Error!</strong> '+response);
-                                        $("#load").html('');
+                            } else {
+                                swal({
+                                    title: "Respuesta",
+                                    text: "Acceso Correcto",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
 
-                                    } else {
-                                        url = "dashboard/";
-                                        $(location).attr('href',url);
-                                    }
-                                    
+                                url = "dashboard/";
+                                $(location).attr('href',url);
                             }
-                    });
-                    } else {
-                        $('#login').attr('data-type', 'confirm');
+                            
                     }
+                });
+   
+
             });
             
         });/* fin del document ready */

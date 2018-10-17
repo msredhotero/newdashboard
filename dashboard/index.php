@@ -2,7 +2,7 @@
 
 session_start();
 
-if (!isset($_SESSION['usua_predio']))
+if (!isset($_SESSION['usua_aif']))
 {
 	header('Location: ../error.php');
 } else {
@@ -23,7 +23,7 @@ $baseHTML = new BaseHTML();
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu($_SESSION['nombre_predio'],"Dashboard",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Dashboard",$_SESSION['refroll_aif'],'');
 
 $configuracion = $serviciosReferencias->traerConfiguracion();
 
@@ -117,7 +117,7 @@ $cadRefEstado 	= $serviciosFunciones->devolverSelectBox($resEstado,array(1),'');
     <!-- Top Bar -->
     <?php echo $baseHTML->cargarNAV($breadCumbs); ?>
     <!-- #Top Bar -->
-    <?php echo $baseHTML->cargarSECTION($_SESSION['usua_predio'], $_SESSION['nombre_predio'], str_replace('..','../dashboard',$resMenu)); ?>
+    <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu)); ?>
 
     <section class="content">
         <div class="container-fluid">

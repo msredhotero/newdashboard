@@ -14,7 +14,8 @@ class BaseHTML {
                          1=>'<link href="'.$altura.'plugins/node-waves/waves.css" rel="stylesheet" />',
                          2=>'<link href="'.$altura.'plugins/animate-css/animate.css" rel="stylesheet" />',
                          3=>'<link href="'.$altura.'css/style.css" rel="stylesheet">',
-                         4=>'<link href="'.$altura.'css/themes/all-themes.css" rel="stylesheet" />');
+                         4=>'<link href="'.$altura.'css/themes/all-themes.css" rel="stylesheet" />',
+                         5=>'<link href="'.$altura.'plugins/sweetalert/sweetalert.css" rel="stylesheet" />');
 
         $cad = '';
 
@@ -39,7 +40,13 @@ class BaseHTML {
                          3=>'<script src="'.$altura.'plugins/jquery-slimscroll/jquery.slimscroll.js"></script>',
                          4=>'<script src="'.$altura.'plugins/node-waves/waves.js"></script>',
                          5=>'<script src="'.$altura.'js/admin.js"></script>',
-                         6=>'<script src="'.$altura.'js/demo.js"></script>');
+                         6=>'<script src="'.$altura.'js/demo.js"></script>',
+                         7=>'<script src="'.$altura.'plugins/bootstrap-notify/bootstrap-notify.js"></script>',
+                         8=>'<script src="'.$altura.'js/pages/ui/notifications.js"></script>',
+                         9=>'<script src="'.$altura.'plugins/jquery-validation/jquery.validate.js"></script>',
+                         10=>'<script src="'.$altura.'plugins/jquery-steps/jquery.steps.js"></script>',
+                         11=>'<script src="'.$altura.'plugins/sweetalert/sweetalert.min.js"></script>',
+                         12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>');
 
         $cad = '';
 
@@ -166,7 +173,7 @@ class BaseHTML {
                     <!-- User Info -->
                     <div class="user-info">
                         <div class="image">
-                            <img src="'.$altura.'images/user.png" width="48" height="48" alt="User" />
+                            <img src="../images/user.png" width="48" height="48" alt="User" />
                         </div>
                         <div class="info-container">
                             <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.$usuario.'</div>

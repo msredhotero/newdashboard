@@ -34,7 +34,7 @@ if (mysql_num_rows($respusu) > 0) {
 	
 	
 	$idUsua = mysql_result($respusu,0,0);
-	$sqlpass = "select nombrecompleto,email,usuario,r.descripcion, r.idrol from dbusuarios u inner join tbroles r on r.idrol = u.refroles where password = '".$pass."' and idusuario = ".$idUsua;
+	$sqlpass = "select nombrecompleto,email,usuario,r.descripcion, r.idrol, u.refcountries from dbusuarios u inner join tbroles r on r.idrol = u.refroles where password = '".$pass."' and u.activo = 1 and idusuario = ".$idUsua;
 
 
 	$resppass = $this->query($sqlpass,0);
@@ -55,11 +55,11 @@ if (mysql_num_rows($respusu) > 0) {
 	if ($error == '') {
 		//die(var_dump($error));
 		session_start();
-		$_SESSION['usua_predio'] = $usuario;
-		$_SESSION['nombre_predio'] = mysql_result($resppass,0,0);
-		$_SESSION['email_predio'] = mysql_result($resppass,0,1);
-		$_SESSION['idroll_predio'] = mysql_result($resppass,0,4);
-		$_SESSION['refroll_predio'] = mysql_result($resppass,0,3);
+		$_SESSION['usua_aif'] = $usuario;
+		$_SESSION['nombre_aif'] = mysql_result($resppass,0,0);
+		$_SESSION['email_aif'] = mysql_result($resppass,0,1);
+		$_SESSION['idroll_aif'] = mysql_result($resppass,0,4);
+		$_SESSION['refroll_aif'] = mysql_result($resppass,0,3);
 		
 		return '';
 	}

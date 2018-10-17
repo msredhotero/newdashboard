@@ -12,7 +12,7 @@ $serviciosHTML				= new ServiciosHTML();
 $serviciosReferencias		= new ServiciosReferencias();
 
 
-$accion = $_GET['accion'];
+$accion = $_POST['accion'];
 
 
 switch ($accion) {
