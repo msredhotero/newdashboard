@@ -134,6 +134,28 @@ if ($res == false) {
 		case 'eliminar".$nombre."': <br>
 			eliminar".$nombre."("."$"."servicios".$servicios."); <br>
 			break; <br>
+		case 'traer".$nombre."': <br>
+			traer".$nombre."("."$"."servicios".$servicios."); <br>
+			break; <br>	
+		case 'traer".$nombre."PorId': <br>
+			traer".$nombre."PorId("."$"."servicios".$servicios."); <br>
+			break; <br>
+
+		case 'Vinsertar".$nombre."': <br>
+			insertar".$nombre."("."$"."servicios".$servicios."); <br>
+			break; <br>
+		case 'Vmodificar".$nombre."': <br>
+			modificar".$nombre."("."$"."servicios".$servicios."); <br>
+			break; <br>
+		case 'Veliminar".$nombre."': <br>
+			eliminar".$nombre."("."$"."servicios".$servicios."); <br>
+			break; <br>
+		case 'Vtraer".$nombre."': <br>
+			traer".$nombre."("."$"."servicios".$servicios."); <br>
+			break; <br>	
+		case 'Vtraer".$nombre."PorId': <br>
+			traer".$nombre."PorId("."$"."servicios".$servicios."); <br>
+			break; <br>
 	
 	";
 	
@@ -268,6 +290,71 @@ if ($res == false) {
 			"."$"."res = "."$"."servicios".$servicios."->eliminar".$nombre."("."$"."id); <br>
 			echo "."$"."res; <br>
 		} <br>
+
+
+		function Vinsertar".$nombre."("."$"."servicios".$servicios.") { <br>
+			".$cuerpoVariablePOST."
+			
+			"."$"."res = "."$"."servicios".$servicios."->insertar".$nombre."(".$cuerpoVariableComunes."); <br>
+			
+			if ((integer)"."$"."res > 0) { <br>
+				"."$"."resV['mensaje'] = 'Registro Cargado con exito!.';
+			} else { <br>
+				"."$"."resV['error'] = true; <br>
+				"."$"."resV['mensaje'] = 'No se pudo cargar el Registro!'; <br>
+			} <br>
+			header('Content-type: application/json'); <br>
+			echo json_encode("."$"."resV); <br>
+		} <br>
+		
+		function Vmodificar".$nombre."("."$"."servicios".$servicios.") { <br>
+			
+			"."$"."id = 	"."$"."_POST['id']; <br>
+			".$cuerpoVariablePOST."
+			
+			"."$"."res = "."$"."servicios".$servicios."->modificar".$nombre."("."$"."id,".$cuerpoVariableComunes."); <br>
+			
+			if ("."$"."res) { <br>
+				"."$"."resV['mensaje'] = 'Registro Modificado con exito!.'; <br>
+			} else { <br>
+				"."$"."resV['error'] = true; <br>
+				"."$"."resV['mensaje'] = 'No se pudo modificar el Registro!'; <br>
+			} <br>
+			header('Content-type: application/json'); <br>
+			echo json_encode("."$"."resV); <br>
+		} <br>
+
+		function Veliminar".$nombre."("."$"."servicios".$servicios.") { <br>
+			"."$"."id = 	"."$"."_POST['id']; <br>
+			
+			"."$"."res = "."$"."servicios".$servicios."->eliminar".$nombre."("."$"."id); <br>
+			if ("."$"."res) { <br>
+				"."$"."resV['mensaje'] = 'Registro Eliminado con exito!.'; <br>
+			} else { <br>
+				"."$"."resV['error'] = true; <br>
+				"."$"."resV['mensaje'] = 'No se pudo eliminar el Registro!'; <br>
+			} <br>
+			header('Content-type: application/json'); <br>
+			echo json_encode("."$"."resV); <br>
+		} <br>
+
+		function Vtraer".$nombre."("."$"."servicios".$servicios.") { <br>
+			
+			"."$"."res = "."$"."servicios".$servicios."->Vtraer".$nombre."(); <br>
+			
+			"."$"."ar = array(); <br>
+
+			while ("."$"."row = mysql_fetch_array("."$"."res) { <br>
+				array_push("."$"."ar, "."$"."row); <br>
+			} <br>
+
+			"."$"."resV['datos'] = "."$"."ar; <br>
+
+			header('Content-type: application/json'); <br>
+			echo json_encode("."$"."resV); <br>
+		} <br>
+
+
 	
 	";
 

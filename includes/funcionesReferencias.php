@@ -109,6 +109,7 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	n.type
 	from dbnoticiaimagenes n 
 	inner join dbnoticias not ON not.idnoticia = n.refnoticias 
+	inner join dbclientes cl ON cl.idcliente = not.refclientes 
 	inner join tbcategorias ca ON ca.idcategoria = not.refcategorias 
 	order by 1"; 
 	$res = $this->query($sql,0); 
@@ -128,18 +129,18 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	
 	/* PARA Noticias */
 	
-	function insertarNoticias($refcategorias,$titulo,$noticia,$pie,$fechacreacion,$refusuarios) { 
-	$sql = "insert into dbnoticias(idnoticia,refcategorias,titulo,noticia,pie,fechacreacion,refusuarios) 
-	values ('',".$refcategorias.",'".utf8_decode($titulo)."','".utf8_decode($noticia)."','".utf8_decode($pie)."',".$fechacreacion.",".$refusuarios.")"; 
+	function insertarNoticias($refclientes,$refcategorias,$titulo,$noticia,$pie,$fechacreacion,$refusuarios) { 
+	$sql = "insert into dbnoticias(idnoticia,refclientes,refcategorias,titulo,noticia,pie,fechacreacion,refusuarios) 
+	values ('',".$refclientes.",".$refcategorias.",'".utf8_decode($titulo)."','".utf8_decode($noticia)."','".utf8_decode($pie)."',".$fechacreacion.",".$refusuarios.")"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
 	
 	
-	function modificarNoticias($id,$refcategorias,$titulo,$noticia,$pie,$fechacreacion,$refusuarios) { 
+	function modificarNoticias($id,$refclientes,$refcategorias,$titulo,$noticia,$pie,$fechacreacion,$refusuarios) { 
 	$sql = "update dbnoticias 
 	set 
-	refcategorias = ".$refcategorias.",titulo = '".utf8_decode($titulo)."',noticia = '".utf8_decode($noticia)."',pie = '".utf8_decode($pie)."',fechacreacion = ".$fechacreacion.",refusuarios = ".$refusuarios." 
+	refclientes = ".$refclientes.",refcategorias = ".$refcategorias.",titulo = '".utf8_decode($titulo)."',noticia = '".utf8_decode($noticia)."',pie = '".utf8_decode($pie)."',fechacreacion = ".$fechacreacion.",refusuarios = ".$refusuarios." 
 	where idnoticia =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
@@ -156,6 +157,7 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	function traerNoticias() { 
 	$sql = "select 
 	n.idnoticia,
+	n.refclientes,
 	n.refcategorias,
 	n.titulo,
 	n.noticia,
@@ -163,6 +165,7 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	n.fechacreacion,
 	n.refusuarios
 	from dbnoticias n 
+	inner join dbclientes cli ON cli.idcliente = n.refclientes 
 	inner join tbcategorias cat ON cat.idcategoria = n.refcategorias 
 	order by 1"; 
 	$res = $this->query($sql,0); 
@@ -171,7 +174,7 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	
 	
 	function traerNoticiasPorId($id) { 
-	$sql = "select idnoticia,refcategorias,titulo,noticia,pie,fechacreacion,refusuarios from dbnoticias where idnoticia =".$id; 
+	$sql = "select idnoticia,refclientes,refcategorias,titulo,noticia,pie,fechacreacion,refusuarios from dbnoticias where idnoticia =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
 	} 
@@ -182,18 +185,18 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	
 	/* PARA Usuarios */
 	
-	function insertarUsuarios($usuario,$password,$refroles,$email,$nombrecompleto) { 
-	$sql = "insert into dbusuarios(idusuario,usuario,password,refroles,email,nombrecompleto) 
-	values ('','".utf8_decode($usuario)."','".utf8_decode($password)."',".$refroles.",'".utf8_decode($email)."','".utf8_decode($nombrecompleto)."')"; 
+	function insertarUsuarios($usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) { 
+	$sql = "insert into dbusuarios(idusuario,usuario,password,refroles,email,nombrecompleto,refclientes,activo) 
+	values ('','".utf8_decode($usuario)."','".utf8_decode($password)."',".$refroles.",'".utf8_decode($email)."','".utf8_decode($nombrecompleto)."',".$refclientes.",".$activo.")"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
 	
 	
-	function modificarUsuarios($id,$usuario,$password,$refroles,$email,$nombrecompleto) { 
+	function modificarUsuarios($id,$usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) { 
 	$sql = "update dbusuarios 
 	set 
-	usuario = '".utf8_decode($usuario)."',password = '".utf8_decode($password)."',refroles = ".$refroles.",email = '".utf8_decode($email)."',nombrecompleto = '".utf8_decode($nombrecompleto)."' 
+	usuario = '".utf8_decode($usuario)."',password = '".utf8_decode($password)."',refroles = ".$refroles.",email = '".utf8_decode($email)."',nombrecompleto = '".utf8_decode($nombrecompleto)."',refclientes = ".$refclientes.",activo = ".$activo." 
 	where idusuario =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
@@ -214,7 +217,9 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	u.password,
 	u.refroles,
 	u.email,
-	u.nombrecompleto
+	u.nombrecompleto,
+	u.refclientes,
+	u.activo
 	from dbusuarios u 
 	inner join tbroles rol ON rol.idrol = u.refroles 
 	order by 1"; 
@@ -224,7 +229,7 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	
 	
 	function traerUsuariosPorId($id) { 
-	$sql = "select idusuario,usuario,password,refroles,email,nombrecompleto from dbusuarios where idusuario =".$id; 
+	$sql = "select idusuario,usuario,password,refroles,email,nombrecompleto,refclientes,activo from dbusuarios where idusuario =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
 	} 
@@ -579,7 +584,6 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	
 	/* Fin */
 	/* /* Fin de la Tabla: tbroles*/
-
 
 
 function query($sql,$accion) {
