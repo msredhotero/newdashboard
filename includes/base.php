@@ -15,7 +15,8 @@ class BaseHTML {
                          2=>'<link href="'.$altura.'plugins/animate-css/animate.css" rel="stylesheet" />',
                          3=>'<link href="'.$altura.'css/style.css" rel="stylesheet">',
                          4=>'<link href="'.$altura.'css/themes/all-themes.css" rel="stylesheet" />',
-                         5=>'<link href="'.$altura.'plugins/sweetalert/sweetalert.css" rel="stylesheet" />');
+                         5=>'<link href="'.$altura.'plugins/sweetalert/sweetalert.css" rel="stylesheet" />',
+                         6=>'<link href="'.$altura.'plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />');
 
         $cad = '';
 
@@ -32,7 +33,6 @@ class BaseHTML {
 
 
     function cargarArchivosJS($altura ,$ar = array()) {
-    
 
         $arNuevo = array(0=>'<script src="'.$altura.'plugins/jquery/jquery.min.js"></script>',
                          1=>'<script src="'.$altura.'plugins/bootstrap/js/bootstrap.js"></script>',
@@ -181,7 +181,7 @@ class BaseHTML {
                             <div class="btn-group user-helper-dropdown">
                                 <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                                 <ul class="dropdown-menu pull-right">
-                                    <li><a href="javascript:void(0);"><i class="material-icons">person</i>Perfil</a></li>
+                                    <li><a href="javascript:void(0);" id="menuPerfil"><i class="material-icons">person</i>Perfil</a></li>
                                     <li role="separator" class="divider"></li>
                                     <li><a href="logout.php"><i class="material-icons">input</i>Salir</a></li>
                                 </ul>
@@ -210,6 +210,32 @@ class BaseHTML {
                 </aside>
                 <!-- #END# Right Sidebar -->
             </section>';
+
+        echo $cad;
+    }
+
+    function modalHTML($id,$titulo,$aceptar,$contenido,$form,$formulario='') {
+        $cad = '<div class="modal fade" id="'.$id.'" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-blue">
+                        <h4 class="modal-title" id="largeModalLabel">'.$titulo.'</h4>
+                    </div>
+                    <form id="'.$form.'" method="POST">
+                    <div class="modal-body">
+                        <p>'.$contenido.'</p>
+                        
+                        '.$formulario.'
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-link waves-effect" id="btn'.$id.'">'.$aceptar.'</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CERRAR</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>';
 
         echo $cad;
     }

@@ -399,6 +399,14 @@ class Servicios {
 			while ($row = mysql_fetch_array($res)) {
 				$label = $row[0];
 				$i = 0;
+
+				if ($row[2]=='NO') {
+					$lblObligatorio = ' required ';
+				} else {
+					$lblObligatorio = '';
+				}
+
+
 				foreach ($lblcambio as $cambio) {
 					if ($row[0] == $cambio) {
 						$label = $lblreemplazo[$i];
@@ -422,6 +430,7 @@ class Servicios {
 						if (in_array($row[0],$geoposicionamiento)) {
 							$form	=	$form.'
 							
+
 							<div class="form-group col-md-6" style="display:'.$lblOculta.'">
 								<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
 								<div class="input-group col-md-12">
@@ -491,16 +500,15 @@ class Servicios {
 							
 								$form	=	$form.'
 								
-								<div class="form-group col-md-6" style="display:'.$lblOculta.'">
-									<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
-									<div class="input-group col-md-12">
-										<select class="form-control" id="'.strtolower($campo).'" name="'.strtolower($campo).'">
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
+									<select class="form-control show-tick" id="'.strtolower($campo).'" name="'.strtolower($campo).'">
+
 											';
 								
 								$form	=	$form.$option;
 								
-								$form	=	$form.'		</select>
-									</div>
+								$form	=	$form.'</select>
+
 								</div>
 								
 								';
@@ -636,11 +644,12 @@ class Servicios {
 												
 
 												$form	=	$form.'
-												
-												<div class="form-group col-md-6" style="display:'.$lblOculta.'">
-													<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
-													<div class="input-group col-md-12">
-														<input type="text" class="form-control" id="'.$campo.'" name="'.$campo.'" placeholder="Ingrese el '.$label.'..." required>
+												<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
+													<div class="form-group form-float">
+														<div class="form-line">
+															<input type="text" class="form-control" id="'.$campo.'" name="'.$campo.'" '.$lblObligatorio.'>
+															<label class="form-label">'.$label.'</label>
+														</div>
 													</div>
 												</div>
 												

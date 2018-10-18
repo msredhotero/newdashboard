@@ -9,178 +9,64 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosReferencias {
 
-function GUID()
-{
-    if (function_exists('com_create_guid') === true)
-    {
-        return trim(com_create_guid(), '{}');
-    }
+	function GUID()
+	{
+		if (function_exists('com_create_guid') === true)
+		{
+			return trim(com_create_guid(), '{}');
+		}
 
-    return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
-}
+		return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+	}
 
 
-/* PARA Clientes */
 
-function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$direccion,$telefono,$email) { 
-	$sql = "insert into dbclientes(idcliente,apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email) 
-	values ('','".utf8_decode($apellido)."','".utf8_decode($nombre)."',".$nrodocumento.",'".utf8_decode($fechanacimiento)."','".utf8_decode($direccion)."','".utf8_decode($telefono)."','".utf8_decode($email)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
+	function traerCountriesPorId($id) {
+		$sql = "select idcountrie,nombre,cuit,fechaalta,
+			fechabaja,refposiciontributaria,latitud,longitud,activo,referencia,direccion,telefonoadministrativo,telefonocampo,email,localidad,codigopostal,refusuarios from dbcountries where idcountrie =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerNombreCountryPorId($id) {
+		$sql = "select nombre from dbcountries where idcountrie =".$id;
+		$res = $this->query($sql,0);
+		
+		if (mysql_num_rows($res)>0) {
+			return mysql_result($res,0,0);
+		}
+
+		return '';
+	}
+
+
+	function traerEquiposPorCountries($idCountrie) { 
+		$sql = "select 
+		e.idequipo,
+		cou.nombre as countrie,
+		e.nombre,
+		cat.categoria,
+		di.division,
+		con.nombre as contacto,
+		e.fechaalta,
+		e.fachebaja,
+		(case when e.activo=1 then 'Si' else 'No' end) as activo,
+		e.refcountries,
+		e.refcategorias,
+		e.refdivisiones,
+		e.refcontactos
+		from dbequipos e 
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
+		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
+		where cou.idcountrie = ".$idCountrie." and e.activo = 1
+		order by 1"; 
+		$res = $this->query($sql,0); 
+		return $res; 
 	} 
-	
-	
-	function modificarClientes($id,$apellido,$nombre,$nrodocumento,$fechanacimiento,$direccion,$telefono,$email) { 
-	$sql = "update dbclientes 
-	set 
-	apellido = '".utf8_decode($apellido)."',nombre = '".utf8_decode($nombre)."',nrodocumento = ".$nrodocumento.",fechanacimiento = '".utf8_decode($fechanacimiento)."',direccion = '".utf8_decode($direccion)."',telefono = '".utf8_decode($telefono)."',email = '".utf8_decode($email)."' 
-	where idcliente =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarClientes($id) { 
-	$sql = "delete from dbclientes where idcliente =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerClientes() { 
-	$sql = "select 
-	c.idcliente,
-	c.apellido,
-	c.nombre,
-	c.nrodocumento,
-	c.fechanacimiento,
-	c.direccion,
-	c.telefono,
-	c.email
-	from dbclientes c 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerClientesPorId($id) { 
-	$sql = "select idcliente,apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email from dbclientes where idcliente =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	/* Fin */
-	/* /* Fin de la Tabla: dbclientes*/
-	
-	
-	/* PARA Noticiaimagenes */
-	
-	function insertarNoticiaimagenes($refnoticias,$imagen,$type) { 
-	$sql = "insert into dbnoticiaimagenes(idnoticiaimagen,refnoticias,imagen,type) 
-	values ('',".$refnoticias.",'".utf8_decode($imagen)."','".utf8_decode($type)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarNoticiaimagenes($id,$refnoticias,$imagen,$type) { 
-	$sql = "update dbnoticiaimagenes 
-	set 
-	refnoticias = ".$refnoticias.",imagen = '".utf8_decode($imagen)."',type = '".utf8_decode($type)."' 
-	where idnoticiaimagen =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarNoticiaimagenes($id) { 
-	$sql = "delete from dbnoticiaimagenes where idnoticiaimagen =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerNoticiaimagenes() { 
-	$sql = "select 
-	n.idnoticiaimagen,
-	n.refnoticias,
-	n.imagen,
-	n.type
-	from dbnoticiaimagenes n 
-	inner join dbnoticias not ON not.idnoticia = n.refnoticias 
-	inner join dbclientes cl ON cl.idcliente = not.refclientes 
-	inner join tbcategorias ca ON ca.idcategoria = not.refcategorias 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerNoticiaimagenesPorId($id) { 
-	$sql = "select idnoticiaimagen,refnoticias,imagen,type from dbnoticiaimagenes where idnoticiaimagen =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	/* Fin */
-	/* /* Fin de la Tabla: dbnoticiaimagenes*/
-	
-	
-	/* PARA Noticias */
-	
-	function insertarNoticias($refclientes,$refcategorias,$titulo,$noticia,$pie,$fechacreacion,$refusuarios) { 
-	$sql = "insert into dbnoticias(idnoticia,refclientes,refcategorias,titulo,noticia,pie,fechacreacion,refusuarios) 
-	values ('',".$refclientes.",".$refcategorias.",'".utf8_decode($titulo)."','".utf8_decode($noticia)."','".utf8_decode($pie)."',".$fechacreacion.",".$refusuarios.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarNoticias($id,$refclientes,$refcategorias,$titulo,$noticia,$pie,$fechacreacion,$refusuarios) { 
-	$sql = "update dbnoticias 
-	set 
-	refclientes = ".$refclientes.",refcategorias = ".$refcategorias.",titulo = '".utf8_decode($titulo)."',noticia = '".utf8_decode($noticia)."',pie = '".utf8_decode($pie)."',fechacreacion = ".$fechacreacion.",refusuarios = ".$refusuarios." 
-	where idnoticia =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarNoticias($id) { 
-	$sql = "delete from dbnoticias where idnoticia =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerNoticias() { 
-	$sql = "select 
-	n.idnoticia,
-	n.refclientes,
-	n.refcategorias,
-	n.titulo,
-	n.noticia,
-	n.pie,
-	n.fechacreacion,
-	n.refusuarios
-	from dbnoticias n 
-	inner join dbclientes cli ON cli.idcliente = n.refclientes 
-	inner join tbcategorias cat ON cat.idcategoria = n.refcategorias 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerNoticiasPorId($id) { 
-	$sql = "select idnoticia,refclientes,refcategorias,titulo,noticia,pie,fechacreacion,refusuarios from dbnoticias where idnoticia =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	/* Fin */
-	/* /* Fin de la Tabla: dbnoticias*/
 	
 	
 	/* PARA Usuarios */
@@ -218,7 +104,6 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	u.refroles,
 	u.email,
 	u.nombrecompleto,
-	u.refclientes,
 	u.activo
 	from dbusuarios u 
 	inner join tbroles rol ON rol.idrol = u.refroles 
@@ -229,115 +114,13 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	
 	
 	function traerUsuariosPorId($id) { 
-	$sql = "select idusuario,usuario,password,refroles,email,nombrecompleto,refclientes,activo from dbusuarios where idusuario =".$id; 
+	$sql = "select idusuario,usuario,password,refroles,email,nombrecompleto,activo from dbusuarios where idusuario =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
 	} 
 	
 	/* Fin */
 	/* /* Fin de la Tabla: dbusuarios*/
-	
-	
-	/* PARA Predio_menu */
-	
-	function insertarPredio_menu($url,$icono,$nombre,$Orden,$hover,$permiso) { 
-	$sql = "insert into predio_menu(idmenu,url,icono,nombre,Orden,hover,permiso) 
-	values ('','".utf8_decode($url)."','".utf8_decode($icono)."','".utf8_decode($nombre)."',".$Orden.",'".utf8_decode($hover)."','".utf8_decode($permiso)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarPredio_menu($id,$url,$icono,$nombre,$Orden,$hover,$permiso) { 
-	$sql = "update predio_menu 
-	set 
-	url = '".utf8_decode($url)."',icono = '".utf8_decode($icono)."',nombre = '".utf8_decode($nombre)."',Orden = ".$Orden.",hover = '".utf8_decode($hover)."',permiso = '".utf8_decode($permiso)."' 
-	where idmenu =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarPredio_menu($id) { 
-	$sql = "delete from predio_menu where idmenu =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerPredio_menu() { 
-	$sql = "select 
-	p.idmenu,
-	p.url,
-	p.icono,
-	p.nombre,
-	p.Orden,
-	p.hover,
-	p.permiso
-	from predio_menu p 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerPredio_menuPorId($id) { 
-	$sql = "select idmenu,url,icono,nombre,Orden,hover,permiso from predio_menu where idmenu =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	/* Fin */
-	/* /* Fin de la Tabla: predio_menu*/
-	
-	
-	/* PARA Categorias */
-	
-	function insertarCategorias($categoria,$activo) { 
-	$sql = "insert into tbcategorias(idcategoria,categoria,activo) 
-	values ('','".utf8_decode($categoria)."',".$activo.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarCategorias($id,$categoria,$activo) { 
-	$sql = "update tbcategorias 
-	set 
-	categoria = '".utf8_decode($categoria)."',activo = ".$activo." 
-	where idcategoria =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarCategorias($id) { 
-	$sql = "delete from tbcategorias where idcategoria =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerCategorias() { 
-	$sql = "select 
-	c.idcategoria,
-	c.categoria,
-	c.activo
-	from tbcategorias c 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerCategoriasPorId($id) { 
-	$sql = "select idcategoria,categoria,activo from tbcategorias where idcategoria =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	/* Fin */
-	/* /* Fin de la Tabla: tbcategorias*/
 	
 	
 	/* PARA Configuracion */
@@ -537,53 +320,6 @@ function insertarClientes($apellido,$nombre,$nrodocumento,$fechanacimiento,$dire
 	/* /* Fin de la Tabla: tbmeses*/
 	
 	
-	/* PARA Roles */
-	
-	function insertarRoles($descripcion,$activo) { 
-	$sql = "insert into tbroles(idrol,descripcion,activo) 
-	values ('','".utf8_decode($descripcion)."',".$activo.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarRoles($id,$descripcion,$activo) { 
-	$sql = "update tbroles 
-	set 
-	descripcion = '".utf8_decode($descripcion)."',activo = ".$activo." 
-	where idrol =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarRoles($id) { 
-	$sql = "delete from tbroles where idrol =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerRoles() { 
-	$sql = "select 
-	r.idrol,
-	r.descripcion,
-	r.activo
-	from tbroles r 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerRolesPorId($id) { 
-	$sql = "select idrol,descripcion,activo from tbroles where idrol =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	/* Fin */
-	/* /* Fin de la Tabla: tbroles*/
 
 
 function query($sql,$accion) {

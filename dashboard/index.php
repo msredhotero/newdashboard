@@ -30,6 +30,11 @@ $configuracion = $serviciosReferencias->traerConfiguracion();
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
 $breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
+
+$club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
+
+$cantidadEquipos = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
+
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Orden";
 
@@ -37,7 +42,7 @@ $plural = "Ordenes";
 
 $eliminar = "eliminarOrdenes";
 
-$insertar = "insertarOrdenes";
+$insertar = "insertarDelegados";
 
 //$tituloWeb = "Gestión: Talleres";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
@@ -45,24 +50,22 @@ $insertar = "insertarOrdenes";
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 
-/////////////////////// Opciones para la creacion del view  patente,refmodelo,reftipovehiculo,anio/////////////////////
-$cabeceras 		= "	<th>Ingreso</th>
-					<th>Dueño</th>
-					<th>Vehiculo</th>
-					<th>Hora Entrada</th>
-					<th>Hora Salida</th>
-					<th>Usuario</th>
-					<th>Estado</th>";
+$tabla 			= "dbdelegados";
 
-//////////////////////////////////////////////  FIN de los opciones //////////////////////////
-/*
-$lstCargados 	= $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerTurnosGridPorEstadoIn('3,4,5'),93);
-$lstCargadosMora = $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerTurnosGridPorEstadoIn('1'),93);
-$lstCargadosCancelados = $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerTurnosGridPorEstadoIn('2'),93);
+$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
+$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
 
-$resEstado 	= $serviciosReferencias->traerEstados();
-$cadRefEstado 	= $serviciosFunciones->devolverSelectBox($resEstado,array(1),'');
-*/
+
+$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
+$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
+
+$refdescripcion = array(0 => $cadRef);
+$refCampo 	=  array("refusuarios");
+
+$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
+///////////////////////////              fin                   ////////////////////////
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -119,18 +122,67 @@ $cadRefEstado 	= $serviciosFunciones->devolverSelectBox($resEstado,array(1),'');
     <!-- #Top Bar -->
     <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu)); ?>
 
-    <section class="content">
+    <section class="content" style="margin-top:-10px;">
         <div class="container-fluid">
-            <div class="block-header">
-                
+            <div class="row clearfix">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-green hover-expand-effect">
+                        <div class="icon">
+                            <i class="material-icons">account_balance</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">CLUB</div>
+                            <div class="number"><?php echo $club; ?></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-deep-orange hover-expand-effect">
+                        <div class="icon">
+                            <i class="material-icons">security</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">EQUIPOS</div>
+                            <div class="number"><?php echo mysql_num_rows($cantidadEquipos); ?></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <?php echo $baseHTML->cargarArchivosJS('../'); ?>
 
-    <script>
 
+    <!-- Modal Large Size -->
+    <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil); ?>
+
+    <script>
+        $(document).ready(function(){
+            $('#menuPerfil').click(function() {
+                $('#modalPerfil').modal();
+            });
+
+            $('#frmPerfil').validate({
+                highlight: function (input) {
+                    console.log(input);
+                    $(input).parents('.form-line').addClass('error');
+                },
+                unhighlight: function (input) {
+                    $(input).parents('.form-line').removeClass('error');
+                },
+                errorPlacement: function (error, element) {
+                    $(element).parents('.input-group').append(error);
+                }
+            });
+
+            $("#btnmodalPerfil").submit(function(e){
+    
+                e.preventDefault();
+            });
+        });
     </script>
 </body>
 <?php } ?>

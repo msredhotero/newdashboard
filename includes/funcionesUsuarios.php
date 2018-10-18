@@ -24,49 +24,54 @@ function login($usuario,$pass) {
 	
 	$sqlusu = "select * from dbusuarios where email = '".$usuario."'";
 
-$error = '';
+	$error = '';
 
-if (trim($usuario) != '' and trim($pass) != '') {
+	if (trim($usuario) != '' and trim($pass) != '') {
 
-$respusu = $this->query($sqlusu,0);
+	$respusu = $this->query($sqlusu,0);
 
-if (mysql_num_rows($respusu) > 0) {
-	
-	
-	$idUsua = mysql_result($respusu,0,0);
-	$sqlpass = "select nombrecompleto,email,usuario,r.descripcion, r.idrol, u.refcountries from dbusuarios u inner join tbroles r on r.idrol = u.refroles where password = '".$pass."' and u.activo = 1 and idusuario = ".$idUsua;
-
-
-	$resppass = $this->query($sqlpass,0);
-	
-	if (mysql_num_rows($resppass) > 0) {
-		$error = '';
-		} else {
-			$error = 'Usuario o Password incorrecto';
-		}
-	
-	}
-	else
-	
-	{
-		$error = 'Usuario o Password incorrecto';	
-	}
-	
-	if ($error == '') {
-		//die(var_dump($error));
-		session_start();
-		$_SESSION['usua_aif'] = $usuario;
-		$_SESSION['nombre_aif'] = mysql_result($resppass,0,0);
-		$_SESSION['email_aif'] = mysql_result($resppass,0,1);
-		$_SESSION['idroll_aif'] = mysql_result($resppass,0,4);
-		$_SESSION['refroll_aif'] = mysql_result($resppass,0,3);
+	if (mysql_num_rows($respusu) > 0) {
 		
-		return '';
+		
+		$idUsua = mysql_result($respusu,0,0);
+		$sqlpass = "select nombrecompleto,email,usuario,r.descripcion, r.idrol, u.refcountries 
+				from dbusuarios u 
+				inner join tbroles r on r.idrol = u.refroles 
+				where password = '".$pass."' and u.activo = 1 and idusuario = ".$idUsua;
+
+
+		$resppass = $this->query($sqlpass,0);
+		
+		if (mysql_num_rows($resppass) > 0) {
+			$error = '';
+			} else {
+				$error = 'Usuario o Password incorrecto';
+			}
+		
+		}
+		else
+		
+		{
+			$error = 'Usuario o Password incorrecto';	
+		}
+		
+		if ($error == '') {
+			//die(var_dump($error));
+			session_start();
+			$_SESSION['usua_aif'] = $usuario;
+			$_SESSION['nombre_aif'] = mysql_result($resppass,0,0);
+			$_SESSION['usuaid_aif'] = $idUsua;
+			$_SESSION['email_aif'] = mysql_result($resppass,0,1);
+			$_SESSION['idroll_aif'] = mysql_result($resppass,0,4);
+			$_SESSION['refroll_aif'] = mysql_result($resppass,0,3);
+			$_SESSION['idclub_aif'] = mysql_result($resppass,0,'refcountries');
+			
+			return '';
+		}
+		
+	}	else {
+		$error = 'Usuario y Password son campos obligatorios';	
 	}
-	
-}	else {
-	$error = 'Usuario y Password son campos obligatorios';	
-}
 	
 	
 	return $error;
