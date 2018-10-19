@@ -218,7 +218,9 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 			data: {
 				errorMensaje: '',
                 successMensaje: '',
-				activeDelegados: {}
+                return {
+                    activeDelegados: ['nombres':'narsad']
+                }
 			},
 			mounted () {
 				this.getDelegado()
