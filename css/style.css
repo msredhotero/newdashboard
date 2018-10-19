@@ -7720,8 +7720,11 @@ fieldset[disabled] .form-control {
 
 /* Login Page ================================== */
 .login-page {
-  background: url(../imagenes/polygon-background10-preview.jpg) 100% 0% no-repeat;
-	background-size: cover;
+  background: url(../imagenes/polygon-background10-preview.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
   padding-left: 0;
   max-width: 360px;
   margin: 5% auto;

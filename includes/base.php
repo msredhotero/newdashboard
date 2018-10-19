@@ -214,13 +214,21 @@ class BaseHTML {
         echo $cad;
     }
 
-    function modalHTML($id,$titulo,$aceptar,$contenido,$form,$formulario='') {
+    function modalHTML($id,$titulo,$aceptar,$contenido,$form,$formulario='',$idTabla,$tabla) {
         $cad = '<div class="modal fade" id="'.$id.'" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-blue">
                         <h4 class="modal-title" id="largeModalLabel">'.$titulo.'</h4>
                     </div>
+                    <transition name="fade">
+                    <div class="alert bg-green" v-if="successMensaje">
+                        <i class="material-icons">check_circle</i> {{ successMensaje }}
+                    </div>
+                    <div class="alert bg-red" v-if="errorMensaje">
+                        <i class="material-icons">error</i> {{ errorMensaje }}
+                    </div>
+                    </transition>
                     <form id="'.$form.'" method="POST">
                     <div class="modal-body">
                         <p>'.$contenido.'</p>
@@ -232,7 +240,9 @@ class BaseHTML {
                         <button type="submit" class="btn btn-link waves-effect" id="btn'.$id.'">'.$aceptar.'</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CERRAR</button>
                     </div>
+                    <input type="hidden" v-modal="active'.$tabla.'.'.$idTabla.'" name="'.$idTabla.'" />
                     </form>
+
                 </div>
             </div>
         </div>';

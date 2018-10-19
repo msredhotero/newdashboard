@@ -647,7 +647,7 @@ class Servicios {
 												<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
 													<div class="form-group form-float">
 														<div class="form-line">
-															<input type="text" class="form-control" id="'.$campo.'" name="'.$campo.'" '.$lblObligatorio.'>
+															<input v-modal="active'.ucwords(substr($tabla,2)).'.'.$campo.'" type="text" class="form-control" id="'.$campo.'" name="'.$campo.'" '.$lblObligatorio.'>
 															<label class="form-label">'.$label.'</label>
 														</div>
 													</div>

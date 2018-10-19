@@ -35,35 +35,14 @@ function query($sql,$accion) {
 
 
 
-$tablasAr	= array("clientes"        => "dbclientes",        
-"noticias"=> "dbnoticias",        
-"noticiaimagenes"        => "dbnoticiaimagenes",        
-"categorias"       => "tbcategorias",       
-"predio_menu"     => "predio_menu",       
-"estados"         => "tbestados",
-"usuarios"	=>	"dbusuarios",         
-"roles"           => "tbroles");
+$tablasAr	= array("delegados"        => "dbdelegados");
 
 
 function recursiveTablas($ar, $tabla, $aliasTablaMadre) {
 	
-	$tablasArAux2	= array("clientes"        => "dbclientes",        
-	"noticias"=> "dbnoticias",        
-	"noticiaimagenes"        => "dbnoticiaimagenes",        
-	"categorias"       => "tbcategorias",       
-	"predio_menu"     => "predio_menu",       
-	"estados"         => "tbestados",
-	"usuarios"	=>	"dbusuarios",         
-	"roles"           => "tbroles");
+	$tablasArAux2	= array("delegados"        => "dbdelegados");
 
-	$tablasArAux	= array("clientes"        => 1,        
-	"noticias"=> 2,        
-	"noticiaimagenes"        => 2,        
-	"categorias"       => 1,       
-	"predio_menu"     => 1,       
-	"estados"         => 1,
-	"usuarios"	=>	2,         
-	"roles"           => 1);
+	$tablasArAux	= array("delegados"        => 1);
 	
 	$inner= '';
 	$sql	=	"show columns from ".$tabla;
@@ -93,7 +72,7 @@ $ajaxFuncionesController = '';
 
 $servicios	= "Referencias";
 
-$sqlMapaer	= "SHOW FULL TABLES FROM ssblog";
+$sqlMapaer	= "SHOW FULL TABLES FROM ssaif_desarrollo_2018";
 $resMapeo 	=	query($sqlMapaer,0);
 
 $aliasTablaMadre = '';

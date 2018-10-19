@@ -121,6 +121,84 @@ class ServiciosReferencias {
 	
 	/* Fin */
 	/* /* Fin de la Tabla: dbusuarios*/
+
+
+	
+/* PARA Delegados */
+
+function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) { 
+	$sql = "insert into dbdelegados(iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4) 
+	values ('',".$refusuarios.",'".utf8_decode($apellidos)."','".utf8_decode($nombres)."','".utf8_decode($direccion)."','".utf8_decode($localidad)."','".utf8_decode($cp)."','".utf8_decode($telefono)."','".utf8_decode($celular)."','".utf8_decode($fax)."','".utf8_decode($email1)."','".utf8_decode($email2)."','".utf8_decode($email3)."','".utf8_decode($email4)."')"; 
+	$res = $this->query($sql,1); 
+	return $res; 
+	} 
+	
+	
+	function modificarDelegados($id,$refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) { 
+	$sql = "update dbdelegados 
+	set 
+	refusuarios = ".$refusuarios.",apellidos = '".utf8_decode($apellidos)."',nombres = '".utf8_decode($nombres)."',direccion = '".utf8_decode($direccion)."',localidad = '".utf8_decode($localidad)."',cp = '".utf8_decode($cp)."',telefono = '".utf8_decode($telefono)."',celular = '".utf8_decode($celular)."',fax = '".utf8_decode($fax)."',email1 = '".utf8_decode($email1)."',email2 = '".utf8_decode($email2)."',email3 = '".utf8_decode($email3)."',email4 = '".utf8_decode($email4)."' 
+	where iddelegado =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function eliminarDelegados($id) { 
+	$sql = "delete from dbdelegados where iddelegado =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function traerDelegados() { 
+	$sql = "select 
+	d.iddelegado,
+	d.refusuarios,
+	d.apellidos,
+	d.nombres,
+	d.direccion,
+	d.localidad,
+	d.cp,
+	d.telefono,
+	d.celular,
+	d.fax,
+	d.email1,
+	d.email2,
+	d.email3,
+	d.email4
+	from dbdelegados d 
+	order by 1"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+
+	function existeDelegadoPorUsuario($id) {
+		$sql = "select iddelegado,refusuarios,apellidos from dbdelegados where refusuarios =".$id;
+		
+		return $this->existeDevuelveId($sql);
+
+	}
+	
+	
+	function traerDelegadosPorId($id) { 
+	$sql = "select iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4 from dbdelegados where iddelegado =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	/* Fin */
+	/* /* Fin de la Tabla: dbdelegados*/
+
+	function existeDevuelveId($sql) {
+
+		$res = $this->query($sql,0);
+		
+		if (mysql_num_rows($res)>0) {
+			return mysql_result($res,0,0);  
+		}
+		return 0;
+	}
 	
 	
 	/* PARA Configuracion */

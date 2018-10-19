@@ -35,6 +35,8 @@ $club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
 
 $cantidadEquipos = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
 
+
+
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Orden";
 
@@ -83,9 +85,14 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 
     <?php echo $baseHTML->cargarArchivosCSS('../'); ?>
 
+    <style>
+        .alert > i{ vertical-align: middle !important; }
+    </style>
+
 </head>
 
 <body class="theme-red">
+
     <!-- Page Loader -->
     <div class="page-loader-wrapper">
         <div class="loader">
@@ -121,11 +128,14 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <?php echo $baseHTML->cargarNAV($breadCumbs); ?>
     <!-- #Top Bar -->
     <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu)); ?>
-
+    <main id="app">
     <section class="content" style="margin-top:-10px;">
+    
         <div class="container-fluid">
             <div class="row clearfix">
-                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">
                         <div class="icon">
                             <i class="material-icons">account_balance</i>
@@ -149,15 +159,31 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
+
+    
     </section>
 
     <?php echo $baseHTML->cargarArchivosJS('../'); ?>
 
 
     <!-- Modal Large Size -->
-    <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil); ?>
+    <transition name="fade">
+    <form class="form" @submit.prevent="guardarDelegado">
+    <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados'); ?>
+    </form>
+    </transition>
+    
+    </main>
+    <!-- VUE JS -->
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    
 
     <script>
         $(document).ready(function(){
@@ -178,11 +204,56 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                 }
             });
 
-            $("#btnmodalPerfil").submit(function(e){
+            $("#btnmodalPerfil9").submit(function(e){
     
                 e.preventDefault();
             });
         });
+    </script>
+
+    <script>
+
+		const app = new Vue({
+			el: "#app",
+			data: {
+				errorMensaje: '',
+                successMensaje: '',
+				activeDelegados: {}
+			},
+			mounted () {
+				this.getDelegado()
+			},
+			computed: {
+
+			},
+			methods: {
+				setMensajes (res) {
+                    if (res.data.error) {
+                        this.errorMensaje = res.data.mensaje
+                    } else {
+                        this.successMensaje = res.data.mensaje
+                    }
+
+                    setTimeout(() => {
+                        this.errorMensaje = ''
+                        this.successMensaje = ''
+                    }, 3000);
+                },
+                getDelegado () {
+					axios.get('../ajax/ajax.php?accion=VtraerDelegadosPorId&iddelegado=1')
+					.then(res => {
+						//console.log(res)
+						this.activeDelegados = res.data.datos
+					})
+				},
+				guardarDelegado (e) {
+                    axios.post('../ajax/ajax.php?accion=VguardarDelegado', new FormData(e.target))
+                    .then(res => {
+                        this.setMensajes(res)
+                    })
+                }
+			}
+		})
     </script>
 </body>
 <?php } ?>
