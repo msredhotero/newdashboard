@@ -214,7 +214,7 @@ class BaseHTML {
         echo $cad;
     }
 
-    function modalHTML($id,$titulo,$aceptar,$contenido,$form,$formulario='',$idTabla,$tabla) {
+    function modalHTML($id,$titulo,$aceptar,$contenido,$form,$formulario='',$idTabla,$tabla,$accion) {
         $cad = '<div class="modal fade" id="'.$id.'" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -222,12 +222,14 @@ class BaseHTML {
                         <h4 class="modal-title" id="largeModalLabel">'.$titulo.'</h4>
                     </div>
                     <transition name="fade">
-                    <div class="alert bg-green" v-if="successMensaje">
-                        <i class="material-icons">check_circle</i> {{ successMensaje }}
-                    </div>
-                    <div class="alert bg-red" v-if="errorMensaje">
-                        <i class="material-icons">error</i> {{ errorMensaje }}
-                    </div>
+                    
+                        <div class="alert bg-green" v-if="successMensaje">
+                            <i class="material-icons">check_circle</i> {{ successMensaje }}
+                        </div>
+                        <div class="alert bg-red" v-if="errorMensaje">
+                            <i class="material-icons">error</i> {{ errorMensaje }}
+                        </div>
+                 
                     </transition>
                     <form id="'.$form.'" method="POST">
                     <div class="modal-body">
@@ -241,6 +243,7 @@ class BaseHTML {
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CERRAR</button>
                     </div>
                     <input type="hidden" ref="ref_'.$idTabla.'" :value="active'.ucwords($tabla).'.'.$idTabla.'" name="'.$idTabla.'" />
+                    <input type="hidden" value="'.$accion.'" name="accion" id="accion" />>
                     </form>
 
                 </div>

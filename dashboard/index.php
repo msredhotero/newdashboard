@@ -133,7 +133,6 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     
         <div class="container-fluid">
             <div class="row clearfix">
-                
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">
@@ -172,7 +171,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <!-- Modal Large Size -->
     <transition name="fade">
     <form class="form" @submit.prevent="guardarDelegado">
-    <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados'); ?>
+    <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
     </form>
     </transition>
     
@@ -212,6 +211,9 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     </script>
 
     <script>
+        const paramsGetDelegado = new URLSearchParams();
+        paramsGetDelegado.append('accion','VtraerDelegadosPorId');
+        paramsGetDelegado.append('iddelegado',1);
 
 		const app = new Vue({
 			el: "#app",
@@ -229,6 +231,8 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 			},
 			methods: {
 				setMensajes (res) {
+                    this.getDelegado()
+
                     if (res.data.error) {
                         this.errorMensaje = res.data.mensaje
                     } else {
@@ -239,9 +243,10 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                         this.errorMensaje = ''
                         this.successMensaje = ''
                     }, 3000);
+
                 },
                 getDelegado () {
-					axios.get('../ajax/ajax.php?accion=VtraerDelegadosPorId&iddelegado=1')
+					axios.post('../ajax/ajax.php',paramsGetDelegado)
 					.then(res => {
                         
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
@@ -249,14 +254,12 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 					})
 				},
 				guardarDelegado (e) {
-                    axios.post('../ajax/ajax.php?accion=VguardarDelegado', new FormData(e.target))
+                    axios.post('../ajax/ajax.php', new FormData(e.target))
                     .then(res => {
                         this.setMensajes(res)
                         
                     });
-                    setTimeout(() => {
-                        this.getDelegado()
-                    }, 300);
+
                     
                 }
 			}

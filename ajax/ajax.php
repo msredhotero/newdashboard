@@ -12,7 +12,7 @@ $serviciosHTML				= new ServiciosHTML();
 $serviciosReferencias		= new ServiciosReferencias();
 
 
-$accion = $_GET['accion'];
+$accion = $_POST['accion'];
 
 $resV['error'] = '';
 $resV['mensaje'] = '';
@@ -124,6 +124,7 @@ function VguardarDelegado($serviciosReferencias) {
 		
 		if ($res) { 
 			$resV['mensaje'] = 'Registro Modificado con exito!.'; 
+			$resV['error'] = false; 
 		} else { 
 			$resV['error'] = true; 
 			$resV['mensaje'] = 'No se pudo modificar el Registro!'; 
@@ -132,6 +133,7 @@ function VguardarDelegado($serviciosReferencias) {
 		$res = $serviciosReferencias->insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4); 
 		if ((integer)$res > 0) { 
 			$resV['mensaje'] = 'Registro Cargado con exito!.'; 
+			$resV['error'] = false;
 		} else { 
 			$resV['error'] = true; 
 			$resV['mensaje'] = 'No se pudo cargar el Registro!'; 
@@ -253,7 +255,7 @@ function VguardarDelegado($serviciosReferencias) {
 		$ar = array(); 
 
 		//if (isset($_GET['iddelegado'])) {
-			$id = $_GET['iddelegado'];
+			$id = $_POST['iddelegado'];
 			//die(var_dump($id));
 			$res = $serviciosReferencias->traerDelegadosPorId($id); 
 
