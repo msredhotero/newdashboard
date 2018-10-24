@@ -218,9 +218,8 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 			data: {
 				errorMensaje: '',
                 successMensaje: '',
-                return {
-                    activeDelegados: ['nombres':'narsad']
-                }
+                activeDelegados: {}
+                
 			},
 			mounted () {
 				this.getDelegado()
@@ -244,15 +243,21 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                 getDelegado () {
 					axios.get('../ajax/ajax.php?accion=VtraerDelegadosPorId&iddelegado=1')
 					.then(res => {
-						//console.log(res)
-						this.activeDelegados = res.data.datos
+                        
+                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+						this.activeDelegados = res.data.datos[0]
 					})
 				},
 				guardarDelegado (e) {
                     axios.post('../ajax/ajax.php?accion=VguardarDelegado', new FormData(e.target))
                     .then(res => {
                         this.setMensajes(res)
-                    })
+                        
+                    });
+                    setTimeout(() => {
+                        this.getDelegado()
+                    }, 300);
+                    
                 }
 			}
 		})

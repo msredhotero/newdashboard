@@ -240,7 +240,7 @@ class BaseHTML {
                         <button type="submit" class="btn btn-link waves-effect" id="btn'.$id.'">'.$aceptar.'</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CERRAR</button>
                     </div>
-                    <input type="hidden" v-modal="active'.$tabla.'.'.$idTabla.'" name="'.$idTabla.'" />
+                    <input type="hidden" ref="ref_'.$idTabla.'" :value="active'.ucwords($tabla).'.'.$idTabla.'" name="'.$idTabla.'" />
                     </form>
 
                 </div>
