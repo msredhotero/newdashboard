@@ -168,7 +168,8 @@ if ($_SESSION['refroll_aif'] != 1) {
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
-    <?php echo $baseHTML->cargarArchivosCSS('../../'); ?>
+	<?php echo $baseHTML->cargarArchivosCSS('../../'); ?>
+	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 
     <style>
         .alert > i{ vertical-align: middle !important; }
@@ -234,8 +235,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 						
 						
 						$cadCabecera .= '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="card">
-							<div class="header">
+						<div class="card ">
+							<div class="header bg-blue">
 								<h2>
 									JUGADORES CARGADOS
 								</h2>
@@ -251,8 +252,9 @@ if ($_SESSION['refroll_aif'] != 1) {
 										</ul>
 									</li>
 								</ul>
-							</div><div class="table-responsive">
-										<table class="table table-bordered table-striped">
+							</div>
+							<div class="body table-responsive">
+									<table class="table table-bordered table-striped highlight">
 										<thead>
 											<tr>
 												<th>Apellido</th>
@@ -288,17 +290,45 @@ if ($_SESSION['refroll_aif'] != 1) {
 			
 				}
 				
-				$cadCabecera .= '</tbody></table></div></div>
+				$cadCabecera .= '</tbody>
+						</table>
+					</div>
+					</div>
 				</div>';
 				
 				echo $cadCabecera;
 			?>
             </div>
 
-            <div class="row" style="padding: 25px;">
-            	<div class="panel panel-primary">
-				  <div class="panel-heading">Jugadores Nuevos</div>
-				  <div class="panel-body"><?php echo str_replace('example','example1', $lstNuevosJugadores); ?></div>
+            <div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header bg-green">
+                            <h2>
+								Jugadores Nuevos
+                            </h2>
+                            <ul class="header-dropdown m-r--5">
+                                <li>
+                                    <a href="javascript:void(0);" data-toggle="cardloading" data-loading-effect="timer" data-loading-color="lightBlue">
+                                        <i class="material-icons">loop</i>
+                                    </a>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <i class="material-icons">more_vert</i>
+                                    </a>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li><a href="javascript:void(0);">Action</a></li>
+                                        <li><a href="javascript:void(0);">Another action</a></li>
+                                        <li><a href="javascript:void(0);">Something else here</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="body">
+						<?php echo str_replace('example','example1', $lstNuevosJugadores); ?>
+                        </div>
+                    </div>
 				</div>
             	
             	<div class="col-md-6">
@@ -324,7 +354,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 
             </div>
 
-            <div class='row' style="margin-left:25px; margin-right:25px;">
+            <div class='row'>
                 <div class='alert'>
                 
                 </div>
@@ -373,13 +403,18 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 </section>
 
-<?php echo $baseHTML->cargarArchivosJS('../../'); ?>
 
+<?php echo $baseHTML->cargarArchivosJS('../../'); ?>
+<!-- Wait Me Plugin Js -->
+<script src="../../plugins/waitme/waitMe.js"></script>
+
+<!-- Custom Js -->
+<script src="../../js/pages/cards/colored.js"></script>
 
 <!-- Modal Large Size -->
 <transition name="fade">
 <form class="form" @submit.prevent="guardarDelegado">
-<?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
+<?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
 </form>
 </transition>
 

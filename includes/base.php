@@ -221,16 +221,7 @@ class BaseHTML {
                     <div class="modal-header bg-blue">
                         <h4 class="modal-title" id="largeModalLabel">'.$titulo.'</h4>
                     </div>
-                    <transition name="fade">
-                    
-                        <div class="alert bg-green" v-if="successMensaje">
-                            <i class="material-icons">check_circle</i> {{ successMensaje }}
-                        </div>
-                        <div class="alert bg-red" v-if="errorMensaje">
-                            <i class="material-icons">error</i> {{ errorMensaje }}
-                        </div>
-                 
-                    </transition>
+                    <mensaje></mensaje>
                     <form id="'.$form.'" method="POST">
                     <div class="modal-body">
                         <p>'.$contenido.'</p>

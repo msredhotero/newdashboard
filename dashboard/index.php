@@ -85,6 +85,14 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 
     <?php echo $baseHTML->cargarArchivosCSS('../'); ?>
 
+    <!-- VUE JS -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <script src="../components/mensajes.js"></script>
+
     <style>
         .alert > i{ vertical-align: middle !important; }
     </style>
@@ -133,7 +141,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     
         <div class="container-fluid">
             <div class="row clearfix">
-
+                
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">
                         <div class="icon">
@@ -165,8 +173,8 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     
     </section>
 
-    <?php echo $baseHTML->cargarArchivosJS('../'); ?>
-
+    
+    
 
     <!-- Modal Large Size -->
     <transition name="fade">
@@ -176,12 +184,8 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     </transition>
     
     </main>
-    <!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-
-    <!-- axios -->
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
+    
+    <?php echo $baseHTML->cargarArchivosJS('../'); ?>
     
 
     <script>
@@ -217,10 +221,12 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 
 		const app = new Vue({
 			el: "#app",
-			data: {
-				errorMensaje: '',
-                successMensaje: '',
-                activeDelegados: {}
+			data () {
+                return {
+                    activeDelegados: {},
+                    errorMensaje: '',
+                    successMensaje: ''
+                }
                 
 			},
 			mounted () {
@@ -265,6 +271,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 			}
 		})
     </script>
+    
 </body>
 <?php } ?>
 </html>
