@@ -65,6 +65,7 @@ function login($usuario,$pass) {
 			$_SESSION['idroll_aif'] = mysql_result($resppass,0,4);
 			$_SESSION['refroll_aif'] = mysql_result($resppass,0,3);
 			$_SESSION['idclub_aif'] = mysql_result($resppass,0,'refcountries');
+			$_SESSION['club_aif'] = mysql_result($resppass,0,'refcountries');
 			
 			return '';
 		}
@@ -241,7 +242,7 @@ function traerTodosUsuarios() {
 }
 
 function traerUsuarioId($id) {
-	$sql = "select idusuario,usuario,refroll,nombrecompleto,email,password from dbusuarios where idusuario = ".$id;
+	$sql = "select idusuario,usuario,refroles,nombrecompleto,email,password from dbusuarios where idusuario = ".$id;
 	$res = $this->query($sql,0);
 	if ($res == false) {
 		return 'Error al traer datos';

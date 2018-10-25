@@ -19,7 +19,94 @@ class ServiciosReferencias {
 		return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 	}
 
+	function traerUltimaTemporada() {
+		$sql = "select
+		t.idtemporadas,
+		t.temporada
+		from tbtemporadas t
+		order by 1 desc
+		limit 1";
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
+	function traerCierrepadronesPorCountry($idcountry) {
+		$sql = "select idcierrepadron,refcountries,refusuarios,fechacierre from tbcierrepadrones where refcountries =".$idcountry;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerTipodocumentos() { 
+		$sql = "select 
+		t.idtipodocumento,
+		t.tipodocumento
+		from tbtipodocumentos t 
+		order by 1"; 
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+
+
+	
+	function traerJugadoresprePorCountries($refCountries) {
+		$sql = "select
+		j.idjugadorpre,
+		td.tipodocumento,
+		j.nrodocumento,
+		j.apellido,
+		j.nombres,
+		j.email,
+		j.fechanacimiento,
+		j.fechaalta,
+		j.numeroserielote,
+		j.observaciones,
+		j.refusuarios,
+		j.refcountries,
+		j.refestados
+		from dbjugadorespre j
+		inner join tbtipodocumentos td on td.idtipodocumento = j.reftipodocumentos
+		where   j.refcountries = ".$refCountries."
+		order by j.apellido, j.nombres";
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerVigenciasoperacionesPorModuloVigencias($idModulo, $fecha) {
+		$sql = "select idvigenciaoperacion,refmodulos,vigenciadesde,vigenciahasta,observaciones from dbvigenciasoperaciones where refmodulos =".$idModulo." and (('".$fecha."' between vigenciadesde and vigenciahasta) or ('".$fecha."' >= vigenciadesde and vigenciahasta is null))";
+		$res = $this->query($sql,0);
+		return $res;
+	}
+	
+	function traerJugadoresClubPorCountrieActivos($idCountrie) { 
+		$sql = "select 
+		j.idjugador,
+		tip.tipodocumento,
+		j.nrodocumento,
+		j.apellido,
+		j.nombres,
+		j.email,
+		date_format(j.fechanacimiento, '%d/%m/%Y') as fechanacimiento,
+		j.fechaalta,
+		j.fechabaja,
+		cou.nombre as countrie,
+		j.observaciones,
+		j.reftipodocumentos,
+		j.refcountries,
+		(case when jc.fechabaja = 1 then 'Si' else 'No' end) as fechabaja,
+		(case when jc.articulo = 1 then 'Si' else 'No' end) as articulo,
+		coalesce( jc.numeroserielote,'') as numeroserielote,
+		concat(j.apellido, ' ', j.nombres) as apyn
+		from dbjugadores j 
+		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
+		inner join dbcountries cou ON cou.idcountrie = j.refcountries 
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
+		left join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador
+		where j.refcountries = ".$idCountrie." and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
+		order by concat(j.apellido, ' ', j.nombres)"; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
 
 	function traerCountriesPorId($id) {
 		$sql = "select idcountrie,nombre,cuit,fechaalta,

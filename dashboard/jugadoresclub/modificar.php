@@ -19,37 +19,43 @@ $serviciosUsuario 	= new ServiciosUsuarios();
 $serviciosHTML 		= new ServiciosHTML();
 $serviciosReferencias 	= new ServiciosReferencias();
 
+//*** SEGURIDAD ****/
+include ('../../includes/funcionesSeguridad.php');
+$serviciosSeguridad = new ServiciosSeguridad();
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_predio'], '../categorias/');
+//*** FIN  ****/
+
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Proveedores",$_SESSION['refroll_predio'],'');
+$resMenu = $serviciosHTML->menu(utf8_encode($_SESSION['nombre_predio']),"Categorias",$_SESSION['refroll_predio'],$_SESSION['email_predio']);
 
 
 $id = $_GET['id'];
 
-$resResultado = $serviciosReferencias->traerProveedoresPorId($id);
+$resResultado = $serviciosReferencias->traerJugadoresPrePorId($id);
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Proveedor";
+$singular = "Categoria";
 
-$plural = "Proveedores";
+$plural = "Categorias";
 
-$eliminar = "eliminarProveedores";
+$eliminar = "eliminarCategorias";
 
-$modificar = "modificarProveedores";
+$modificar = "modificarCategorias";
 
-$idTabla = "idproveedor";
+$idTabla = "idtcategoria";
 
-$tituloWeb = "Gestión: Libreria";
+$tituloWeb = "Gestión: AIF";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbproveedores";
+$tabla 			= "tbcategorias";
 
-$lblCambio	 	= array("razonsocial");
-$lblreemplazo	= array("Razon Social");
+$lblCambio	 	= array("");
+$lblreemplazo	= array("");
 
 
 $cadRef 	= '';
