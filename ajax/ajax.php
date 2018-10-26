@@ -70,10 +70,62 @@ switch ($accion) {
 		case 'VguardarDelegado':
 		VguardarDelegado($serviciosReferencias);
 		break;
+
+		case 'VtraerJugadoresClubPorCountrieActivos':
+		VtraerJugadoresClubPorCountrieActivos($serviciosReferencias);
+		break;
+		case 'VtraerPaginasJugadoresPorClub':
+		VtraerPaginasJugadoresPorClub($serviciosReferencias);
+		break;
 /* Fin */
 
 }
 /* Fin */
+
+function VtraerPaginasJugadoresPorClub($serviciosReferencias) {
+	$idclub = $_POST['idclub'];
+	$busqueda = $_POST['busqueda'];
+
+	$res = $serviciosReferencias->traerJugadoresClubPorCountrieActivos($idclub, $busqueda); 
+
+	$ar = array(round(mysql_num_rows($res) / 10));
+
+	$resV['datos'] = $ar; 
+	
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+}
+
+function VtraerJugadoresClubPorCountrieActivos($serviciosReferencias) {
+	$idclub = $_POST['idclub'];
+	$pagina = $_POST['pagina'];
+	$cantidad = $_POST['cantidad'];
+	$busqueda = $_POST['busqueda'];
+
+	$res = $serviciosReferencias->traerJugadoresClubPorCountrieActivosPaginador($idclub, $pagina, $cantidad, $busqueda); 
+	$ar = array(); 
+
+	while ($row = mysql_fetch_assoc($res)) { 
+		$arNuevo = array('apellido'=> utf8_encode($row['apellido']),
+						'nombres'=>utf8_encode($row['nombres']),
+						'nrodocumento'=>$row['nrodocumento'],
+						'idjugador'=>$row['idjugador'],
+						'fechabajacheck'=> ($row['fechabajacheck'] == '0' ? false : true),
+						'articulocheck'=> ($row['articulocheck'] == '0' ? false : true),
+						'numeroserielote' => $row['numeroserielote']
+		);
+			
+		array_push($ar, $arNuevo); 
+
+	} 
+	
+	$resV['datos'] = $ar; 
+	
+	//die(var_dump($resV));
+
+	header('Content-type: application/json; charset=utf-8'); 
+	echo json_encode($resV);
+}
 
 
 function insertarDelegados($serviciosReferencias) { 
@@ -254,17 +306,15 @@ function VguardarDelegado($serviciosReferencias) {
 
 		$ar = array(); 
 
-		//if (isset($_GET['iddelegado'])) {
-			$id = $_POST['iddelegado'];
-			//die(var_dump($id));
-			$res = $serviciosReferencias->traerDelegadosPorId($id); 
 
-			while ($row = mysql_fetch_assoc($res)) { 
-				array_push($ar, $row); 
-			} 
-		//}
+		$id = $_POST['iddelegado'];
 
-		
+		$res = $serviciosReferencias->traerDelegadosPorId($id); 
+
+		while ($row = mysql_fetch_assoc($res)) { 
+			array_push($ar, $row); 
+		} 
+
 		$resV['datos'] = $ar; 
 		header('Content-type: application/json'); 
 		echo json_encode($resV); 

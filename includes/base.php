@@ -173,7 +173,7 @@ class BaseHTML {
                     <!-- User Info -->
                     <div class="user-info">
                         <div class="image">
-                            <img src="../images/user.png" width="48" height="48" alt="User" />
+                            <img src="../../images/user.png" width="48" height="48" alt="User" />
                         </div>
                         <div class="info-container">
                             <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.$usuario.'</div>
@@ -221,7 +221,7 @@ class BaseHTML {
                     <div class="modal-header bg-blue">
                         <h4 class="modal-title" id="largeModalLabel">'.$titulo.'</h4>
                     </div>
-                    <mensaje></mensaje>
+                    
                     <form id="'.$form.'" method="POST">
                     <div class="modal-body">
                         <p>'.$contenido.'</p>

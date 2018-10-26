@@ -172,6 +172,14 @@ if ($_SESSION['refroll_aif'] != 1) {
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
+	<!-- VUE JS -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+	<!-- axios -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+	<script src="https://unpkg.com/vue-swal"></script>
+
     <style>
         .alert > i{ vertical-align: middle !important; }
     </style>
@@ -226,90 +234,91 @@ if ($_SESSION['refroll_aif'] != 1) {
 			<form id="formjugadoresclub" method="POST" role="form">
         	<div class="row">
 
-			<?php 
-				$country = '';
-				$fecha = '';
-				$cadCabecera = '';
-				$primero = 0;
-				while ($row = mysql_fetch_array($resJugadoresPorCountries)) {
-					if ($country != $refClub)  {
-						
-						
-						$cadCabecera .= '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="card ">
-							<div class="header bg-blue">
-								<h2>
-									JUGADORES CARGADOS
-								</h2>
-								<ul class="header-dropdown m-r--5">
-									<li class="dropdown">
-										<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-											<i class="material-icons">more_vert</i>
-										</a>
-										<ul class="dropdown-menu pull-right">
-											<li><a href="javascript:void(0);">Action</a></li>
-											<li><a href="javascript:void(0);">Another action</a></li>
-											<li><a href="javascript:void(0);">Something else here</a></li>
-										</ul>
-									</li>
-								</ul>
-							</div>
-							<div class="body table-responsive">
-									<table class="table table-bordered table-striped table-hover js-basic-example dataTable" id="example">
-										<thead>
-											<tr>
-												<th>Apellido</th>
-												<th>Nombre</th>
-												<th>Nro Documento</th>
-												<th>Numero de Socio/Lote</th>
-												<th>Baja</th>
-												<th>Art 2 Inciso D</th>
-												<th>Accion</th>
-											</tr>
-										</thead>
-										<tbody>';
-										
-						$primero = 1;
-						$country = $refClub;	
-					}
-					
-					$cadCabecera .= "<tr>
-										<td>".$row['apellido']."</td>
-										<td>".$row['nombres']."</td>
-										<td>".$row['nrodocumento']."</td>
-										<td><input class='form-control' type='text' name='numeroserielote".$row['idjugador']."' id='numeroserielote".$row['idjugador']."' value='".$row['numeroserielote']."'/></td>
-										<td>
-										<div class='switch'>
-                                            <label><input type='checkbox' name='fechabaja".$row['idjugador']."' id='fechabaja".$row['idjugador']."' ".($row['fechabaja'] == 'Si' ? 'checked' : '')."><span class='lever switch-col-green'></span></label>
-                                        </div>
-										
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="card ">
+						<div class="header bg-blue">
+							<h2>
+								JUGADORES CARGADOS
+							</h2>
+							<ul class="header-dropdown m-r--5">
+								<li class="dropdown">
+									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										<i class="material-icons">more_vert</i>
+									</a>
+									<ul class="dropdown-menu pull-right">
+										<li><a href="javascript:void(0);">Action</a></li>
+										<li><a href="javascript:void(0);">Another action</a></li>
+										<li><a href="javascript:void(0);">Something else here</a></li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<div class="body table-responsive">
+							<div class="row clearfix">
+								<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+									<label for="email_address_2">Buscar:</label>
+								</div>
+								<div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+									<div class="form-group">
+										<div class="form-line">
+											<input type="text" id="buscar" class="form-control" placeholder="Ingrese los datos de la busqueda" v-model="busqueda" v-on:keyup.enter="buscarJugadoresPorClub" />
 										</div>
-										</td>
-										<td>
-										<div class='switch'>
-                                            <label><input type='checkbox' name='articulo".$row['idjugador']."' id='articulo".$row['idjugador']."' id='articulo".$row['idjugador']."'  ".($row['articulo'] == 'Si' ? 'checked' : '')."><span class='lever switch-col-green'></span></label>
-                                        </div>
-										
-										</td>
-										
-										<td>";
-					if ($permiteRegistrar == 1) {
-						
-						$cadCabecera .=			"<button type='button' class='btn btn-primary guardarJugadorClubSimple' id='".$row['idjugador']."'>Guardar</button>";
-					}
-					$cadCabecera .= "</td>
-									</tr>";
+									</div>
+								</div>
+							</div>
+							<table class="table table-bordered table-striped table-hover" id="example">
+								<thead>
+									<tr>
+										<th>Apellido</th>
+										<th>Nombre</th>
+										<th>Nro Documento</th>
+										<th>Numero de Socio/Lote</th>
+										<th>Baja</th>
+										<th>Art 2 Inciso D</th>
+										<th>Accion</th>
+									</tr>
+								</thead>
+								<tbody>
+
+				
+								<tr v-for="jugador in jugadoresPorClub" :key="jugador.idjugador">
+									<td>{{ jugador.apellido }}</td>
+									<td>{{ jugador.nombres }}</td>
+									<td>{{ jugador.nrodocumento }}</td>
+									<td><input class='form-control' type='text' name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/></td>
+									<td>
+									<div class='switch'>
+										<label><input type='checkbox' v-model="jugador.fechabajacheck" v-bind:id="jugador.id"/><span class='lever switch-col-green'></span></label>
+									</div>
+									
+									</div>
+									</td>
+									<td>
+									<div class='switch'>
+										<label><input type='checkbox' v-model="jugador.articulocheck" v-bind:id="jugador.id"/><span class='lever switch-col-green'></span></label>
+									</div>
+									
+									</td>
+									
+									<td>
+									<button type='button' class='btn btn-primary guardarJugadorClubSimple' id=''>Guardar</button>
+									</td>
+								</tr>
 			
-				}
-				
-				$cadCabecera .= '</tbody>
-						</table>
+								</tbody>
+							</table>
+							<div align="center">
+							<ul class="pagination">
+								<li class="waves-effect"><a href="#" v-show="pag != 1" @click.prevent="activarPagina(pag -= 1)"><i class="material-icons">chevron_left</i></a></li>
+								<li  v-for="n in paginasJC" :class="{active:pag == n}" @click="activarPagina(n)"><a href="#!">{{ n }}</a></li>
+								<li class="waves-effect"><a href="#" v-show="pag < paginasJC" @click.prevent="activarPagina(pag += 1)"><i class="material-icons">chevron_right</i></a></li>
+							</ul>
+							</div>							
+						</div>
 					</div>
-					</div>
-				</div>';
+				</div>
 				
-				echo $cadCabecera;
-			?>
+
 			</div>
 			
 
@@ -483,11 +492,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 </transition>
 
 </main>
-<!-- VUE JS -->
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
-<!-- axios -->
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 
 
 
@@ -520,23 +526,53 @@ if ($_SESSION['refroll_aif'] != 1) {
 <script>
 	const paramsGetDelegado = new URLSearchParams();
 	paramsGetDelegado.append('accion','VtraerDelegadosPorId');
-	paramsGetDelegado.append('iddelegado',1);
+	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
+
+	const paramsGetjugadores = new URLSearchParams();
+	paramsGetjugadores.append('accion','VtraerJugadoresClubPorCountrieActivos');
+	paramsGetjugadores.append('idclub',<?php echo $refClub; ?>);
+	paramsGetjugadores.append('pagina',1);
+	paramsGetjugadores.append('cantidad',10);
+	paramsGetjugadores.append('busqueda','');
+
+	const paramsGetPaginadorJC = new URLSearchParams();
+	paramsGetPaginadorJC.append('accion','VtraerPaginasJugadoresPorClub');
+	paramsGetPaginadorJC.append('idclub',<?php echo $refClub; ?>);
+	paramsGetPaginadorJC.append('busqueda','');
 
 	const app = new Vue({
 		el: "#app",
 		data: {
+			pag: 1,
+			idclub: <?php echo $refClub; ?>,
+			cantidad: 10,
+			activeClass: 'waves-effect',
 			errorMensaje: '',
 			successMensaje: '',
-			activeDelegados: {}
+			activeDelegados: {},
+			jugadoresPorClub: [],
+			paginasJC: {},
+			busqueda: ''		
 			
 		},
 		mounted () {
-			
+			this.getJugadoresPorClub(this.busqueda),
+			this.getPaginasJC(this.busqueda),
+			this.getActivePagina()
 		},
 		computed: {
-
+			
 		},
 		methods: {
+			activarPagina(e) {
+				this.pag = e
+				this.getJugadoresPorClubPorPagina(this.busqueda)
+			},
+			getActivePagina() {
+				if (this.pag == 1) {
+					this.activeClass = 'active'
+				}
+			},
 			setMensajes (res) {
 				this.getDelegado()
 
@@ -552,8 +588,42 @@ if ($_SESSION['refroll_aif'] != 1) {
 				}, 3000);
 
 			},
+			getJugadoresPorClub (filtro) {
+				paramsGetjugadores.set('busqueda', filtro)
+
+				axios.post('../../ajax/ajax.php',paramsGetjugadores)
+				.then(res => {
+					//console.log(res);
+					this.jugadoresPorClub = res.data.datos
+				})
+			},
+			getJugadoresPorClubPorPagina (filtro) {
+
+				paramsGetjugadores.set('accion','VtraerJugadoresClubPorCountrieActivos')
+				paramsGetjugadores.set('idclub',this.idclub)
+				paramsGetjugadores.set('pagina',this.pag)
+				paramsGetjugadores.set('cantidad',10)
+				paramsGetjugadores.set('busqueda', filtro)
+
+				axios.post('../../ajax/ajax.php',paramsGetjugadores)
+				.then(res => {
+					//console.log(res);
+					this.jugadoresPorClub = res.data.datos
+				})
+			},
+			getPaginasJC (filtro) {
+
+				paramsGetPaginadorJC.set('busqueda', filtro)
+
+				axios.post('../../ajax/ajax.php', paramsGetPaginadorJC)
+				.then(res => {
+					//console.log(res);
+					//alert(res.data.datos[0]);
+					this.paginasJC = res.data.datos[0]
+				})
+			},
 			getDelegado () {
-				axios.post('../ajax/ajax.php',paramsGetDelegado)
+				axios.post('../../ajax/ajax.php',paramsGetDelegado)
 				.then(res => {
 					
 					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
@@ -561,12 +631,20 @@ if ($_SESSION['refroll_aif'] != 1) {
 				})
 			},
 			guardarDelegado (e) {
-				axios.post('../ajax/ajax.php', new FormData(e.target))
+				axios.post('../../ajax/ajax.php', new FormData(e.target))
 				.then(res => {
 					this.setMensajes(res)
 					
 				});
 
+				
+			},
+			buscarJugadoresPorClub () {
+
+				this.getPaginasJC(this.busqueda)
+				this.getJugadoresPorClub(this.busqueda)
+				this.activarPagina(1)
+			
 				
 			}
 		}

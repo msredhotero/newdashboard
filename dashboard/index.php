@@ -90,6 +90,8 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 
     <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="https://unpkg.com/vue-swal"></script>
     
     <script src="../components/mensajes.js"></script>
 
@@ -217,7 +219,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <script>
         const paramsGetDelegado = new URLSearchParams();
         paramsGetDelegado.append('accion','VtraerDelegadosPorId');
-        paramsGetDelegado.append('iddelegado',1);
+        paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 
 		const app = new Vue({
 			el: "#app",
@@ -262,7 +264,13 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 				guardarDelegado (e) {
                     axios.post('../ajax/ajax.php', new FormData(e.target))
                     .then(res => {
-                        this.setMensajes(res)
+                        //this.setMensajes(res)
+
+                        if (!res.data.error) {
+                            this.$swal("Ok!", res.data.mensaje, "success")
+                        } else {
+                            this.$swal("Error!", res.data.mensaje, "error")
+                        }
                         
                     });
 

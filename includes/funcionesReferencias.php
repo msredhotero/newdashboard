@@ -77,7 +77,7 @@ class ServiciosReferencias {
 		return $res;
 	}
 	
-	function traerJugadoresClubPorCountrieActivos($idCountrie) { 
+	function traerJugadoresClubPorCountrieActivos($idCountrie,$busqueda='') { 
 		$sql = "select 
 		j.idjugador,
 		tip.tipodocumento,
@@ -94,6 +94,8 @@ class ServiciosReferencias {
 		j.refcountries,
 		(case when jc.fechabaja = 1 then 'Si' else 'No' end) as fechabaja,
 		(case when jc.articulo = 1 then 'Si' else 'No' end) as articulo,
+		(case when jc.fechabaja = 1 then true else false end) as fechabajacheck,
+		(case when jc.articulo = 1 then true else false end) as articulocheck,
 		coalesce( jc.numeroserielote,'') as numeroserielote,
 		concat(j.apellido, ' ', j.nombres) as apyn
 		from dbjugadores j 
@@ -102,7 +104,53 @@ class ServiciosReferencias {
 		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
 		left join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador
 		where j.refcountries = ".$idCountrie." and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
-		order by concat(j.apellido, ' ', j.nombres)"; 
+		";
+		if ($busqueda != '') {
+			$sql .= " and concat(j.nrodocumento,' ', j.apellido, ' ', j.nombres) like '%".$busqueda."%'";
+		}
+		$sql .= " 
+		order by concat(j.apellido, ' ', j.nombres) 
+		"; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+
+
+	function traerJugadoresClubPorCountrieActivosPaginador($idCountrie, $pagina, $cantidad, $busqueda='') { 
+		$sql = "select 
+		j.idjugador,
+		tip.tipodocumento,
+		j.nrodocumento,
+		j.apellido,
+		j.nombres,
+		j.email,
+		date_format(j.fechanacimiento, '%d/%m/%Y') as fechanacimiento,
+		j.fechaalta,
+		j.fechabaja,
+		cou.nombre as countrie,
+		j.observaciones,
+		j.reftipodocumentos,
+		j.refcountries,
+		(case when jc.fechabaja = 1 then 'Si' else 'No' end) as fechabaja,
+		(case when jc.articulo = 1 then 'Si' else 'No' end) as articulo,
+		(case when jc.fechabaja = 1 then true else false end) as fechabajacheck,
+		(case when jc.articulo = 1 then true else false end) as articulocheck,
+		coalesce( jc.numeroserielote,'') as numeroserielote,
+		concat(j.apellido, ' ', j.nombres) as apyn
+		from dbjugadores j 
+		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
+		inner join dbcountries cou ON cou.idcountrie = j.refcountries 
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
+		left join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador
+		where j.refcountries = ".$idCountrie." 
+			  and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
+			  ";
+		if ($busqueda != '') {
+			$sql .= " and concat(j.nrodocumento,' ', j.apellido, ' ', j.nombres) like '%".$busqueda."%'";
+		}
+		$sql .= " order by concat(j.apellido, ' ', j.nombres) 
+		limit ".(($pagina - 1) * $cantidad).",".$cantidad; 
 		
 		$res = $this->query($sql,0); 
 		return $res; 
