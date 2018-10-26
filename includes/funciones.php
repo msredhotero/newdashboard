@@ -151,11 +151,11 @@ class Servicios {
 								<td>
 									
 									<div class="btn-group">
-										<button class="btn btn-success" type="button">Acciones</button>
+										
 										
 										<button class="btn btn-success dropdown-toggle" data-toggle="dropdown" type="button">
 										<span class="caret"></span>
-										<span class="sr-only">Toggle Dropdown</span>
+										<span class="sr-only">Acciones</span>
 										</button>
 										
 										<ul class="dropdown-menu" role="menu">';
@@ -222,11 +222,11 @@ class Servicios {
 								<td>
 									
 									<div class="btn-group">
-										<button class="btn btn-success" type="button">Action</button>
+										
 										
 										<button class="btn btn-success dropdown-toggle" data-toggle="dropdown" type="button">
 										<span class="caret"></span>
-										<span class="sr-only">Toggle Dropdown</span>
+										<span class="sr-only">Acciones</span>
 										</button>
 										
 										<ul class="dropdown-menu" role="menu">
@@ -246,7 +246,7 @@ class Servicios {
 		//'.utf8_encode($cadRows).' verificar al subir al servidor
 		
 		$cadView = $cadView.'
-			<table class="table table-striped table-responsive" id="example">
+			<table class="table table-bordered table-striped table-hover js-basic-example dataTable" id="example">
             	<thead>
                 	<tr>
                     	'.$cabeceras.'
@@ -258,7 +258,7 @@ class Servicios {
                 	'.($cadRows).'
                 </tbody>
             </table>
-			<div style="margin-bottom:85px; margin-right:60px;"></div>
+			
 		
 		';	
 		

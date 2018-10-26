@@ -36,7 +36,7 @@ $configuracion = $serviciosReferencias->traerConfiguracion();
 
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
-$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a class="navbar-brand" href="index.php">Jugadores Por Club</a>';
+$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href="javascript:void(0)" class="navbar-brand"><i class="material-icons">navigate_next</i></a><a class="navbar-brand active" href="index.php">Jugadores Por Club</a>';
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
@@ -140,7 +140,7 @@ $cabeceras 		= "	<th>Tipo Documento</th>
 					<th>Nro Serie Lote</th>
 					<th>Obs.</th>";
 
-$lstNuevosJugadores = $serviciosFunciones->camposTablaView($cabeceras,$serviciosReferencias->traerJugadoresprePorCountries($refClub),9);
+$lstNuevosJugadores = $serviciosReferencias->traerJugadoresprePorCountries($refClub);
 
 
 
@@ -170,6 +170,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 	<?php echo $baseHTML->cargarArchivosCSS('../../'); ?>
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
+	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
     <style>
         .alert > i{ vertical-align: middle !important; }
@@ -254,7 +255,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 								</ul>
 							</div>
 							<div class="body table-responsive">
-									<table class="table table-bordered table-striped highlight">
+									<table class="table table-bordered table-striped table-hover js-basic-example dataTable" id="example">
 										<thead>
 											<tr>
 												<th>Apellido</th>
@@ -277,8 +278,19 @@ if ($_SESSION['refroll_aif'] != 1) {
 										<td>".$row['nombres']."</td>
 										<td>".$row['nrodocumento']."</td>
 										<td><input class='form-control' type='text' name='numeroserielote".$row['idjugador']."' id='numeroserielote".$row['idjugador']."' value='".$row['numeroserielote']."'/></td>
-										<td><input class='form-control' type='checkbox' name='fechabaja".$row['idjugador']."' id='fechabaja".$row['idjugador']."' ".($row['fechabaja'] == 'Si' ? 'checked' : '')."/></td>
-										<td><input class='form-control' type='checkbox' name='articulo".$row['idjugador']."' id='articulo".$row['idjugador']."'  ".($row['articulo'] == 'Si' ? 'checked' : '')."/></td>
+										<td>
+										<div class='switch'>
+                                            <label><input type='checkbox' name='fechabaja".$row['idjugador']."' id='fechabaja".$row['idjugador']."' ".($row['fechabaja'] == 'Si' ? 'checked' : '')."><span class='lever switch-col-green'></span></label>
+                                        </div>
+										
+										</div>
+										</td>
+										<td>
+										<div class='switch'>
+                                            <label><input type='checkbox' name='articulo".$row['idjugador']."' id='articulo".$row['idjugador']."' id='articulo".$row['idjugador']."'  ".($row['articulo'] == 'Si' ? 'checked' : '')."><span class='lever switch-col-green'></span></label>
+                                        </div>
+										
+										</td>
 										
 										<td>";
 					if ($permiteRegistrar == 1) {
@@ -298,7 +310,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 				
 				echo $cadCabecera;
 			?>
-            </div>
+			</div>
+			
 
             <div class="row">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -325,72 +338,120 @@ if ($_SESSION['refroll_aif'] != 1) {
                                 </li>
                             </ul>
                         </div>
-                        <div class="body">
-						<?php echo str_replace('example','example1', $lstNuevosJugadores); ?>
+                        <div class="body table-responsive">
+						<table class="table table-bordered table-striped table-hover js-basic-example dataTable" id="example">
+							<thead>
+								<tr>
+									<th>Tipo Doc.</th>
+									<th>Nro Doc</th>
+									<th>Apellido</th>
+									<th>Nombres</th>
+									<th>Email</th>
+									<th>Fecha Nac.</th>
+									<th>Fecha Alta</th>
+									<th>Nro Serie Lote</th>
+									<th></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="resultados">
+							<?php while ($row = mysql_fetch_array($lstNuevosJugadores)) { ?>
+								<tr>
+									<td><?php echo $row['tipodocumento']; ?></td>
+									<td><?php echo $row['nrodocumento']; ?></td>
+									<td><?php echo $row['apellido']; ?></td>
+									<td><?php echo $row['nombres']; ?></td>
+									<td><?php echo $row['email']; ?></td>
+									<td><?php echo $row['fechanacimiento']; ?></td>
+									<td><?php echo $row['fechaalta']; ?></td>
+									<td><?php echo $row['numeroserielote']; ?></td>
+									<td align="center">
+										<button type="button" class="btn bg-amber btn-circle waves-effect waves-circle waves-float">
+											<i class="material-icons">create</i>
+										</button>
+									</td>
+									<td align="center">
+										<button type="button" class="btn bg-red btn-circle waves-effect waves-circle waves-float">
+											<i class="material-icons">delete</i>
+										</button>
+									</td>
+								</tr>
+
+							<?php } ?>
+							</tbody>
+						</table>
+						<?php //echo str_replace('example','example1', $lstNuevosJugadores); ?>
                         </div>
                     </div>
 				</div>
             	
-            	<div class="col-md-6">
-            		<label class="control-label">Seleccione un año para generar el reporte</label>
-            		<select id="anio" name="anio" class="form-control">
-            			<?php
-	            			if (date('m') >= 6) {
-	            		?>
-	            			<option value="<?php echo date('Y') + 1; ?>"><?php echo date('Y') + 1; ?></option>
-	            			<option value="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></option>
-	            		<?php
-	            			} else {
-	            		?>
-	            			<option value="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></option>
-	            			<option value="<?php echo date('Y') + 1; ?>"><?php echo date('Y') + 1; ?></option>
-	            			
-
-	            		<?php
-	            			}
-	            		?>
-            		</select>
-            	</div>
+            	
 
             </div>
 
-            <div class='row'>
-                <div class='alert'>
-                
-                </div>
-                <div id='load'>
-                
-                </div>
-            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="card">
+					<div class="header">
+						<h2>
+							Operaciones
+							
+						</h2>
+						<ul class="header-dropdown m-r--5">
+							<li class="dropdown">
+								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+									<i class="material-icons">more_vert</i>
+								</a>
+								<ul class="dropdown-menu pull-right">
+									<li><a href="javascript:void(0);" class=" waves-effect waves-block">Action</a></li>
+									<li><a href="javascript:void(0);" class=" waves-effect waves-block">Another action</a></li>
+									<li><a href="javascript:void(0);" class=" waves-effect waves-block">Something else here</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div class="body">
+
+						<div class="col-md-12">
+							<label class="control-label">Seleccione un año para generar el reporte</label>
+							<select id="anio" name="anio" class="form-control">
+								<?php
+									if (date('m') >= 6) {
+								?>
+									<option value="<?php echo date('Y') + 1; ?>"><?php echo date('Y') + 1; ?></option>
+									<option value="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></option>
+								<?php
+									} else {
+								?>
+									<option value="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></option>
+									<option value="<?php echo date('Y') + 1; ?>"><?php echo date('Y') + 1; ?></option>
+									
+
+								<?php
+									}
+								?>
+							</select>
+						</div>
+						<div class="button-demo">
+							<button type="button" class="btn btn-danger" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
+						<?php if ($habilitado == 0) { ?>
+							<button type="button" class="btn btn-success cerrar" id="btnAbrir" style="margin-left:0px;">Abrir</button>
+						<?php } else { ?>
+							<button type="button" class="btn btn-warning cerrar" id="btnCerrar" style="margin-left:0px;">Cerrar</button>
+						<?php } ?>
+							<button type="button" data-toggle="modal" data-target="#myModal3" class="btn btn-success" id="agregarContacto"><span class="glyphicon glyphicon-plus"></span> Agregar Jugador</button>
+							<button type="button" class="btn btn-info" id="btnExcel1" style="margin-left:0px;" onClick="location.href = 'http://www.aif.org.ar/wp-content/uploads/2017/12/buenafe.xlsx'"><span class="glyphicon glyphicon-save"></span> Lista de Buena Fe/Altas de equipos</button>
+							<button type="button" class="btn btn-info" id="btnExcel2" style="margin-left:0px;" onClick="location.href = 'http://www.aif.org.ar/wp-content/uploads/2016/09/buenafemo.xlsx'"><span class="glyphicon glyphicon-save"></span> Modificaciones de Lista de Buena Fe/Altas de equipos</button>
+							<button type="button" class="btn btn-danger" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
+						</div>
+					</div>
+				</div>
+			</div>
             
             <div class="row">
                 <div class="col-md-12">
-                <ul class="list-inline" style="margin-top:15px;">
+                <ul class="list-inline">
                 	
-                    <li>
-                        <button type="button" class="btn btn-danger" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
-                    </li>
-                    <?php if ($habilitado == 0) { ?>
-                    <li>
-                        <button type="button" class="btn btn-success cerrar" id="btnAbrir" style="margin-left:0px;">Abrir</button>
-                    </li>
-                    <?php } else { ?>
-                    <li>
-                        <button type="button" class="btn btn-warning cerrar" id="btnCerrar" style="margin-left:0px;">Cerrar</button>
-                    </li>
-                    <?php } ?>
-                    <li>
-                    	<button type="button" data-toggle="modal" data-target="#myModal3" class="btn btn-success" id="agregarContacto"><span class="glyphicon glyphicon-plus"></span> Agregar Jugador</button>
-                    </li>
-                    <li>
-                        <button type="button" class="btn btn-info" id="btnExcel1" style="margin-left:0px;" onClick="location.href = 'http://www.aif.org.ar/wp-content/uploads/2017/12/buenafe.xlsx'"><span class="glyphicon glyphicon-save"></span> Lista de Buena Fe/Altas de equipos</button>
-                    </li>
-                    <li>
-                        <button type="button" class="btn btn-info" id="btnExcel2" style="margin-left:0px;" onClick="location.href = 'http://www.aif.org.ar/wp-content/uploads/2016/09/buenafemo.xlsx'"><span class="glyphicon glyphicon-save"></span> Modificaciones de Lista de Buena Fe/Altas de equipos</button>
-                    </li>
-                    <li>
-                        <button type="button" class="btn btn-danger" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
-                    </li>
+                    
                 </ul>
                 </div>
             </div>
@@ -411,6 +472,9 @@ if ($_SESSION['refroll_aif'] != 1) {
 <!-- Custom Js -->
 <script src="../../js/pages/cards/colored.js"></script>
 
+<script src="../../plugins/jquery-datatable/jquery.dataTables.js"></script>
+<script src="../../plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="../../js/pages/tables/jquery-datatable.js"></script>
 <!-- Modal Large Size -->
 <transition name="fade">
 <form class="form" @submit.prevent="guardarDelegado">
