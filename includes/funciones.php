@@ -366,6 +366,341 @@ class Servicios {
 		
 		return $cadView;
 	}
+
+
+	function camposTablaViejo($accion,$tabla,$lblcambio,$lblreemplazo,$refdescripcion,$refCampo) {
+		$sql	=	"show columns from ".$tabla;
+		$res 	=	$this->query($sql,0);
+		$label  = '';
+		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","tipoimagen","utilidad","idusuario","refestados");
+		
+		$geoposicionamiento = array("latitud","longitud");
+		
+		$camposEscondido = "";
+		/* Analizar para despues */
+		/*if (count($refencias) > 0) {
+			$j = 0;
+
+			foreach ($refencias as $reftablas) {
+				$sqlTablas = "select id".$reftablas.", ".$refdescripcion[$j]." from ".$reftablas." order by ".$refdescripcion[$j];
+				$resultadoRef[$j][0] = $this->query($sqlTablas,0);
+				$resultadoRef[$j][1] = $refcampos[$j];
+			}
+		}*/
+		
+		
+		if ($res == false) {
+			return 'Error al traer datos';
+		} else {
+			
+			$form	=	'';
+			
+			while ($row = mysql_fetch_array($res)) {
+				$label = $row[0];
+				$i = 0;
+
+				if ($row[2]=='NO') {
+					$lblObligatorio = ' required ';
+				} else {
+					$lblObligatorio = '';
+				}
+
+				foreach ($lblcambio as $cambio) {
+					if ($row[0] == $cambio) {
+						$label = $lblreemplazo[$i];
+						$i = 0;
+						break;
+					} else {
+						$label = $row[0];
+					}
+					$i = $i + 1;
+				}
+				
+				if (in_array($row[0],$ocultar)) {
+					$lblOculta = "none";	
+				} else {
+					$lblOculta = "block";
+				}
+				
+				if ($row[3] != 'PRI') {
+					if (strpos($row[1],"decimal") !== false) {
+						
+						if (in_array($row[0],$geoposicionamiento)) {
+							$form	=	$form.'
+							
+							<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+								<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
+								<div class="input-group col-md-12">
+									<span class="input-group-addon"><span class="glyphicon glyphicon-map-marker"></span></span>
+									<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="0" required>
+									
+								</div>
+							</div>
+							
+							';
+
+						} else {
+						
+							$form	=	$form.'
+							
+							<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+								<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
+								<div class="input-group col-md-12">
+									<span class="input-group-addon">$</span>
+									<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="0" required>
+									<span class="input-group-addon">.00</span>
+								</div>
+							</div>
+							
+							';
+						}
+					} else {
+						if ( in_array($row[0],$refCampo) ) {
+							
+							$campo = strtolower($row[0]);
+							
+							$option = $refdescripcion[array_search($row[0], $refCampo)];
+							/*
+							$i = 0;
+							foreach ($lblcambio as $cambio) {
+								if ($row[0] == $cambio) {
+									$label = $lblreemplazo[$i];
+									$i = 0;
+									break 2;
+								} else {
+									$label = $row[0];
+								}
+								$i = $i + 1;
+							}*/
+							
+							$autocompletar = array("refclientevehiculos","refordenes");
+							
+							if (in_array($campo,$autocompletar)) {
+								$form	=	$form.'
+							
+								<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+									<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+									<div class="input-group col-md-12">
+										
+										<select data-placeholder="selecione el '.$label.'..." id="'.strtolower($campo).'" name="'.strtolower($campo).'" class="chosen-select" tabindex="2">
+            								<option value=""></option>
+											';
+								
+								$form	=	$form.$option;
+								
+								$form	=	$form.'		</select>
+									</div>
+								</div>
+								
+								';								
+							} else {
+							
+								$form	=	$form.'
+								
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
+									<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+									<select class="form-control show-tick" id="'.strtolower($campo).'" name="'.strtolower($campo).'">
+
+											';
+								
+								$form	=	$form.$option;
+								
+								$form	=	$form.'</select>
+
+								</div>
+								
+								';
+							}
+							
+						} else {
+							
+							if (strpos($row[1],"bit") !== false) {
+								$label = ucwords($label);
+								$campo = strtolower($row[0]);
+								
+								$form	=	$form.'
+								
+								<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+									<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+									<div class="input-group col-md-12 fontcheck">
+										<input type="checkbox" class="form-control" id="'.$campo.'" name="'.$campo.'" style="width:50px;" required> <p>Si/No</p>
+									</div>
+								</div>
+								
+								';
+								
+								
+							} else {
+								
+								if (strpos($row[1],"date") !== false) {
+									$label = ucwords($label);
+									$campo = strtolower($row[0]);
+									
+									/*if (($row[0] == "fechabaja2") || ($row[0] == "fechaalta2")){*/
+										$form	=	$form.'
+										
+										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
+											<label class="form-label">'.$label.'</label>
+											<div class="form-group">
+												<div class="form-line">
+													<input type="text" class="date form-control" id="'.$campo.'" name="'.$campo.'" '.$lblObligatorio.'>
+													
+												</div>
+											</div>
+										</div>
+
+										
+										';
+									
+								} else {
+									
+									if (strpos($row[1],"time") !== false) {
+										$label = ucwords($label);
+										$campo = strtolower($row[0]);
+										
+										$form	=	$form.'
+										
+										<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+											<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+											<div class="input-group col-md-6">
+												<input id="'.$campo.'" name="'.$campo.'" class="form-control">
+												<span class="input-group-addon">
+<span class="glyphicon glyphicon-time"></span>
+</span>
+											</div>
+											
+										</div>
+										<script type="text/javascript">
+										$(document).ready(function(){
+											
+											$("#'.$campo.'").mask("99:99",{placeholder:"hh:mm"});
+										});
+										</script>
+										';
+										
+									} else {
+										if ($row[1] == 'MEDIUMTEXT') {
+											$label = ucwords($label);
+											$campo = strtolower($row[0]);
+											
+											$form	=	$form.'
+											
+											<div class="form-group col-md-12" style="display:'.$lblOculta.'">
+												<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+												<div class="input-group col-md-12">
+													<textarea name="'.$campo.'" id="'.$campo.'" rows="200" cols="160">
+														Ingrese la noticia.
+													</textarea>
+													
+													
+												</div>
+												
+											</div>
+											
+											';
+											
+										} else {
+											
+											if ((integer)(str_replace('varchar(','',$row[1])) > 200) {
+												$label = ucwords($label);
+												$campo = strtolower($row[0]);
+												
+												$form	=	$form.'
+												<div class="col-sm-12">
+												<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+													<div class="form-group">
+														<div class="form-line">
+															<textarea rows="4" class="form-control no-resize" id="'.$campo.'" name="'.$campo.'" placeholder="Ingrese el '.$label.'..."></textarea>
+														</div>
+													</div>
+												</div>
+												
+												
+												';
+												
+												} else {
+												
+												if ($row[0]=='imagen') {
+													$label = ucwords($label);
+													$campo = strtolower($row[0]);
+													
+	
+													$form	=	$form.'
+													
+													<div class="col-md-12 col-xs-12" style="margin-left:-5px; margin-right:0px;">
+														<h4>Agregar Imagen</h4>
+															<p style=" color: #999;">Imagenes / Archivos (tamaño maximo del archivo 2 MB)</p>
+															<div style="height:auto; 
+																	width:100%; 
+																	background-color:#FFF;
+																	-webkit-border-radius: 13px; 
+																	-moz-border-radius: 13px;
+																	border-radius: 13px;
+																	margin-left:15px;
+																	padding-left:20px;">
+									
+																
+												<ul class="list-inline">
+															<li style="margin-top:14px;">
+															<div style=" height:210px; width:340px; border:2px dashed #CCC; text-align:center; overflow: auto;">
+																<div class="custom-input-file">
+																	<input type="file" name="'.$campo.'" id="imagen1">
+																	<img src="../../imagenes/clip20.jpg">
+																	<div class="files">...</div>
+																</div>
+																
+																<img id="vistaPrevia1" name="vistaPrevia1" width="100" height="100"/>
+															</div>
+															<div style="height:14px;">
+																
+															</div>
+															
+															</li>
+															
+															
+															</ul>   
+												</div>
+												</div>	
+													';
+												}else {
+													$label = ucwords($label);
+													$campo = strtolower($row[0]);
+													
+	
+													$form	=	$form.'
+													<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
+														<label class="form-label">'.$label.'</label>
+														<div class="form-group">
+															<div class="form-line">
+																<input type="text" class="form-control" id="'.$campo.'" name="'.$campo.'" '.$lblObligatorio.'>
+																
+															</div>
+														</div>
+													</div>
+													
+													';
+												}
+												
+											}
+										}
+									}
+								}
+							}
+						}
+						
+						
+					}
+				} else {
+	
+					$camposEscondido = $camposEscondido.'<input type="hidden" id="accion" name="accion" value="'.$accion.'"/>';	
+				}
+			}
+			
+			$formulario = $form."<br><br>".$camposEscondido;
+			
+			return $formulario;
+		}	
+	}
 	
 	
 	

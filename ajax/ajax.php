@@ -77,17 +77,118 @@ switch ($accion) {
 		case 'VtraerPaginasJugadoresPorClub':
 		VtraerPaginasJugadoresPorClub($serviciosReferencias);
 		break;
+
+		case 'guardarJugadorClubSimple':
+		guardarJugadorClubSimple($serviciosReferencias);
+		break;
+
+		case 'insertarJugadorespre':
+			insertarJugadorespre($serviciosReferencias);
+			break;
+		case 'modificarJugadorespre':
+			modificarJugadorespre($serviciosReferencias);
+			break;
+		case 'eliminarJugadorespre':
+			eliminarJugadorespre($serviciosReferencias);
+			break; 
 /* Fin */
 
 }
 /* Fin */
+
+
+
+function insertarJugadorespre($serviciosReferencias) {
+	$reftipodocumentos = $_POST['reftipodocumentos'];
+	$nrodocumento = $_POST['nrodocumento'];
+	$apellido = $_POST['apellido'];
+	$nombres = $_POST['nombres'];
+	$email = $_POST['email'];
+	$fechanacimiento = ($_POST['fechanacimiento']);
+	$fechaalta = ($_POST['fechaalta']);
+	$numeroserielote = $_POST['numeroserielote'];
+	$refcountries = $_POST['refcountries'];
+	$observaciones = $_POST['observaciones'];
+	$refusuarios = $_POST['refusuarios'];
+	
+	if (($fechaalta == '') || ($fechanacimiento == '')) {
+		echo 'Formato de fecha incorrecto';
+	} else {
+		if (($serviciosReferencias->existeJugador($nrodocumento) == 0) && ($serviciosReferencias->existeJugadorPre($nrodocumento) == 0)) {
+			$res = $serviciosReferencias->insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios); 
+			
+			if ((integer)$res > 0) { 
+				echo $res; 
+			} else { 
+				echo 'Huvo un error al insertar datos ';	 
+			} 
+		} else {
+			echo 'Ya existe ese numero de documento';	
+		}
+	}
+}
+
+function existeJugadorPre($serviciosReferencias) {
+	$nrodocumento = $_POST['nrodocumento']; 
+	
+	$res = $serviciosReferencias->existeJugadorPre($nrodocumento);
+	
+	if ($res == 0) {
+		echo '';	
+	} else {
+		echo 'Ya existe este Nro de Documento';	
+	}
+}
+
+
+function modificarJugadorespre($serviciosReferencias) {
+	$id = $_POST['id'];
+	$reftipodocumentos = $_POST['reftipodocumentos'];
+	$nrodocumento = $_POST['nrodocumento'];
+	$apellido = $_POST['apellido'];
+	$nombres = $_POST['nombres'];
+	$email = $_POST['email'];
+	$fechanacimiento = ($_POST['fechanacimiento']);
+	$fechaalta = ($_POST['fechaalta']);
+	$numeroserielote = $_POST['numeroserielote'];
+	$refcountries = $_POST['refcountries'];
+	$observaciones = $_POST['observaciones'];
+	$refusuarios = $_POST['refusuarios'];
+	
+	if (($fechaalta == '') || ($fechanacimiento == '')) {
+		echo 'Formato de fecha incorrecto';
+	} else {
+		$res = $serviciosReferencias->modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
+		
+		if ($res == true) {
+			echo '';
+		} else {
+			echo 'Huvo un error al modificar datos';
+		}
+	}
+}
+
+
+function eliminarJugadorespre($serviciosReferencias) {
+	$id = $_POST['id'];
+
+	$res = $serviciosReferencias->traerJugadoresprePorId($id);	
+
+	if ( (integer)mysql_result($res, 0,'idusuario') > 0) {
+		echo 'No se puede borrar el jugador ya que se registro como usuario en el sistema, comunicarse con la Asociacion para resolverlo.';
+
+	} else {
+		$res = $serviciosReferencias->eliminarJugadorespre($id);
+		echo $res;
+	}
+} 
 
 function VtraerPaginasJugadoresPorClub($serviciosReferencias) {
 	$idclub = $_POST['idclub'];
 	$busqueda = $_POST['busqueda'];
 
 	$res = $serviciosReferencias->traerJugadoresClubPorCountrieActivos($idclub, $busqueda); 
-
+	
 	$ar = array(round(mysql_num_rows($res) / 10));
 
 	$resV['datos'] = $ar; 
@@ -195,6 +296,53 @@ function VguardarDelegado($serviciosReferencias) {
 	
 	header('Content-type: application/json'); 
 	echo json_encode($resV); 
+}
+
+
+function guardarJugadorClubSimple($serviciosReferencias) {
+	$idClub 		= $_POST['idclub'];
+	$idJugador 		= $_POST['idjugador'];
+	$numeroSerie 	= $_POST['numeroserielote'];
+	$fechabaja 		= $_POST['fechabaja'];
+	$articulo 		= $_POST['articulo'];
+
+	if (trim($numeroSerie) == '') {
+		$resV['error'] = true; 
+		$resV['mensaje'] = 'No se pudo cargar el Registro!, Debe cargar el Nro de Serie/Lote'; 
+	} else {
+		$resTemporada = $serviciosReferencias->traerUltimaTemporada();
+		$temporada = mysql_result($resTemporada,0,1);
+
+		$existe = $serviciosReferencias->existeJugadoresclubPorClubJugador($idClub, $idJugador);
+
+		if ($existe > 0) {
+			/* modifico */
+			$res = $serviciosReferencias->modificarJugadoresclub($existe,$idJugador,$fechabaja,$articulo,$numeroSerie,$temporada,$idClub);
+			if ($res == true) {
+				$resV['mensaje'] = 'Registro Modificado con exito!.'; 
+				$resV['error'] = false; 
+			} else {
+				$resV['error'] = true; 
+				$resV['mensaje'] = 'No se pudo cargar el Registro!'; 
+			}
+		} else {
+			/* inserto */
+			$res = $serviciosReferencias->insertarJugadoresclub($idJugador,$fechabaja,$articulo,$numeroSerie,$temporada,$idClub);
+
+			if ($res >0) {
+				$resV['mensaje'] = 'Registro Cargado con exito!.'; 
+				$resV['error'] = false;
+			} else {
+				$resV['error'] = true; 
+				$resV['mensaje'] = 'No se pudo cargar el Registro!'; 
+			}
+		}
+	}
+	
+
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+
 }
 
 	function modificarDelegados($serviciosReferencias) { 
@@ -309,7 +457,7 @@ function VguardarDelegado($serviciosReferencias) {
 
 		$id = $_POST['iddelegado'];
 
-		$res = $serviciosReferencias->traerDelegadosPorId($id); 
+		$res = $serviciosReferencias->traerDelegadosPorUsuario($id); 
 
 		while ($row = mysql_fetch_assoc($res)) { 
 			array_push($ar, $row); 

@@ -137,7 +137,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <!-- Top Bar -->
     <?php echo $baseHTML->cargarNAV($breadCumbs); ?>
     <!-- #Top Bar -->
-    <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu)); ?>
+    <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../'); ?>
     <main id="app">
     <section class="content" style="margin-top:-10px;">
     

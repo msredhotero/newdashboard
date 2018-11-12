@@ -19,6 +19,56 @@ class ServiciosReferencias {
 		return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 	}
 
+
+	function existeJugadoresclubPorClubJugador($idClub, $idJugador) { 
+
+		$resTemporada = $this->traerUltimaTemporada();
+		$temporada = mysql_result($resTemporada,0,1);
+
+		$sql = "select 
+		jc.idjugadorclub,
+		j.apellido,
+		j.nombres,
+		j.nrodocumento,
+		(case when jc.fechabaja=1 then 'Si' else 'No' end) as fechabaja,
+		(case when jc.articulo=1 then 'Si' else 'No' end) as articulo,
+		jc.numeroserielote,
+		jc.temporada,
+		jc.refcountries,
+		jc.refjugadores
+		from dbjugadoresclub jc
+		inner join dbjugadores j on j.idjugador = jc.refjugadores
+		inner join dbcountries c on c.idcountrie = jc.refcountries 
+		where jc.refJugadores = ".$idJugador." and j.refcountries = ".$idClub." and jc.temporada = ".$temporada."
+		order by 1"; 
+		$res = $this->existeDevuelveId($sql);
+		return $res; 
+	} 
+
+	function insertarJugadoresclub($refjugadores,$fechabaja,$articulo,$numeroserielote,$temporada,$refcountries) { 
+		$sql = "insert into dbjugadoresclub(idjugadorclub,refjugadores,fechabaja,articulo,numeroserielote,temporada,refcountries) 
+		values ('',".$refjugadores.",".$fechabaja.",".$articulo.",'".($numeroserielote)."',".$temporada.",".$refcountries.")"; 
+		
+		$res = $this->query($sql,1); 
+		return $res; 
+	} 
+
+	function eliminarJugadoresclub($id) { 
+		$sql = "delete from dbjugadoresclub where idjugadorclub =".$id; 
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+	
+	
+	function modificarJugadoresclub($id,$refjugadores,$fechabaja,$articulo,$numeroserielote,$temporada,$refcountries) { 
+		$sql = "update dbjugadoresclub 
+		set 
+		refjugadores = ".$refjugadores.",fechabaja = ".$fechabaja.",articulo = ".$articulo.",numeroserielote = '".($numeroserielote)."',temporada = ".$temporada.",refcountries = ".$refcountries." 
+		where idjugadorclub =".$id; 
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+
 	function traerUltimaTemporada() {
 		$sql = "select
 		t.idtemporadas,
@@ -46,6 +96,77 @@ class ServiciosReferencias {
 		return $res; 
 	} 
 
+	function existeJugador($nroDocumento) {
+		$sql = "select idjugador from dbjugadores where nrodocumento = ".$nroDocumento;
+		$res = $this->query($sql,0);
+		
+		if (mysql_num_rows($res)>0) {
+			return 1;   
+		}
+		return 0;
+	}
+	
+	
+	function existeJugadorPre($nroDocumento) {
+		$sql = "select idjugadorpre from dbjugadorespre where nrodocumento = ".$nroDocumento;
+		$res = $this->query($sql,0);
+		
+		if (mysql_num_rows($res)>0) {
+			return 1;   
+		}
+		return 0;
+	}
+
+	
+function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios) {
+	$sql = "insert into dbjugadorespre(idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,numeroserielote,refcountries,observaciones,refusuarios, refestados)
+	values ('',".$reftipodocumentos.",".$nrodocumento.",'".strtoupper($apellido)."','".strtoupper($nombres)."','".($email)."','".($fechanacimiento)."','".($fechaalta)."','".($numeroserielote)."',".$refcountries.",'".($observaciones)."',".$refusuarios.",1)";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+	
+	
+	function modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios) {
+	$sql = "update dbjugadorespre
+	set
+	reftipodocumentos = ".$reftipodocumentos.",nrodocumento = ".$nrodocumento.",apellido = '".strtoupper($apellido)."',nombres = '".strtoupper($nombres)."',email = '".($email)."',fechanacimiento = '".utf8_decode($fechanacimiento)."',fechaalta = '".($fechaalta)."',numeroserielote = '".($numeroserielote)."',refcountries = ".$refcountries.",observaciones = '".($observaciones)."',refusuarios = ".$refusuarios."
+	where idjugadorpre =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function modificarJugadorespreRegistro($id,$apellido,$nombres,$fechanacimiento,$observaciones) {
+	$sql = "update dbjugadorespre
+	set
+	apellido = '".strtoupper($apellido)."',nombres = '".strtoupper($nombres)."',fechanacimiento = '".($fechanacimiento)."',observaciones = '".($observaciones)."'
+	where idjugadorpre =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+	function traerJugadoresprePorId($id) {
+	$sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,refcountries,observaciones,refusuarios,numeroserielote from dbjugadorespre where idjugadorpre =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	function modificarJugadorespreRegistroNuevo($id,$apellido,$nombres,$fechanacimiento,$observaciones,$email) {
+	$sql = "update dbjugadorespre
+	set
+	apellido = '".strtoupper($apellido)."',nombres = '".strtoupper($nombres)."',fechanacimiento = '".($fechanacimiento)."',observaciones = '".($observaciones)."',email = '".($email)."'
+	where idjugadorpre =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function eliminarJugadorespre($id) {
+		
+	$sql = "delete from dbjugadorespre where idjugadorpre =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
 
 	
 	function traerJugadoresprePorCountries($refCountries) {
@@ -65,7 +186,8 @@ class ServiciosReferencias {
 		j.refestados
 		from dbjugadorespre j
 		inner join tbtipodocumentos td on td.idtipodocumento = j.reftipodocumentos
-		where   j.refcountries = ".$refCountries."
+		left join dbjugadores jj on jj.nrodocumento = j.nrodocumento
+		where   j.refcountries = ".$refCountries." and jj.idjugador is null
 		order by j.apellido, j.nombres";
 		$res = $this->query($sql,0);
 		return $res;
@@ -78,6 +200,10 @@ class ServiciosReferencias {
 	}
 	
 	function traerJugadoresClubPorCountrieActivos($idCountrie,$busqueda='') { 
+
+		$resTemporada = $this->traerUltimaTemporada();
+		$temporada = mysql_result($resTemporada,0,1);
+
 		$sql = "select 
 		j.idjugador,
 		tip.tipodocumento,
@@ -102,7 +228,8 @@ class ServiciosReferencias {
 		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
 		inner join dbcountries cou ON cou.idcountrie = j.refcountries 
 		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		left join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador
+		left join dbjugadoresclub jc 
+		on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador and jc.temporada = ".$temporada."
 		where j.refcountries = ".$idCountrie." and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
 		";
 		if ($busqueda != '') {
@@ -111,13 +238,17 @@ class ServiciosReferencias {
 		$sql .= " 
 		order by concat(j.apellido, ' ', j.nombres) 
 		"; 
-		
+		//die(var_dump($sql));
 		$res = $this->query($sql,0); 
 		return $res; 
 	} 
 
 
 	function traerJugadoresClubPorCountrieActivosPaginador($idCountrie, $pagina, $cantidad, $busqueda='') { 
+
+		$resTemporada = $this->traerUltimaTemporada();
+		$temporada = mysql_result($resTemporada,0,1);
+
 		$sql = "select 
 		j.idjugador,
 		tip.tipodocumento,
@@ -142,7 +273,8 @@ class ServiciosReferencias {
 		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
 		inner join dbcountries cou ON cou.idcountrie = j.refcountries 
 		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		left join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador
+		left 
+		join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador and jc.temporada = ".$temporada."
 		where j.refcountries = ".$idCountrie." 
 			  and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
 			  ";
@@ -208,7 +340,7 @@ class ServiciosReferencias {
 	
 	function insertarUsuarios($usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) { 
 	$sql = "insert into dbusuarios(idusuario,usuario,password,refroles,email,nombrecompleto,refclientes,activo) 
-	values ('','".utf8_decode($usuario)."','".utf8_decode($password)."',".$refroles.",'".utf8_decode($email)."','".utf8_decode($nombrecompleto)."',".$refclientes.",".$activo.")"; 
+	values ('','".($usuario)."','".($password)."',".$refroles.",'".($email)."','".($nombrecompleto)."',".$refclientes.",".$activo.")"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
@@ -217,7 +349,7 @@ class ServiciosReferencias {
 	function modificarUsuarios($id,$usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) { 
 	$sql = "update dbusuarios 
 	set 
-	usuario = '".utf8_decode($usuario)."',password = '".utf8_decode($password)."',refroles = ".$refroles.",email = '".utf8_decode($email)."',nombrecompleto = '".utf8_decode($nombrecompleto)."',refclientes = ".$refclientes.",activo = ".$activo." 
+	usuario = '".($usuario)."',password = '".($password)."',refroles = ".$refroles.",email = '".($email)."',nombrecompleto = '".($nombrecompleto)."',refclientes = ".$refclientes.",activo = ".$activo." 
 	where idusuario =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
@@ -263,7 +395,7 @@ class ServiciosReferencias {
 
 function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) { 
 	$sql = "insert into dbdelegados(iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4) 
-	values ('',".$refusuarios.",'".utf8_decode($apellidos)."','".utf8_decode($nombres)."','".utf8_decode($direccion)."','".utf8_decode($localidad)."','".utf8_decode($cp)."','".utf8_decode($telefono)."','".utf8_decode($celular)."','".utf8_decode($fax)."','".utf8_decode($email1)."','".utf8_decode($email2)."','".utf8_decode($email3)."','".utf8_decode($email4)."')"; 
+	values ('',".$refusuarios.",'".($apellidos)."','".($nombres)."','".($direccion)."','".($localidad)."','".($cp)."','".($telefono)."','".($celular)."','".($fax)."','".($email1)."','".($email2)."','".($email3)."','".($email4)."')"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
@@ -272,7 +404,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	function modificarDelegados($id,$refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) { 
 	$sql = "update dbdelegados 
 	set 
-	refusuarios = ".$refusuarios.",apellidos = '".utf8_decode($apellidos)."',nombres = '".utf8_decode($nombres)."',direccion = '".utf8_decode($direccion)."',localidad = '".utf8_decode($localidad)."',cp = '".utf8_decode($cp)."',telefono = '".utf8_decode($telefono)."',celular = '".utf8_decode($celular)."',fax = '".utf8_decode($fax)."',email1 = '".utf8_decode($email1)."',email2 = '".utf8_decode($email2)."',email3 = '".utf8_decode($email3)."',email4 = '".utf8_decode($email4)."' 
+	refusuarios = ".$refusuarios.",apellidos = '".($apellidos)."',nombres = '".($nombres)."',direccion = '".($direccion)."',localidad = '".($localidad)."',cp = '".($cp)."',telefono = '".($telefono)."',celular = '".($celular)."',fax = '".($fax)."',email1 = '".($email1)."',email2 = '".($email2)."',email3 = '".($email3)."',email4 = '".($email4)."' 
 	where iddelegado =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
@@ -321,6 +453,13 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	$res = $this->query($sql,0); 
 	return $res; 
 	} 
+
+
+	function traerDelegadosPorUsuario($id) { 
+		$sql = "select iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4 from dbdelegados where refusuarios =".$id; 
+		$res = $this->query($sql,0); 
+		return $res; 
+		} 
 	
 	/* Fin */
 	/* /* Fin de la Tabla: dbdelegados*/
@@ -340,7 +479,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	
 	function insertarConfiguracion($razonsocial,$empresa,$sistema,$direccion,$telefono,$email) { 
 	$sql = "insert into tbconfiguracion(idconfiguracion,razonsocial,empresa,sistema,direccion,telefono,email) 
-	values ('','".utf8_decode($razonsocial)."','".utf8_decode($empresa)."','".utf8_decode($sistema)."','".utf8_decode($direccion)."','".utf8_decode($telefono)."','".utf8_decode($email)."')"; 
+	values ('','".($razonsocial)."','".($empresa)."','".($sistema)."','".($direccion)."','".($telefono)."','".($email)."')"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
@@ -349,7 +488,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	function modificarConfiguracion($id,$razonsocial,$empresa,$sistema,$direccion,$telefono,$email) { 
 	$sql = "update tbconfiguracion 
 	set 
-	razonsocial = '".utf8_decode($razonsocial)."',empresa = '".utf8_decode($empresa)."',sistema = '".utf8_decode($sistema)."',direccion = '".utf8_decode($direccion)."',telefono = '".utf8_decode($telefono)."',email = '".utf8_decode($email)."' 
+	razonsocial = '".($razonsocial)."',empresa = '".($empresa)."',sistema = '".($sistema)."',direccion = '".($direccion)."',telefono = '".($telefono)."',email = '".($email)."' 
 	where idconfiguracion =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
@@ -393,7 +532,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	
 	function insertarEstados($estado) { 
 	$sql = "insert into tbestados(idestado,estado) 
-	values ('','".utf8_decode($estado)."')"; 
+	values ('','".($estado)."')"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
@@ -402,7 +541,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	function modificarEstados($id,$estado) { 
 	$sql = "update tbestados 
 	set 
-	estado = '".utf8_decode($estado)."' 
+	estado = '".($estado)."' 
 	where idestado =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
@@ -489,7 +628,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	
 	function insertarMeses($nombremes) { 
 	$sql = "insert into tbmeses(mes,nombremes) 
-	values ('','".utf8_decode($nombremes)."')"; 
+	values ('','".($nombremes)."')"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
@@ -498,7 +637,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	function modificarMeses($id,$nombremes) { 
 	$sql = "update tbmeses 
 	set 
-	nombremes = '".utf8_decode($nombremes)."' 
+	nombremes = '".($nombremes)."' 
 	where mes =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
