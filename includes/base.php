@@ -16,7 +16,8 @@ class BaseHTML {
                          3=>'<link href="'.$altura.'css/style.css" rel="stylesheet">',
                          4=>'<link href="'.$altura.'css/themes/all-themes.css" rel="stylesheet" />',
                          5=>'<link href="'.$altura.'plugins/sweetalert/sweetalert.css" rel="stylesheet" />',
-                         6=>'<link href="'.$altura.'plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />');
+                         6=>'<link href="'.$altura.'plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />',
+                         7=>'<link href="'.$altura.'css/ventanaModal.css" rel="stylesheet" />');
 
         $cad = '';
 

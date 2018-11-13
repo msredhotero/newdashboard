@@ -4573,10 +4573,10 @@ section.content {
   border-top: 1px solid #eee; }
   .table-bordered tbody tr td, .table-bordered tbody tr th {
     padding: 10px;
-    border: 1px solid #eee; }
+    border-top: 1px solid #ccc; }
   .table-bordered thead tr th {
     padding: 10px;
-    border: 1px solid #eee; }
+    border: 1px solid #ccc; }
 
 /* Panel ======================================= */
 .panel-group .panel-col-red {

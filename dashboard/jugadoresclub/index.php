@@ -144,6 +144,20 @@ $lstNuevosJugadores = $serviciosReferencias->traerJugadoresprePorCountries($refC
 
 
 
+$tabla 			= "dbdelegados";
+
+$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
+$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
+
+
+$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
+$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
+
+$refdescripcion = array(0 => $cadRef);
+$refCampo 	=  array("refusuarios");
+
+$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
 if ($_SESSION['refroll_aif'] != 1) {
 
 } else {
@@ -169,6 +183,7 @@ if ($_SESSION['refroll_aif'] != 1) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
 	<?php echo $baseHTML->cargarArchivosCSS('../../'); ?>
+
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
@@ -186,7 +201,10 @@ if ($_SESSION['refroll_aif'] != 1) {
 
     <style>
         .alert > i{ vertical-align: middle !important; }
-    </style>
+
+		
+	</style>
+	
 
 </head>
 
@@ -230,13 +248,14 @@ if ($_SESSION['refroll_aif'] != 1) {
 <!-- #Top Bar -->
 <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../../'); ?>
 <main id="app">
-<section class="content" style="margin-top:-10px;">
+<section class="content" style="margin-top:-15px;">
 
 	<div class="container-fluid">
 		<div class="row clearfix">
 
         	<div class="row">
 
+			
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="card ">
 						<div class="header bg-blue">
@@ -249,7 +268,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 										<i class="material-icons">more_vert</i>
 									</a>
 									<ul class="dropdown-menu pull-right">
-										<li><a href="javascript:void(0);">Consulta por email</a></li>
+										<li><a href="javascript:void(0);" @click="showModal = true">Realizar Consulta</a></li>
 									</ul>
 								</li>
 							</ul>
@@ -268,7 +287,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 								</div>
 							</div>
 							<form class="form" id="formJugadoresClub">
-							<table class="table table-bordered table-striped table-hover" id="example">
+							<table class="table table-bordered table-striped table-hover highlight" id="example">
 								<thead>
 									<tr>
 										<th>Apellido</th>
@@ -334,6 +353,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			
 
             <div class="row">
+			
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="header bg-green">
@@ -347,7 +367,7 @@ if ($_SESSION['refroll_aif'] != 1) {
                                         <i class="material-icons">more_vert</i>
                                     </a>
                                     <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:void(0);">Consultar por email</a></li>
+                                        <li><a href="javascript:void(0);" @click="showModal = true">Realizar Consulta</a></li>
 
                                     </ul>
                                 </li>
@@ -361,7 +381,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 							</button>
 							</div>
 						<form class="form-inline formulario" role="form">
-						<table class="table table-bordered table-striped table-hover js-basic-example dataTable" id="example1">
+						<table class="table table-bordered table-striped table-hover js-basic-example dataTable highlight" id="example1">
 							<thead>
 								<tr>
 									<th>Tipo Doc.</th>
@@ -559,11 +579,72 @@ if ($_SESSION['refroll_aif'] != 1) {
 <!-- Modal Large Size -->
 <transition name="fade">
 <form class="form" @submit.prevent="guardarDelegado">
-<?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
+<?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
 </form>
 </transition>
 
+
+<form class="form" @submit.prevent="realizarConsulta">
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header">
+              default header
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+			  <h4>Ingrese su consulta y en la brevedad se comunicarán con usted</h4>
+			  	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<label class="form-label">Mensaje</label>
+					<div class="form-group">
+						<div class="form-line">
+							<input type="text" class="form-control" id="mensaje" name="mensaje" />
+							
+						</div>
+					</div>
+				</div>
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+			<button class="btn bg-grey waves-effect" @click="$emit('close')">
+                CANCELAR
+			  </button>
+			  <button type="button" class="btn bg-green waves-effect" @click="enviarConsulta()">
+					<i class="material-icons">send</i>
+					<span>ENVIAR</span>
+				</button>
+
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
+</form>
+
+  
+  <!-- use the modal component, pass in the prop -->
+  <modal v-if="showModal" @close="showModal = false">
+    <!--
+      you can use custom content here to overwrite
+      default content
+    -->
+    <h3 slot="header">Realizar Consulta</h3>
+  </modal>
+
+
 </main>
+
+
 
 
 <script>
@@ -694,10 +775,19 @@ if ($_SESSION['refroll_aif'] != 1) {
 	});
 </script>
 
+
+
+
 <script>
 	const paramsGetDelegado = new URLSearchParams();
-	paramsGetDelegado.append('accion','VtraerDelegadosPorId');
+    paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
+	
+	const paramsNotificacion = new URLSearchParams();
+    paramsNotificacion.append('accion','VenviarMensaje');
+	paramsNotificacion.append('mensaje','');
+	paramsNotificacion.append('premensaje','Jugadores Por Club: ');
+	paramsNotificacion.append('url','jugadoresclub/id.php?id=' + <?php echo $refClub; ?>);
 
 	const paramsGetjugadores = new URLSearchParams();
 	paramsGetjugadores.append('accion','VtraerJugadoresClubPorCountrieActivos');
@@ -719,6 +809,30 @@ if ($_SESSION['refroll_aif'] != 1) {
 	paramsGetjugadoresClub.append('fechabaja',0);
 	paramsGetjugadoresClub.append('articulo',1);
 
+	Vue.component('modal', {
+		template: '#modal-template',
+		methods: {
+			enviarConsulta () {
+				
+				paramsNotificacion.set('mensaje',$('#mensaje').val());
+				
+				axios.post('../../ajax/ajax.php', paramsNotificacion)
+				.then(res => {
+					//this.setMensajes(res)
+					
+
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+						this.$emit('close')
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+					
+				});
+			}
+		}
+	})
+
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -735,13 +849,15 @@ if ($_SESSION['refroll_aif'] != 1) {
 			nrosocio: '',
 			baja: '',
 			art: '',
+			showModal: false,
 			jugadorClubId: ''	
 			
 		},
 		mounted () {
 			this.getJugadoresPorClub(this.busqueda),
 			this.getPaginasJC(this.busqueda),
-			this.getActivePagina()
+			this.getActivePagina(),
+			this.getDelegado()
 		},
 		computed: {
 			
@@ -806,19 +922,27 @@ if ($_SESSION['refroll_aif'] != 1) {
 				})
 			},
 			getDelegado () {
-				axios.post('../../ajax/ajax.php',paramsGetDelegado)
-				.then(res => {
-					
-					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
-					this.activeDelegados = res.data.datos[0]
-				})
+					axios.post('../../ajax/ajax.php',paramsGetDelegado)
+					.then(res => {
+                        
+                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+						this.activeDelegados = res.data.datos[0]
+					})
 			},
 			guardarDelegado (e) {
 				axios.post('../../ajax/ajax.php', new FormData(e.target))
 				.then(res => {
-					this.setMensajes(res)
+					//this.setMensajes(res)
+
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
 					
 				});
+
+				
 			},
 			guardarJugadorClub : function(jug){
 

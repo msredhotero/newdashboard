@@ -4,12 +4,14 @@ include ('../includes/funcionesUsuarios.php');
 include ('../includes/funciones.php');
 include ('../includes/funcionesHTML.php');
 include ('../includes/funcionesReferencias.php');
+include ('../includes/funcionesNotificaciones.php');
 
 
 $serviciosUsuarios  		= new ServiciosUsuarios();
 $serviciosFunciones 		= new Servicios();
 $serviciosHTML				= new ServiciosHTML();
 $serviciosReferencias		= new ServiciosReferencias();
+$serviciosNotificaciones	= new ServiciosNotificaciones();
 
 
 $accion = $_POST['accion'];
@@ -91,6 +93,10 @@ switch ($accion) {
 		case 'eliminarJugadorespre':
 			eliminarJugadorespre($serviciosReferencias);
 			break; 
+		
+		case 'VenviarMensaje':
+			VenviarMensaje($serviciosNotificaciones);
+			break;
 /* Fin */
 
 }
@@ -373,6 +379,41 @@ function guardarJugadorClubSimple($serviciosReferencias) {
 		$res = $serviciosReferencias->eliminarDelegados($id); 
 		echo $res; 
 	} 
+
+	function VenviarMensaje($serviciosNotificaciones) {
+		$mensaje = trim($_POST['mensaje']); 
+		$premensaje = trim($_POST['premensaje']); 
+		$idpagina = 53; //ver el id cuando lo genera en cada base de datos 
+		$autor = ''; 
+		$destinatario = 'msredhotero@msn.com'; 
+		$id1 = 0; 
+		$id2 = 0; 
+		$id3 = 0; 
+		$icono = 'glyphicon glyphicon-warning-sign'; 
+		$estilo = 'alert alert-warning'; 
+		$fecha = date('Y-m-d H:i:s'); 
+		$url = $_POST['url']; 
+
+
+		if ($mensaje == '') {
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'Debe escribir un mensaje! '; 
+		} else {
+			$res = $serviciosNotificaciones->insertarNotificaciones($premensaje.' '.$mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url); 
+
+			if ((integer)$res > 0) { 
+				$resV['error'] = false;
+				$resV['mensaje'] = 'Registro Cargado con exito!.'; 
+			} else { 
+				$resV['error'] = true; 
+				$resV['mensaje'] = 'No se pudo cargar el Registro! '; 
+			}
+		}
+		 
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+
+	}
 
 	function VinsertarDelegados($serviciosReferencias) { 
 		$refusuarios = $_POST['refusuarios']; 
