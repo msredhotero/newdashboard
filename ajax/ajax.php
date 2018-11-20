@@ -97,10 +97,69 @@ switch ($accion) {
 		case 'VenviarMensaje':
 			VenviarMensaje($serviciosNotificaciones);
 			break;
+
+		case 'modificarJugadorNuevo':
+			modificarJugadorNuevo($serviciosReferencias, $serviciosFunciones, $serviciosUsuarios);
+			break;
 /* Fin */
 
 }
 /* Fin */
+
+function validar_fecha_espanol($fecha){
+	$valores = explode('-', str_replace('_','',$fecha));
+	//die(var_dump((integer)$valores[1].(integer)$valores[2].(integer)$valores[0]));
+	if(count($valores) == 3 && 
+		checkdate((integer)$valores[1], (integer)$valores[2], (integer)$valores[0] &&
+		strlen($valores[1]) == 2 &&
+		strlen($valores[2]) == 2 &&
+		strlen($valores[0]) == 4)){
+		return true;
+    }
+	return false;
+}
+
+
+function modificarJugadorNuevo($serviciosReferencias, $serviciosFunciones, $serviciosUsuarios) {
+	$id = $_POST['id'];
+
+	$resResultado = $serviciosReferencias->traerJugadoresPrePorId($id);
+
+	$modificar = "modificarJugadorespre";
+
+	$idTabla = "idjugadorpre";
+
+	/////////////////////// Opciones para la creacion del formulario  /////////////////////
+	$tabla 			= "dbjugadorespre";
+
+	$lblCambio	 	= array("reftipodocumentos","nrodocumento","fechanacimiento","fechaalta","fechabaja","refcountries","refusuarios","numeroserielote", "refestados");
+	$lblreemplazo	= array("Tipo Documento","Nro Documento","Fecha Nacimiento","Fecha Alta","Fecha Baja","Countries","Usuario","Nro Serie Lote","Estado");
+
+
+	$resTipoDoc 	= $serviciosReferencias->traerTipodocumentos();
+	$cadRefj 	= $serviciosFunciones->devolverSelectBoxActivo($resTipoDoc,array(1),'',mysql_result($resResultado,0,'reftipodocumentos'));
+
+	$resCountries 	= $serviciosReferencias->traerCountriesPorId(mysql_result($resResultado,0,'refcountries'));
+	$cadRef2j 	= $serviciosFunciones->devolverSelectBox($resCountries,array(1),'');
+
+	$resUsua = $serviciosUsuarios->traerUsuarioId(mysql_result($resResultado,0,'refusuarios'));
+	$cadRef3j 	= $serviciosFunciones->devolverSelectBox($resUsua,array(3),'');
+
+	$resEstado 	= $serviciosReferencias->traerEstadosPorId(mysql_result($resResultado,0,'refestados'));
+	$cadRefE 	= $serviciosFunciones->devolverSelectBoxActivo($resEstado,array(1),'',mysql_result($resResultado,0,'refestados'));
+
+
+	$refdescripcion = array(0 => $cadRefj,1 => $cadRef2j,2 => $cadRef3j, 3 => $cadRefE);
+	$refCampo 	=  array("reftipodocumentos","refcountries","refusuarios","refestados");
+
+	//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+
+
+	$formulario 	= $serviciosFunciones->camposTablaModificar($id, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
+	echo $formulario;
+
+}
 
 
 
@@ -149,28 +208,56 @@ function existeJugadorPre($serviciosReferencias) {
 
 function modificarJugadorespre($serviciosReferencias) {
 	$id = $_POST['id'];
+
+	$errores = '';
+
 	$reftipodocumentos = $_POST['reftipodocumentos'];
-	$nrodocumento = $_POST['nrodocumento'];
-	$apellido = $_POST['apellido'];
-	$nombres = $_POST['nombres'];
+	
+	$nrodocumento = trim($_POST['nrodocumento']);
+	$apellido = trim($_POST['apellido']);
+	$nombres = trim($_POST['nombres']);
+	$fechanacimiento = str_replace('_','',$_POST['fechanacimiento']);
+	if ($nrodocumento == '') {
+		$errores .= 'Es obligatorio el nro de documento - ';
+	}
+	
+	if ($apellido == '') {
+		$errores .= 'Es obligatorio el apellido - ';
+	}
+
+	if ($nombres == '') {
+		$errores .= 'Es obligatorio el nombres - ';
+	}
+
 	$email = $_POST['email'];
-	$fechanacimiento = ($_POST['fechanacimiento']);
-	$fechaalta = ($_POST['fechaalta']);
+	
+	$fechaalta = str_replace('_','',$_POST['fechaalta']);
 	$numeroserielote = $_POST['numeroserielote'];
 	$refcountries = $_POST['refcountries'];
 	$observaciones = $_POST['observaciones'];
 	$refusuarios = $_POST['refusuarios'];
+
 	
-	if (($fechaalta == '') || ($fechanacimiento == '')) {
-		echo 'Formato de fecha incorrecto';
-	} else {
-		$res = $serviciosReferencias->modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
+	
+	if ((validar_fecha_espanol($fechaalta) == false) || (validar_fecha_espanol($fechanacimiento) == false)) {
 		
-		if ($res == true) {
-			echo '';
+		$errores .= 'Formato de fecha incorrecto - ';
+
+		echo trim($errores);
+	} else {
+
+		if ($errores == '') {
+			$res = $serviciosReferencias->modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
+			
+			if ($res == true) {
+				echo 'ok';
+			} else {
+				echo trim($res);
+			}
 		} else {
-			echo 'Huvo un error al modificar datos';
+			echo trim($errores);
 		}
+		
 	}
 }
 

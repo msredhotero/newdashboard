@@ -147,7 +147,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">
                         <div class="icon">
-                            <i class="material-icons">account_balance</i>
+                            <i class="material-icons">home</i>
                         </div>
                         <div class="content">
                             <div class="text">CLUB</div>

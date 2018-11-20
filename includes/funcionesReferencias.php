@@ -132,7 +132,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	reftipodocumentos = ".$reftipodocumentos.",nrodocumento = ".$nrodocumento.",apellido = '".strtoupper($apellido)."',nombres = '".strtoupper($nombres)."',email = '".($email)."',fechanacimiento = '".utf8_decode($fechanacimiento)."',fechaalta = '".($fechaalta)."',numeroserielote = '".($numeroserielote)."',refcountries = ".$refcountries.",observaciones = '".($observaciones)."',refusuarios = ".$refusuarios."
 	where idjugadorpre =".$id;
 	$res = $this->query($sql,0);
-	return $res;
+	return $sql;
 	}
 	
 	
@@ -146,7 +146,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	}
 
 	function traerJugadoresprePorId($id) {
-	$sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,refcountries,observaciones,refusuarios,numeroserielote from dbjugadorespre where idjugadorpre =".$id;
+	$sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
 	$res = $this->query($sql,0);
 	return $res;
 	}
@@ -167,6 +167,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	$res = $this->query($sql,0);
 	return $res;
 	}
+
 
 	
 	function traerJugadoresprePorCountries($refCountries) {

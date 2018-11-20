@@ -246,7 +246,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 <!-- Top Bar -->
 <?php echo $baseHTML->cargarNAV($breadCumbs); ?>
 <!-- #Top Bar -->
-<?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../../'); ?>
+<?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], $resMenu,'../../'); ?>
 <main id="app">
 <section class="content" style="margin-top:-15px;">
 
@@ -408,7 +408,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 									<td><?php echo $row['fechaalta']; ?></td>
 									<td><?php echo $row['numeroserielote']; ?></td>
 									<td align="center">
-										<button type="button" class="btn bg-amber btn-circle waves-effect waves-circle waves-float">
+										<button type="button" class="btn bg-amber btn-circle waves-effect waves-circle waves-float varmodificar" id="<?php echo $row['idjugadorpre']; ?>">
 											<i class="material-icons">create</i>
 										</button>
 									</td>
@@ -522,7 +522,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			</div>
 			<div class="modal-footer">
 			<button type="button" class="btn btn-primary" id="cargarJugador">Agregar</button>
-			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 			
 			</div>
 			</form>
@@ -541,13 +541,39 @@ if ($_SESSION['refroll_aif'] != 1) {
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			<h4 class="modal-title" id="myModalLabel">Eliminar Jugador</h4>
 			</div>
-			<div class="modal-body">
+			<div class="modal-body demo-masked-input">
 			<p>¿Esta seguro que desea eliminar al jugador?</p>
 			</div>
 			<div class="modal-footer">
 			<input type="hidden" name="idEliminar" id="idEliminar" value=''/>
 			<button type="button" class="btn btn-danger" data-dismiss="modal" id="btnEliminarJugador">Si</button>
-			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			
+			</div>
+			</form>
+		</div>
+		</div>
+	</div>
+
+	<!-- del modal -->
+
+
+	<!-- Modal del guardar-->
+	<div class="modal fade" id="myModal5" tabindex="1" style="z-index:50000;" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<form class="form-inline formulario2" role="form">
+			<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="myModalLabel">Modificar Jugador</h4>
+			</div>
+			<div class="modal-body modificarJugadorNuevo">
+			
+			</div>
+			<div class="modal-footer">
+			<input type="hidden" name="idModificarJugadorNuevo" id="idModificarJugadorNuevo" value=''/>
+			<button type="button" class="btn btn-warning" id="btnModificarJugadorNuevo">Modificar</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 			
 			</div>
 			</form>
@@ -699,10 +725,27 @@ if ($_SESSION['refroll_aif'] != 1) {
 		
 		$("#example1").on("click",'.varmodificar', function(){
 			usersid =  $(this).attr("id");
-			url = "modificarjugador.php?id=" + usersid;
-			$(location).attr('href',url);
+			$('#myModal5').modal();
 
+			$.ajax({
+				data:  {id: $(this).attr("id"), 
+					    accion: 'modificarJugadorNuevo'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+					$('.modificarJugadorNuevo').html('');	
+				},
+				success:  function (response) {
+					$('.modificarJugadorNuevo').html(response);
+
+					$('.modificarJugadorNuevo').find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
+						
+				}
+			});
+			
 		});//fin del boton modificar
+		
+		
 
 		
 		$('#btnEliminarJugador').click(function() {
@@ -721,6 +764,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 				}
 			});
 		});
+
 
 				//al enviar el formulario
 			$('#cargarJugador').click(function(){
@@ -769,8 +813,62 @@ if ($_SESSION['refroll_aif'] != 1) {
 						$("#load").html('');
 					}
 				});
-			
+
+
+				
+				
 			});
+
+
+				//al enviar el formulario
+				
+				$('#btnModificarJugadorNuevo').click(function(){
+					//información del formulario
+					var formData = new FormData($(".formulario2")[0]);
+					var message = "";
+					//hacemos la petición ajax  
+					$.ajax({
+						url: '../../ajax/ajax.php',  
+						type: 'POST',
+						// Form data
+						//datos del formulario
+						data: formData,
+						//necesario para subir archivos via ajax
+						cache: false,
+						contentType: false,
+						processData: false,
+						//mientras enviamos el archivo
+						beforeSend: function(){
+							$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');       
+						},
+						//una vez finalizado correctamente
+						success: function(data){
+							
+							if (data == 'ok') {
+								swal("Correcto!", "Se modifico exitosamente el Jugador. ", "success");
+							
+								$('#myModal5').modal('hide');
+
+								url = "index.php";
+								$(location).attr('href',url);
+								$("#load").html('');
+								
+								
+							} else {
+								swal("Error!", data, "warning");
+
+								$("#load").html('');
+							}
+						},
+						//si ha ocurrido un error
+						error: function(){
+							$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+							$("#load").html('');
+						}
+					});
+				});
+			
+			
 		<?php } ?>
 	});
 </script>
