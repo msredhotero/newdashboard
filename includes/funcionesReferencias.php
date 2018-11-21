@@ -19,6 +19,477 @@ class ServiciosReferencias {
 		return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 	}
 
+	function sanear_string($string)
+	{
+	
+		$string = trim($string);
+	
+		$string = str_replace(
+			array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
+			array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
+			$string
+		);
+	
+		$string = str_replace(
+			array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
+			array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'),
+			$string
+		);
+	
+		$string = str_replace(
+			array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
+			array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'),
+			$string
+		);
+	
+		$string = str_replace(
+			array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
+			array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
+			$string
+		);
+	
+		$string = str_replace(
+			array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
+			array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'),
+			$string
+		);
+	
+		$string = str_replace(
+			array('ñ', 'Ñ', 'ç', 'Ç'),
+			array('n', 'N', 'c', 'C',),
+			$string
+		);
+	
+	
+	
+		return $string;
+	}
+
+	function borrarDirecctorio($dir) {
+        array_map('unlink', glob($dir."/*.*")); 
+    
+    }
+
+	function borrarArchivos($directorio) {
+        
+        $res =  $this->borrarDirecctorio("./".$directorio);
+
+        rmdir("./".$directorio);
+
+        return '';
+    }
+
+
+
+	
+function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo) {
+	$sql = "insert into dbconectordelegados(idconector,reftemporadas, refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo)
+	values ('',".$refjugadores.",".$reftemporadas.",".$refusuarios.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.")";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+	
+	
+	function modificarConectorDelegado($id,$reftemporadas, $refusuarios, $refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo) {
+	$sql = "update dbconectordelegados
+	set
+	reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.", refjugadores = ".$refjugadores.",reftipojugadores = ".$reftipojugadores.",refequipos = ".$refequipos.",refcountries = ".$refcountries.",refcategorias = ".$refcategorias.",esfusion = ".$esfusion.",activo = ".$activo."
+	where idconector =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function eliminarConectorDelegado($id) {
+	$sql = "update dbconectordelegados set activo = 0 where idconector =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	function eliminarTodosLosJugadoresDelegado($id) {
+		$sql = "update dbconectordelegados set activo = 0 where refequipos =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+	
+	function eliminarConectorDefinitivamenteDelegado($id) {
+	$sql = "delete from dbconectordelegados where idconector =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	
+	function eliminarConectorPorJugadorDelegado($id) {
+	$sql = "update dbconectordelegados set activo = 0 where refjugadores =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function traerConectorDelegado($refJugador, $reftemporadas, $refusuarios) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		concat(equ.idequipo, '- ',equ.nombre) as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento
+		
+	from
+	dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = c.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where jug.idjugador = ".$refJugador." and c.reftemporadas = ".$reftemporadas." 
+				and c.refusuarios = ".$refusuarios."
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function traerConectorActivosDelegado($refJugador, $reftemporadas, $refusuarios) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		equ.nombre as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento
+		
+	from
+	dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where jug.idjugador = ".$refJugador." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+				and c.refusuarios = ".$refusuarios."
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	
+	function traerConectorCategoriasActivosDelegado($refCategorias, $reftemporadas, $refusuarios) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		equ.nombre as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento
+		
+	from
+	dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where cat.idtcategoria = ".$refCategorias." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+		and c.refusuarios = ".$refusuarios."
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	
+	function traerConectorTodosActivosDelegado($reftemporadas, $refusuarios) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		equ.nombre as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento
+		
+	from
+	dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+		and c.refusuarios = ".$refusuarios."
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, $refusuarios) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		equ.nombre as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento,
+		jug.fechanacimiento,
+		tip.idtipojugador,
+		year(now()) - year(jug.fechanacimiento) as edad,
+		jug.fechabaja,
+		jug.fechaalta
+	
+	from
+	dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+				and c.refusuarios = ".$refusuarios."
+	order by concat(jug.apellido,', ',jug.nombres)";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function traerConectorActivosPorEquiposCategoriasDelegado($refEquipos, $idCategoria, $reftemporadas, $refusuarios) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		equ.nombre as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento,
+		jug.fechanacimiento,
+		tip.idtipojugador,
+		year(now()) - year(jug.fechanacimiento) as edad,
+		(case when jug.fechabaja = '0000-00-00' then '1900-01-01' else coalesce(jug.fechabaja,'1900-01-01') end) as fechabaja
+		
+	from
+		dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.refcategorias = ".$idCategoria." 
+				and c.reftemporadas = ".$reftemporadas." 
+				and c.refusuarios = ".$refusuarios."
+	order by concat(jug.apellido,', ',jug.nombres)";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	function traerConectorActivosPorEquiposEdadesDelegado($refEquipos, $reftemporadas, $refusuarios) {
+	$sql = "select 
+		min(year(now()) - year(jug.fechanacimiento)) as edadMinima,
+		max(year(now()) - year(jug.fechanacimiento)) as edadMaxima,
+		count(*) as cantidadJugadores,
+		round((max(year(now()) - year(jug.fechanacimiento)) + min(year(now()) - year(jug.fechanacimiento)))/2,2) as edadPromedio 
+	from
+		dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where equ.idequipo = ".$refEquipos." and c.activo = 1 
+				and c.reftemporadas = ".$reftemporadas." 
+				and c.refusuarios = ".$refusuarios;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+	
+	
+	
+	function traerConectorActivosPorConectorDelegado($id) {
+	$sql = "select 
+		c.idconector,
+		cat.categoria,
+		equ.nombre as equipo,
+		co.nombre as countrie,
+		tip.tipojugador,
+		(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		c.refjugadores,
+		c.reftipojugadores,
+		c.refequipos,
+		c.refcountries,
+		c.refcategorias,
+		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		jug.nrodocumento,
+		jug.fechanacimiento,
+		tip.idtipojugador,
+		year(now()) - year(jug.fechanacimiento) as edad
+		
+	from
+		dbconectordelegados c
+			inner join
+		dbjugadores jug ON jug.idjugador = c.refjugadores
+			inner join
+		tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+			inner join
+		dbcountries co ON co.idcountrie = jug.refcountries
+			inner join
+		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+			inner join
+		dbequipos equ ON equ.idequipo = c.refequipos
+			inner join
+		tbdivisiones di ON di.iddivision = equ.refdivisiones
+			inner join
+		dbcontactos con ON con.idcontacto = equ.refcontactos
+			inner join
+		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+			inner join
+		tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		where c.idconector =".$id."
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 
 	function existeJugadoresclubPorClubJugador($idClub, $idJugador) { 
 
@@ -291,7 +762,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 
 	function traerCountriesPorId($id) {
 		$sql = "select idcountrie,nombre,cuit,fechaalta,
-			fechabaja,refposiciontributaria,latitud,longitud,activo,referencia,direccion,telefonoadministrativo,telefonocampo,email,localidad,codigopostal,refusuarios from dbcountries where idcountrie =".$id;
+			fechabaja,refposiciontributaria,latitud,longitud,activo,referencia,direccion,telefonoadministrativo,telefonocampo,email,localidad,codigopostal,refusuarios, imagen from dbcountries where idcountrie =".$id;
 		$res = $this->query($sql,0);
 		return $res;
 	}
@@ -305,6 +776,13 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		}
 
 		return '';
+	}
+
+	function modificarImagenCuontries($id, $imagen) {
+		$sql = "update dbcountries set imagen = '".$imagen."' where idcountrie = ".$id;
+		$res = $this->query($sql,0);
+
+		echo $res;
 	}
 
 
