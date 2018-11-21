@@ -226,7 +226,7 @@ function modificarJugadorespre($serviciosReferencias) {
 	}
 
 	if ($nombres == '') {
-		$errores .= 'Es obligatorio el nombres - ';
+		$errores .= 'Es obligatorio el nombre - ';
 	}
 
 	$email = $_POST['email'];
@@ -250,7 +250,7 @@ function modificarJugadorespre($serviciosReferencias) {
 			$res = $serviciosReferencias->modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
 			
 			if ($res == true) {
-				echo 'ok';
+				echo 1;
 			} else {
 				echo trim($res);
 			}
