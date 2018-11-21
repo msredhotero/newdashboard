@@ -844,7 +844,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 						//una vez finalizado correctamente
 						success: function(data){
 							
-							if (data == 'ok') {
+							if (!isNaN(data)) {
 								swal("Correcto!", "Se modifico exitosamente el Jugador. ", "success");
 							
 								$('#myModal5').modal('hide');
