@@ -397,17 +397,23 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 
 <script>
-	Dropzone.options.dropzone = {
+
+	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
+
+	Dropzone.options.frmFileUpload = {
 		maxFilesize: 2,
+		addRemoveLinks: true,
 		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
-		maxFiles: 1,
 		accept: function(file, done) {
-			console.log("uploaded");
 			done();
 		},
 		init: function() {
-			this.on("maxfilesexceeded", function(file){
-				alert("No more files please!");
+			this.on('success', function( file, resp ){
+				swal("Correcto!", resp.replace("1", ""), "success");
+			});
+
+			this.on('error', function( file, resp ){
+				swal("Error!", resp.replace("1", ""), "warning");
 			});
 		}
 	};

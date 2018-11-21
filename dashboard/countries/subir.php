@@ -37,7 +37,7 @@ if (!isset($_SESSION['usua_aif']))
     $noentrar = '../../imagenes/index.php';
     $nuevo_noentrar = '../../archivos/countries/'.$_SESSION['idclub_aif'].'/'.'index.php';
 
-    $serviciosReferencias->borrarArchivos($dir_destino);
+    $resBorrar = $serviciosReferencias->borrarArchivos($dir_destino);
     
     if (!file_exists($dir_destino)) {
         mkdir($dir_destino, 0777);
@@ -46,7 +46,7 @@ if (!isset($_SESSION['usua_aif']))
     
 
     if (move_uploaded_file($templocation, $imagen_subida)) {
-        $serviciosReferencias->modificarImagenCuontries($_SESSION['idclub_aif'], $name);
+        $resModificar = $serviciosReferencias->modificarImagenCuontries($_SESSION['idclub_aif'], $name);
         echo "Archivo guardado correctamente";
     } else {
         echo "Error al guardar el archivo";
