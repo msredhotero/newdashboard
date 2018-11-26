@@ -39,6 +39,12 @@ $tituloWeb = mysql_result($configuracion,0,'sistema');
 $breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href="javascript:void(0)" class="navbar-brand"><i class="material-icons">navigate_next</i></a><a class="navbar-brand active" href="index.php">Equipos</a>';
 
 $club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
+
+$permiteRegistrar = 1;
+
+$habilitado = 1;
+
+
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Country";
 
@@ -115,7 +121,10 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
 	<!-- Multi Select Css -->
-    <link href="../../plugins/multi-select/css/multi-select.css" rel="stylesheet">
+	<link href="../../plugins/multi-select/css/multi-select.css" rel="stylesheet">
+	
+	<!-- Animation Css -->
+    <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
 
 	<!-- VUE JS -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -207,77 +216,152 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 						</div>
 						<div class="body table-responsive">
 							
-							<form class="form" id="formCountryEquipos">
+							
 								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-										<h4>Equipos Activos</h4>
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<h4>Equipos Activos Actuales</h4>
+										<p>Recuerde que el plantel del equipo se deberá cargar </p>
+										<div class="alert alert-warning animated shake">
+											<strong>Importante!</strong> Toda la información será confirmada por la Asociación.
+										</div>
 
 									</div>
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-										<h4>Equipos que se Eliminaran</h4>
-									</div>	
+									
 								</div>
-								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<table class="table table-bordered table-striped table-hover highlight" id="example">
-									<thead>
-										<tr>
-											<th>Equipo</th>
-											<th>Categoria</th>
-											<th>Division</th>
-											<th>Acciones</th>
-										</tr>
-									</thead>
-									<tbody>
 
-					
-									<tr v-for="equipo in equipos" :key="jugador.idjugador">
-										<td>{{ equipo.nombre }}</td>
-										<td>{{ equipo.categoria }}</td>
-										<td>{{ equipo.division }}</td>
-										
-										<td>
-										<?php
-										if ($permiteRegistrar == 1) {
-										if ($habilitado == 1) {	
-										?>
-											<button type='button' class='btn btn-primary guardarJugadorClubSimple' @click="guardarJugadorClub(jugador)">Guardar</button>
-										<?php
-											}
-										}
-										?>
-										</td>
-									</tr>
-				
-									</tbody>
-								</table>
-								</form>
-									<select id="optgroup" class="ms" multiple="multiple">
-										<?php
-										$categoria = '';
-										$division = '';
-										$primero = 0;
-										while ($row = mysql_fetch_array($resEquiposCountries)) {
-											if (($categoria != $row['categoria']) || ($division != $row['division'])) {
-												if ($primero == 1) {
-													echo '</optgroup>';
+								<div class="row">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<form class="form" id="formCountryEquiposEstable">
+										<table class="table table-bordered table-striped table-hover highlight" id="example">
+											<thead>
+												<tr>
+													<th>Equipo</th>
+													<th>Categoria</th>
+													<th>Division</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+
+							
+											<tr v-for="equipo in activeEquipos" :key="equipo.idequipo">
+												<td>{{ equipo.nombre }}</td>
+												<td>{{ equipo.categoria }}</td>
+												<td>{{ equipo.division }}</td>
+												
+												<td>
+												<?php
+												if ($permiteRegistrar == 1) {
+													if ($habilitado == 1) {	
+												?>
+													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipo(equipo)">
+														<i class="material-icons">delete</i>
+														<span>Eliminar</span>
+													</button>
+												<?php
+													}
 												}
-												$categoria = $row['categoria'];
-												$division = $row['division'];
-												echo "<optgroup label='".$categoria." - ".$division."'>";
-												$primero = 1;
-											}
-										?>
+												?>
+												</td>
+											</tr>
+						
+											</tbody>
+										</table>
+									</form>
 										
-											<option value="<?php echo $row['idequipo']; ?>"><?php echo $row['nombre']; ?></option>
-
-										<?php 
-										}
-										echo '</optgroup>';
-
-										?>
-									</select>
+									</div>
 								</div>
-								
+
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<h4>Equipos que seran Eliminados</h4>
+									<form class="form" id="formCountryEquiposEliminados">
+										<table class="table table-bordered table-striped table-hover highlight" id="example">
+											<thead>
+												<tr>
+													<th>Equipo</th>
+													<th>Categoria</th>
+													<th>Division</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+
+							
+											<tr v-for="equipo in lstequiposEliminados" :key="equipo.idequipo">
+												<td>{{ equipo.nombre }}</td>
+												<td>{{ equipo.categoria }}</td>
+												<td>{{ equipo.division }}</td>
+												
+												<td>
+												<?php
+												if ($permiteRegistrar == 1) {
+													if ($habilitado == 1) {	
+												?>
+													<button type='button' class='btn bg-light-blue waves-effect recargarEquipo' @click="recargarEquipo(equipo)">
+														<i class="material-icons">save</i>
+														<span>Habilitar</span>
+													</button>
+												<?php
+													}
+												}
+												?>
+												</td>
+											</tr>
+						
+											</tbody>
+										</table>
+									
+										
+									</div>
+
+
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<h4>Equipos que seran Agregados</h4>
+									<form class="form" id="formCountryEquiposNuevos">
+										<table class="table table-bordered table-striped table-hover highlight" id="example">
+											<thead>
+												<tr>
+													<th>Equipo</th>
+													<th>Categoria</th>
+													<th>Division</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+
+							
+											<tr v-for="equipo in lstequiposNuevos" :key="equipo.idequipo">
+												<td>{{ equipo.nombre }}</td>
+												<td>{{ equipo.categoria }}</td>
+												<td>{{ equipo.division }}</td>
+												
+												<td>
+												<?php
+												if ($permiteRegistrar == 1) {
+													if ($habilitado == 1) {	
+												?>
+													<button type="submit" class="btn bg-light-blue waves-effect eliminarEquipoNuevo" @click="eliminarEquipoNuevo(equipo)">
+														<i class="material-icons">delete</i>
+														<span>Eliminar</span>
+													</button>
+													
+												<?php
+													}
+												}
+												?>
+												</td>
+											</tr>
+						
+											</tbody>
+										</table>
+									
+										
+									</div>
+
+
+
+								</div>
 								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
 								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
 							
@@ -319,19 +403,9 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 <!-- Custom Js -->
 <script src="../../js/pages/cards/colored.js"></script>
 
-<!-- Bootstrap Material Datetime Picker Plugin Js -->
-<script src="../../plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+<script src="../../js/pages/ui/animations.js"></script>
 
-<!-- Dropzone Plugin Js -->
-<script src="../../plugins/dropzone/dropzone.js"></script>
 
-<!-- Multi Select Plugin Js -->
-<script src="../../plugins/multi-select/js/jquery.multi-select.js"></script>
-
-<!-- Bootstrap Colorpicker Js -->
-<script src="../../plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
-
-<script src="../../js/pages/forms/advanced-form-elements.js"></script>
 
 <!-- Modal Large Size -->
 <transition name="fade">
@@ -406,56 +480,10 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 
 <script>
 
-	function traerImagen() {
-		$.ajax({
-			data:  {id: <?php echo $_SESSION['idclub_aif']; ?>, 
-					accion: 'traerImgenCountry'},
-			url:   '../../ajax/ajax.php',
-			type:  'post',
-			beforeSend: function () {
-					
-			},
-			success:  function (response) {
-
-				$(".thumbnail img").attr("src",response);
-					
-			}
-		});
-	}
-
-	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
-
-	Dropzone.options.frmFileUpload = {
-		maxFilesize: 2,
-		addRemoveLinks: true,
-		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
-		accept: function(file, done) {
-			done();
-		},
-		init: function() {
-			this.on('success', function( file, resp ){
-				traerImagen();
-				swal("Correcto!", resp.replace("1", ""), "success");
-			});
-
-			this.on('error', function( file, resp ){
-				swal("Error!", resp.replace("1", ""), "warning");
-			});
-		}
-	};
-
-	var myDropzone = new Dropzone("#archivos", {
-		url: 'subir.php'
-	});
+	
 
 	$(document).ready(function(){
 
-		var $demoMaskedInput = $('.demo-masked-input');
-
-		//Date
-		$demoMaskedInput.find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
-
-		
 
 	});
 </script>
@@ -468,9 +496,9 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 	
-	const paramsGetCountry = new URLSearchParams();
-    paramsGetCountry.append('accion','traerCountriesPorId');
-	paramsGetCountry.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+	const paramsGetEquipos = new URLSearchParams();
+    paramsGetEquipos.append('accion','traerEquiposPorCountries');
+	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 	
 
 	Vue.component('modal', {
@@ -506,13 +534,13 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 			errorMensaje: '',
 			successMensaje: '',
 			activeDelegados: {},
-			activeCountry: {},
+			activeEquipos: {},
 			showModal: false	
 			
 		},
 		mounted () {
 			this.getDelegado()
-			this.getCountry()
+			this.getAllEquipos()
 		},
 		computed: {
 			
@@ -557,29 +585,16 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 
 				
 			},
-			getCountry () {
-					axios.post('../../ajax/ajax.php',paramsGetCountry)
+			getAllEquipos () {
+					axios.post('../../ajax/ajax.php',paramsGetEquipos)
 					.then(res => {
                         
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
-						this.activeCountry = res.data.datos[0]
+						this.activeEquipos = res.data.datos
 					})
-			},
-			guardarCountry (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-					//this.setMensajes(res)
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-					
-				});
-
-				
 			}
+
+
 		}
 	})
 </script>

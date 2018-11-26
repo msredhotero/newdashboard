@@ -110,10 +110,34 @@ switch ($accion) {
 		case 'traerImgenCountry':
 			traerImgenCountry($serviciosReferencias);
 		break;
+		case 'traerEquiposPorCountries':
+			traerEquiposPorCountries($serviciosReferencias);
+		break;
 /* Fin */
 
 }
 /* Fin */
+
+function traerEquiposPorCountries($serviciosReferencias) {
+	$id = $_POST['idcountrie'];
+
+	$res = $serviciosReferencias->traerEquiposPorCountries($id); 
+	
+	$ar = array(); 
+	
+	while ($row = mysql_fetch_assoc($res)) { 
+		array_push($ar, $row); 
+	} 
+	
+	$resV['datos'] = $ar; 
+	
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+
+
+}
+
+
 
 function traerImgenCountry($serviciosReferencias) {
 	$id = $_POST['id'];
