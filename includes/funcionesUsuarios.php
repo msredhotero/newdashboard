@@ -67,7 +67,7 @@ function login($usuario,$pass) {
 			$_SESSION['idclub_aif'] = mysql_result($resppass,0,'refcountries');
 			$_SESSION['club_aif'] = mysql_result($resppass,0,'refcountries');
 			
-			return '';
+			return 1;
 		}
 		
 	}	else {

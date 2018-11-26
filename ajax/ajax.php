@@ -101,10 +101,29 @@ switch ($accion) {
 		case 'modificarJugadorNuevo':
 			modificarJugadorNuevo($serviciosReferencias, $serviciosFunciones, $serviciosUsuarios);
 			break;
+		case 'traerCountriesPorId':
+			traerCountriesPorId($serviciosReferencias);
+		break;
+		case 'VmodificarCountries':
+			VmodificarCountries($serviciosReferencias);
+		break;
+		case 'traerImgenCountry':
+			traerImgenCountry($serviciosReferencias);
+		break;
 /* Fin */
 
 }
 /* Fin */
+
+function traerImgenCountry($serviciosReferencias) {
+	$id = $_POST['id'];
+
+	$res = $serviciosReferencias->traerCountriesPorId($id);
+
+	$imagen = mysql_result($res,0,'imagen');
+
+	echo $imagen;
+}
 
 function validar_fecha_espanol($fecha){
 	$valores = explode('-', str_replace('_','',$fecha));
@@ -553,6 +572,27 @@ function guardarJugadorClubSimple($serviciosReferencias) {
 		echo json_encode($resV); 
 	} 
 
+	function VmodificarCountries($serviciosReferencias) {
+		$id = $_POST['id'];
+		$direccion = $_POST['direccion'];
+		$telefonoadministrativo = $_POST['telefonoadministrativo'];
+		$telefonocampo = $_POST['telefonocampo'];
+		$email = $_POST['email'];
+
+		$res = $serviciosReferencias->modificarCountry($id, $direccion, $telefonoadministrativo,$telefonocampo,$email); 
+		
+		if ($res) { 
+			$resV['mensaje'] = 'Registro Modificado con exito!.'; 
+		} else { 
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'No se pudo modificar el Registro!'; 
+		} 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+		
+	}
+
 	function VeliminarDelegados($serviciosReferencias) { 
 		$id = $_POST['id']; 
 		$res = $serviciosReferencias->eliminarDelegados($id); 
@@ -576,6 +616,21 @@ function guardarJugadorClubSimple($serviciosReferencias) {
 		header('Content-type: application/json'); 
 		echo json_encode($resV); 
 	} 
+
+
+	function traerCountriesPorId($serviciosReferencias) {
+
+		$id = $_POST['idcountrie'];
+
+		$res = $serviciosReferencias->traerCountriesPorId($id); 
+		$ar = array(); 
+		while ($row = mysql_fetch_assoc($res)) { 
+			array_push($ar, $row); 
+		} 
+		$resV['datos'] = $ar; 
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
 
 
 	function VtraerDelegadosPorId($serviciosReferencias) { 

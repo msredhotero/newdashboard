@@ -184,7 +184,7 @@ class BaseHTML {
                                 <ul class="dropdown-menu pull-right">
                                     <li><a href="javascript:void(0);" id="menuPerfil"><i class="material-icons">person</i>Perfil</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="logout.php"><i class="material-icons">input</i>Salir</a></li>
+                                    <li><a href="'.$altura.'logout.php"><i class="material-icons">input</i>Salir</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -235,7 +235,7 @@ class BaseHTML {
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CERRAR</button>
                     </div>
                     <input type="hidden" ref="ref_'.$idTabla.'" :value="active'.ucwords($tabla).'.'.$idTabla.'" name="'.$idTabla.'" />
-                    <input type="hidden" value="'.$accion.'" name="accion" id="accion" />>
+                    <input type="hidden" value="'.$accion.'" name="accion" id="accion" />
                     </form>
 
                 </div>

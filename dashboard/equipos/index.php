@@ -24,19 +24,19 @@ $baseHTML = new BaseHTML();
 //*** SEGURIDAD ****/
 include ('../../includes/funcionesSeguridad.php');
 $serviciosSeguridad = new ServiciosSeguridad();
-$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../countries/');
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../equipos/');
 //*** FIN  ****/
 
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Countries",$_SESSION['refroll_aif'],$_SESSION['email_aif']);
+$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Equipos",$_SESSION['refroll_aif'],$_SESSION['email_aif']);
 
 $configuracion = $serviciosReferencias->traerConfiguracion();
 
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
-$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href="javascript:void(0)" class="navbar-brand"><i class="material-icons">navigate_next</i></a><a class="navbar-brand active" href="index.php">Countries</a>';
+$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href="javascript:void(0)" class="navbar-brand"><i class="material-icons">navigate_next</i></a><a class="navbar-brand active" href="index.php">Equipos</a>';
 
 $club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
@@ -90,7 +90,7 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;   
 }
 
-
+$resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
 
 
 ?>
@@ -113,6 +113,9 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+
+	<!-- Multi Select Css -->
+    <link href="../../plugins/multi-select/css/multi-select.css" rel="stylesheet">
 
 	<!-- VUE JS -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -203,58 +206,78 @@ if (mysql_num_rows($resTemporadas)>0) {
 							</ul>
 						</div>
 						<div class="body table-responsive">
-							<div class="row">
-                                
-                                <div class="col-xs-6 col-md-6 col-lg-6">
-                                    <a href="javascript:void(0);" class="thumbnail">
-                                        <img v-bind:src="activeCountry.imagen" class="img-responsive">
-                                    </a>
-                                </div>
-                                
+							
+							<form class="form" id="formCountryEquipos">
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+										<h4>Equipos Activos</h4>
 
-                            </div>
-							<form v-on:submit.prevent="guardarCountry" class="form" id="formCountry">
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+										<h4>Equipos que se Eliminaran</h4>
+									</div>	
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<table class="table table-bordered table-striped table-hover highlight" id="example">
+									<thead>
+										<tr>
+											<th>Equipo</th>
+											<th>Categoria</th>
+											<th>Division</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
 
-								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-									<label class="form-label">Dirección</label>
-                                        <div class="form-line">
-                                            <input type="text" class="form-control" :value="activeCountry.direccion" v-modal="activeCountry.direccion" id="direccion" name="direccion" />
-                                            
-                                        </div>
-                                    </div>
+					
+									<tr v-for="equipo in equipos" :key="jugador.idjugador">
+										<td>{{ equipo.nombre }}</td>
+										<td>{{ equipo.categoria }}</td>
+										<td>{{ equipo.division }}</td>
+										
+										<td>
+										<?php
+										if ($permiteRegistrar == 1) {
+										if ($habilitado == 1) {	
+										?>
+											<button type='button' class='btn btn-primary guardarJugadorClubSimple' @click="guardarJugadorClub(jugador)">Guardar</button>
+										<?php
+											}
+										}
+										?>
+										</td>
+									</tr>
+				
+									</tbody>
+								</table>
+								</form>
+									<select id="optgroup" class="ms" multiple="multiple">
+										<?php
+										$categoria = '';
+										$division = '';
+										$primero = 0;
+										while ($row = mysql_fetch_array($resEquiposCountries)) {
+											if (($categoria != $row['categoria']) || ($division != $row['division'])) {
+												if ($primero == 1) {
+													echo '</optgroup>';
+												}
+												$categoria = $row['categoria'];
+												$division = $row['division'];
+												echo "<optgroup label='".$categoria." - ".$division."'>";
+												$primero = 1;
+											}
+										?>
+										
+											<option value="<?php echo $row['idequipo']; ?>"><?php echo $row['nombre']; ?></option>
+
+										<?php 
+										}
+										echo '</optgroup>';
+
+										?>
+									</select>
 								</div>
 								
-								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-									<label class="form-label">Tel. Administrativo</label>
-                                        <div class="form-line">
-                                            <input type="text" class="form-control" :value="activeCountry.telefonoadministrativo" v-modal="activeCountry.telefonoadministrativo" id="telefonoadministrativo" name="telefonoadministrativo" />
-                                            
-                                        </div>
-                                    </div>
-								</div>
-								
-								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-									<label class="form-label">Tel. Campo</label>
-                                        <div class="form-line">
-                                            <input type="text" class="form-control" :value="activeCountry.telefonocampo" v-modal="activeCountry.telefonocampo" id="telefonocampo" name="telefonocampo" />
-                                            
-                                        </div>
-                                    </div>
-								</div>
-								
-
-								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-									<label class="form-label">Email</label>
-                                        <div class="form-line">
-                                            <input type="email" class="form-control" :value="activeCountry.email" v-modal="activeCountry.email" id="email" name="email" />
-                                            
-                                        </div>
-                                    </div>
-								</div>
 								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
 								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
 							
@@ -281,44 +304,6 @@ if (mysql_num_rows($resTemporadas)>0) {
 		</div>
 
 
-		<div class="row clearfix">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<div class="card">
-					<div class="header">
-						<h2>
-							SELECCIONE LA IMAGEN DEL ESCUDO DEL COUNTRY PARA SUBIR
-						</h2>
-						<ul class="header-dropdown m-r--5">
-							<li class="dropdown">
-								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-									<i class="material-icons">more_vert</i>
-								</a>
-								<ul class="dropdown-menu pull-right">
-									<li><a href="javascript:void(0);">Action</a></li>
-									<li><a href="javascript:void(0);">Another action</a></li>
-									<li><a href="javascript:void(0);">Something else here</a></li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-					<div class="body">
-						<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
-							<div class="dz-message">
-								<div class="drag-icon-cph">
-									<i class="material-icons">touch_app</i>
-								</div>
-								<h3>Arrastre y suelte una imagen aqui o haga click y busque una imagen en su ordenador.</h3>
-								
-							</div>
-							<div class="fallback">
-								<input name="file" type="file" id="archivos" />
-								
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 
 	
@@ -339,6 +324,14 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 <!-- Dropzone Plugin Js -->
 <script src="../../plugins/dropzone/dropzone.js"></script>
+
+<!-- Multi Select Plugin Js -->
+<script src="../../plugins/multi-select/js/jquery.multi-select.js"></script>
+
+<!-- Bootstrap Colorpicker Js -->
+<script src="../../plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+
+<script src="../../js/pages/forms/advanced-form-elements.js"></script>
 
 <!-- Modal Large Size -->
 <transition name="fade">

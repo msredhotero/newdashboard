@@ -761,8 +761,21 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	} 
 
 	function traerCountriesPorId($id) {
-		$sql = "select idcountrie,nombre,cuit,fechaalta,
-			fechabaja,refposiciontributaria,latitud,longitud,activo,referencia,direccion,telefonoadministrativo,telefonocampo,email,localidad,codigopostal,refusuarios, imagen from dbcountries where idcountrie =".$id;
+		$sql = "select idcountrie,direccion,
+			telefonoadministrativo,telefonocampo,email, 
+			concat('../../archivos/countries/', idcountrie,'/',imagen) as imagen 
+			from dbcountries where idcountrie =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function modificarCountry($id, $direccion, $telefonoadministrativo,$telefonocampo,$email) {
+		$sql = "update dbcountries 
+					set direccion = '".$direccion."',
+						telefonoadministrativo = '".$telefonoadministrativo."',
+						telefonocampo = '".$telefonocampo."',
+						email = '".$email."'
+					where idcountrie =".$id;
 		$res = $this->query($sql,0);
 		return $res;
 	}
@@ -809,7 +822,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
 		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
 		where cou.idcountrie = ".$idCountrie." and e.activo = 1
-		order by 1"; 
+		order by cat.idtcategoria, di.iddivision, e.nombre"; 
 		$res = $this->query($sql,0); 
 		return $res; 
 	} 
