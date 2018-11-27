@@ -81,6 +81,130 @@ class ServiciosReferencias {
 
 
 
+/* PARA Conectordelegados */
+
+function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados) { 
+	$sql = "insert into dbconectordelegados(idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados) 
+	values ('',".$reftemporadas.",".$refusuarios.",".$refjugadores.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.",".$refestados.")"; 
+	$res = $this->query($sql,1); 
+	return $res; 
+	} 
+	
+	
+	function modificarConectordelegados($id,$reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados) { 
+	$sql = "update dbconectordelegados 
+	set 
+	reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refjugadores = ".$refjugadores.",reftipojugadores = ".$reftipojugadores.",refequipos = ".$refequipos.",refcountries = ".$refcountries.",refcategorias = ".$refcategorias.",esfusion = ".$esfusion.",activo = ".$activo.",refestados = ".$refestados." 
+	where idconector =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function eliminarConectordelegados($id) { 
+	$sql = "delete from dbconectordelegados where idconector =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function traerConectordelegados() { 
+	$sql = "select 
+	c.idconector,
+	c.reftemporadas,
+	c.refusuarios,
+	c.refjugadores,
+	c.reftipojugadores,
+	c.refequipos,
+	c.refcountries,
+	c.refcategorias,
+	c.esfusion,
+	c.activo,
+	c.refestados
+	from dbconectordelegados c 
+	inner join jug ON jug. = c.refjugadores 
+	inner join tip ON tip. = c.reftipojugadores 
+	inner join equ ON equ. = c.refequipos 
+	inner join cou ON cou. = c.refcountries 
+	inner join cat ON cat. = c.refcategorias 
+	order by 1"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function traerConectordelegadosPorId($id) { 
+	$sql = "select idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados from dbconectordelegados where idconector =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	/* Fin */
+	/* /* Fin de la Tabla: dbconectordelegados*/
+
+
+
+
+	
+/* PARA Equiposdelegados */
+
+function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) { 
+	$sql = "insert into dbequiposdelegados(idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados) 
+	values ('',".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.")"; 
+	$res = $this->query($sql,1); 
+	return $res; 
+	} 
+	
+	
+	function modificarEquiposdelegados($id,$reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) { 
+	$sql = "update dbequiposdelegados 
+	set 
+	reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refcountries = ".$refcountries.",nombre = '".utf8_decode($nombre)."',refcategorias = ".$refcategorias.",refdivisiones = ".$refdivisiones.",fechabaja = '".utf8_decode($fechabaja)."',activo = ".$activo.",refestados = ".$refestados." 
+	where idequipo =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function eliminarEquiposdelegados($id) { 
+	$sql = "delete from dbequiposdelegados where idequipo =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function traerEquiposdelegados() { 
+	$sql = "select 
+	e.idequipo,
+	e.reftemporadas,
+	e.refusuarios,
+	e.refcountries,
+	e.nombre,
+	e.refcategorias,
+	e.refdivisiones,
+	e.fechabaja,
+	e.activo,
+	e.refestados
+	from dbequiposdelegados e 
+	inner join dbcountries cou ON cou.idcountrie = e.refcountries 
+	inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
+	inner join tbdivisiones div ON div.iddivision = e.refdivisiones 
+	order by 1"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	
+	function traerEquiposdelegadosPorId($id) { 
+	$sql = "select idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados from dbequiposdelegados where idequipo =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+	
+	/* Fin */
+	/* /* Fin de la Tabla: dbequiposdelegados*/
+
+
 	
 function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo) {
 	$sql = "insert into dbconectordelegados(idconector,reftemporadas, refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo)
