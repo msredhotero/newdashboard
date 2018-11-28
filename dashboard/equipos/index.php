@@ -96,8 +96,11 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;   
 }
 
+//die(var_dump($ultimaTemporada));
+
 $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
 
+$idusuario = $_SESSION['usuaid_aif'];
 
 ?>
 
@@ -254,7 +257,7 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 												if ($permiteRegistrar == 1) {
 													if ($habilitado == 1) {	
 												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipo(equipo)">
+													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipoPasivo(equipo)">
 														<i class="material-icons">delete</i>
 														<span>Eliminar</span>
 													</button>
@@ -271,10 +274,13 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 										
 									</div>
 								</div>
-
+								<hr>
 								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
 									<h4>Equipos que seran Eliminados</h4>
+									</div>
+									
 									<form class="form" id="formCountryEquiposEliminados">
 										<table class="table table-bordered table-striped table-hover highlight" id="example">
 											<thead>
@@ -288,7 +294,7 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 											<tbody>
 
 							
-											<tr v-for="equipo in lstequiposEliminados" :key="equipo.idequipo">
+											<tr v-for="equipo in activeEquiposEliminados" :key="equipo.idequipo">
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
@@ -298,8 +304,8 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 												if ($permiteRegistrar == 1) {
 													if ($habilitado == 1) {	
 												?>
-													<button type='button' class='btn bg-light-blue waves-effect recargarEquipo' @click="recargarEquipo(equipo)">
-														<i class="material-icons">save</i>
+													<button type='button' class='btn bg-green waves-effect recargarEquipo' @click="recargarEquipo(equipo)">
+														<i class="material-icons">autorenew</i>
 														<span>Habilitar</span>
 													</button>
 												<?php
@@ -317,7 +323,16 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 
 
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									<h4>Equipos que seran Agregados</h4>
+									
+										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+											<h4>Equipos que seran Agregados</h4>
+										</div>
+										<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+											<button type="button" class="btn btn-success waves-effect">
+                                    			<i class="material-icons">add_box</i>
+												<span>Agregar</span>
+											</button>
+										</div>
 									<form class="form" id="formCountryEquiposNuevos">
 										<table class="table table-bordered table-striped table-hover highlight" id="example">
 											<thead>
@@ -331,7 +346,7 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 											<tbody>
 
 							
-											<tr v-for="equipo in lstequiposNuevos" :key="equipo.idequipo">
+											<tr v-for="equipo in activeEquiposNuevos" :key="equipo.idequipo">
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
@@ -499,6 +514,23 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 	const paramsGetEquipos = new URLSearchParams();
     paramsGetEquipos.append('accion','traerEquiposPorCountries');
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+
+	const paramsGetEquiposEliminados = new URLSearchParams();
+    paramsGetEquiposEliminados.append('accion','traerEquiposdelegadosEliminadosPorCountrie');
+	paramsGetEquiposEliminados.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
+	paramsGetEquiposEliminados.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+
+	const paramsGetEquiposNuevos = new URLSearchParams();
+    paramsGetEquiposNuevos.append('accion','traerEquiposdelegadosPorCountrie');
+	paramsGetEquiposNuevos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
+	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+
+
+	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
+    paramsGetEliminarEquipoPasivo.append('accion','eliminarEquipoPasivo');
+	paramsGetEliminarEquipoPasivo.append('id',0);
+	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
+	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
 	
 
 	Vue.component('modal', {
@@ -535,12 +567,16 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
 			successMensaje: '',
 			activeDelegados: {},
 			activeEquipos: {},
+			activeEquiposEliminados: {},
+			activeEquiposNuevos: {},
 			showModal: false	
 			
 		},
 		mounted () {
 			this.getDelegado()
 			this.getAllEquipos()
+			this.getAllEquiposEliminados()
+			this.getAllEquiposNuevos()
 		},
 		computed: {
 			
@@ -592,6 +628,39 @@ $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 						this.activeEquipos = res.data.datos
 					})
+			},
+			getAllEquiposEliminados () {
+					axios.post('../../ajax/ajax.php',paramsGetEquiposEliminados)
+					.then(res => {
+                        
+                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+						this.activeEquiposEliminados = res.data.datos
+					})
+			},
+			getAllEquiposNuevos () {
+					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
+					.then(res => {
+                        
+                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+						this.activeEquiposNuevos = res.data.datos
+					})
+			},
+			eliminarEquipoPasivo : function(equi){
+
+				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
+
+				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
+				.then(res => {
+					
+					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+
+						this.getAllEquiposEliminados()
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+				})
 			}
 
 

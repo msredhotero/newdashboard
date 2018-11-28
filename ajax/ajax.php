@@ -113,10 +113,112 @@ switch ($accion) {
 		case 'traerEquiposPorCountries':
 			traerEquiposPorCountries($serviciosReferencias);
 		break;
+
+		case 'traerEquiposdelegadosEliminadosPorCountrie':
+		traerEquiposdelegadosEliminadosPorCountrie($serviciosReferencias);
+		break;
+		case 'traerEquiposdelegadosPorCountrie':
+		traerEquiposdelegadosPorCountrie($serviciosReferencias);
+		break;
+
+		case 'eliminarEquipoPasivo':
+		eliminarEquipoPasivo($serviciosReferencias);
+		break;
+		case 'eliminarEquipoDelegado':
+		eliminarEquipoPasivo($serviciosReferencias);
+		break;
+		
 /* Fin */
 
 }
 /* Fin */
+
+
+	function eliminarEquipoPasivo($serviciosReferencias) { 
+		$id = $_POST['id'];
+		$idtemporada = $_POST['idtemporada'];
+		$idusuario = $_POST['idusuario'];
+		
+		$sqlExiste = "select idequipo from dbequiposdelegados where idequipo = ".$id." and reftemporadas =".$idtemporada;
+		$resExiste = $serviciosReferencias->existeDevuelveId($sqlExiste);
+
+		if ($resExiste == 0) {
+			$res = $serviciosReferencias->eliminarEquipoPasivo($id, $idtemporada, $idusuario); 
+			
+			if ($res) { 
+				$resV['mensaje'] = 'Registro Eliminado con exito!.'; 
+			} else { 
+				$resV['error'] = true; 
+				$resV['mensaje'] = 'No se pudo eliminar el Registro!'; 
+			} 
+		} else {
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'Ya fue eliminado!';
+		}
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	} 
+
+
+	function eliminarEquipoDelegado($serviciosReferencias) { 
+		$id = $_POST['id']; 
+		$idtemporada = $_POST['idtemporada'];
+		$idusuario = $_POST['idusuario'];
+
+		$res = $serviciosReferencias->eliminarEquipoDelegado($id, $idtemporada, $idusuario); 
+		
+		if ($res) { 
+			$resV['mensaje'] = 'Registro Eliminado con exito!.'; 
+		} else { 
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'No se pudo eliminar el Registro!'; 
+		} 
+		
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
+
+function traerEquiposdelegadosEliminadosPorCountrie($serviciosReferencias) {
+	$id = $_POST['idcountrie'];
+	$idtemporada = $_POST['idtemporada'];
+
+	$res = $serviciosReferencias->traerEquiposdelegadosEliminadosPorCountrie($id, $idtemporada); 
+	
+	$ar = array(); 
+	
+	while ($row = mysql_fetch_assoc($res)) { 
+		array_push($ar, $row); 
+	} 
+	
+	$resV['datos'] = $ar; 
+	
+	
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+
+
+}
+
+function traerEquiposdelegadosPorCountrie($serviciosReferencias) {
+	$id = $_POST['idcountrie'];
+	$idtemporada = $_POST['idtemporada'];
+
+	$res = $serviciosReferencias->traerEquiposdelegadosPorCountrie($id, $idtemporada); 
+	
+	$ar = array(); 
+	
+	while ($row = mysql_fetch_assoc($res)) { 
+		array_push($ar, $row); 
+	} 
+	
+	$resV['datos'] = $ar; 
+	
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+
+
+}
 
 function traerEquiposPorCountries($serviciosReferencias) {
 	$id = $_POST['idcountrie'];

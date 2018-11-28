@@ -173,26 +173,85 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 	} 
 	
 	
-	function traerEquiposdelegados() { 
-	$sql = "select 
-	e.idequipo,
-	e.reftemporadas,
-	e.refusuarios,
-	e.refcountries,
-	e.nombre,
-	e.refcategorias,
-	e.refdivisiones,
-	e.fechabaja,
-	e.activo,
-	e.refestados
-	from dbequiposdelegados e 
-	inner join dbcountries cou ON cou.idcountrie = e.refcountries 
-	inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
-	inner join tbdivisiones div ON div.iddivision = e.refdivisiones 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
+	function traerEquiposdelegadosPorCountrie($id, $idtemporada) { 
+		$sql = "select 
+		e.idequipo,
+		cou.nombre as countrie,
+		e.nombre,
+		cat.categoria,
+		di.division,
+		e.fechabaja,
+		(case when e.activo=1 then 'Si' else 'No' end) as activo,
+		e.refestados
+		from dbequiposdelegados e 
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		where e.activo = 1 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
+		order by 1"; 
+		
+		$res = $this->query($sql,0); 
+		
+		return $res; 
 	} 
+
+
+	function traerEquiposdelegadosEliminadosPorCountrie($id, $idtemporada) { 
+		$sql = "select 
+		e.idequipo,
+		cou.nombre as countrie,
+		e.nombre,
+		cat.categoria,
+		di.division,
+		e.fechabaja,
+		(case when e.activo=1 then 'Si' else 'No' end) as activo,
+		e.refestados
+		from dbequiposdelegados e 
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		where e.activo = 0 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
+		order by 1"; 
+		
+		$res = $this->query($sql,0); 
+		
+		return $res; 
+	} 
+
+	function eliminarEquipoPasivo($id, $idtemporada, $idusuario) {
+
+		//verifico si ya existe el equipo eliminado
+		
+		$sql = "
+		INSERT INTO dbequiposdelegados
+					(idequipo,
+					reftemporadas,
+					refusuarios,
+					refcountries,
+					nombre,
+					refcategorias,
+					refdivisiones,
+					fechabaja,
+					activo,
+					refestados)
+		select
+			idequipo,
+			".$idtemporada.",
+			".$idusuario.",
+			refcountries,
+			nombre,
+			refcategorias,
+			refdivisiones,
+			fachebaja,
+			0,
+			1
+		from dbequipos where idequipo = ".$id;
+
+		$res = $this->query($sql,0); 
+		
+		return $res; 
+
+	}
 	
 	
 	function traerEquiposdelegadosPorId($id) { 
