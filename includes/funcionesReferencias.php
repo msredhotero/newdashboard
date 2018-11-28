@@ -148,11 +148,46 @@ function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$re
 	
 /* PARA Equiposdelegados */
 
+function traerCategorias() {
+	$sql = "select
+	c.idtcategoria,
+	c.categoria
+	from tbcategorias c
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+function traerDivisiones() {
+	$sql = "select
+	d.iddivision,
+	d.division
+	from tbdivisiones d
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+function devolverNuevoIdEquipo() {
+	$sql = "select
+			sum(r.idequipo) from (
+					select max(idequipo) as idequipo from dbequipos
+					union all
+					select coalesce( max(idequipo),0) as idequipo from dbequiposdelegados
+	) r";
+
+	$res = $this->query($sql,0); 
+
+	return mysql_result($res,0,0) + 1;
+}
+
 function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) { 
+	$id = $this->devolverNuevoIdEquipo();
+	
 	$sql = "insert into dbequiposdelegados(idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados) 
-	values ('',".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
+	values (".$id.",".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.")"; 
+	$res = $this->query($sql,0); 
+	return $sql; 
 	} 
 	
 	

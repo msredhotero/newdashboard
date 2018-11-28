@@ -124,14 +124,42 @@ switch ($accion) {
 		case 'eliminarEquipoPasivo':
 		eliminarEquipoPasivo($serviciosReferencias);
 		break;
-		case 'eliminarEquipoDelegado':
-		eliminarEquipoPasivo($serviciosReferencias);
+		case 'eliminarEquiposdelegados':
+		eliminarEquiposdelegados($serviciosReferencias);
+		break;
+		case 'insertarEquiposdelegados':
+		insertarEquiposdelegados($serviciosReferencias);
 		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+
+	function insertarEquiposdelegados($serviciosReferencias) {
+		$nombre = $_POST['nombre'];
+		$idtemporada = $_POST['idtemporada'];
+		$idusuario = $_POST['idusuario'];
+		$idcountrie = $_POST['idcountrie'];
+		$refcategorias = $_POST['refcategorias'];
+		$refdivisiones = $_POST['refdivisiones'];
+
+		$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,1); 
+		//die(var_dump($res));
+
+		if ($res) { 
+			$resV['error'] = false; 
+			$resV['mensaje'] = 'Registro Cargado con exito!.'; 
+		} else { 
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'No se pudo Cargar el Registro!'; 
+		}
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+
+	}
 
 
 	function eliminarEquipoPasivo($serviciosReferencias) { 
@@ -146,6 +174,7 @@ switch ($accion) {
 			$res = $serviciosReferencias->eliminarEquipoPasivo($id, $idtemporada, $idusuario); 
 			
 			if ($res) { 
+				$resV['error'] = false; 
 				$resV['mensaje'] = 'Registro Eliminado con exito!.'; 
 			} else { 
 				$resV['error'] = true; 
@@ -161,12 +190,10 @@ switch ($accion) {
 	} 
 
 
-	function eliminarEquipoDelegado($serviciosReferencias) { 
+	function eliminarEquiposdelegados($serviciosReferencias) { 
 		$id = $_POST['id']; 
-		$idtemporada = $_POST['idtemporada'];
-		$idusuario = $_POST['idusuario'];
 
-		$res = $serviciosReferencias->eliminarEquipoDelegado($id, $idtemporada, $idusuario); 
+		$res = $serviciosReferencias->eliminarEquiposdelegados($id); 
 		
 		if ($res) { 
 			$resV['mensaje'] = 'Registro Eliminado con exito!.'; 

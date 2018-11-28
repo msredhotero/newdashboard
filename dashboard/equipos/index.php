@@ -100,6 +100,12 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 $resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
 
+$resCategorias 	= $serviciosReferencias->traerCategorias();
+$cadRefCategorias 	= $serviciosFunciones->devolverSelectBox($resCategorias,array(1),'');
+
+$resDivisiones 	= $serviciosReferencias->traerDivisiones();
+$cadRefDivisiones 	= $serviciosFunciones->devolverSelectBox($resDivisiones,array(1),'');
+
 $idusuario = $_SESSION['usuaid_aif'];
 
 ?>
@@ -304,7 +310,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 												if ($permiteRegistrar == 1) {
 													if ($habilitado == 1) {	
 												?>
-													<button type='button' class='btn bg-green waves-effect recargarEquipo' @click="recargarEquipo(equipo)">
+													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquipoDelegado(equipo)">
 														<i class="material-icons">autorenew</i>
 														<span>Habilitar</span>
 													</button>
@@ -328,7 +334,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 											<h4>Equipos que seran Agregados</h4>
 										</div>
 										<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-											<button type="button" class="btn btn-success waves-effect">
+											<button type="button" class="btn btn-success waves-effect" @click="showModalEquipo = true">
                                     			<i class="material-icons">add_box</i>
 												<span>Agregar</span>
 											</button>
@@ -356,7 +362,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 												if ($permiteRegistrar == 1) {
 													if ($habilitado == 1) {	
 												?>
-													<button type="submit" class="btn bg-light-blue waves-effect eliminarEquipoNuevo" @click="eliminarEquipoNuevo(equipo)">
+													<button type='button' class='btn btn-danger waves-effect eliminarEquiposDelegadoDefinitivo' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
 														<i class="material-icons">delete</i>
 														<span>Eliminar</span>
 													</button>
@@ -477,6 +483,68 @@ $idusuario = $_SESSION['usuaid_aif'];
 </script>
 </form>
 
+
+
+<form class="form" @submit.prevent="insertarEquiposdelegados">
+<script type="text/x-template" id="modal-template-equipo">
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header">
+              default header
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+
+			  	<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+						<label class="form-label">Nombre</label>
+						<div class="form-group">
+							<div class="form-line">
+								<input value="" type="text" class="form-control" id="nombre" name="nombre" require />
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+						<label class="form-label">Categoria</label>
+						<select class="form-control show-tick" id="refcategorias" name="refcategorias" require >
+							<?php echo $cadRefCategorias; ?>
+						</select>
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+						<label class="form-label">Division</label>
+						<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require >
+							<?php echo $cadRefDivisiones; ?>
+						</select>
+					</div>
+				</div>
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+			<button class="btn bg-grey waves-effect" @click="$emit('close')">
+                CANCELAR
+			  </button>
+			  <button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
+					<i class="material-icons">send</i>
+					<span>CREAR</span>
+				</button>
+				
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
+</form>
+
   
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
@@ -488,6 +556,17 @@ $idusuario = $_SESSION['usuaid_aif'];
   </modal>
 
 
+  <!-- use the modal component, pass in the prop -->
+  <modal2 v-if="showModalEquipo" @close="showModalEquipo = false">
+    <!--
+      you can use custom content here to overwrite
+      default content
+    -->
+	<h3 slot="header">Crear Equipo</h3>
+	
+  </modal2>
+
+											
 </main>
 
 
@@ -525,12 +604,24 @@ $idusuario = $_SESSION['usuaid_aif'];
 	paramsGetEquiposNuevos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 
+	const paramsCrearEquipo = new URLSearchParams();
+    paramsCrearEquipo.append('accion','insertarEquiposdelegados');
+	paramsCrearEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
+	paramsCrearEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+	paramsCrearEquipo.append('idusuario',<?php echo  $idusuario; ?>);
+	paramsCrearEquipo.append('refcategorias',0);
+	paramsCrearEquipo.append('refdivisiones',0);
+	paramsCrearEquipo.append('nombre','');
+	
+
 
 	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
-    paramsGetEliminarEquipoPasivo.append('accion','eliminarEquipoPasivo');
+    paramsGetEliminarEquipoPasivo.append('accion','');
 	paramsGetEliminarEquipoPasivo.append('id',0);
 	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
+
+	const activeEquiposNuevos = {}
 	
 
 	Vue.component('modal', {
@@ -557,6 +648,43 @@ $idusuario = $_SESSION['usuaid_aif'];
 		}
 	})
 
+	Vue.component('modal2', {
+		template: '#modal-template-equipo',
+		methods: {
+			
+			crearEquipo () {
+				paramsCrearEquipo.set('nombre',$('#nombre').val());
+				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
+				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
+				
+				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
+				.then(res => {
+					//this.setMensajes(res)
+					
+
+					if (res.data.error == '') {
+						this.$swal("Ok!", res.data.mensaje, "success")
+						this.$emit('close')	
+						this.getAllEquiposNuevos()
+						
+						
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+					
+				});
+			},
+			getAllEquiposNuevos () {
+					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
+					.then(res => {
+                        
+                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+						app.activeEquiposNuevos = res.data.datos
+					})
+			}
+		}
+	})
+
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -568,8 +696,8 @@ $idusuario = $_SESSION['usuaid_aif'];
 			activeDelegados: {},
 			activeEquipos: {},
 			activeEquiposEliminados: {},
-			activeEquiposNuevos: {},
-			showModal: false	
+			showModal: false,
+			showModalEquipo: false	
 			
 		},
 		mounted () {
@@ -582,7 +710,6 @@ $idusuario = $_SESSION['usuaid_aif'];
 			
 		},
 		methods: {
-
 			setMensajes (res) {
 				this.getDelegado()
 
@@ -648,6 +775,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 			eliminarEquipoPasivo : function(equi){
 
 				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
+				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
 
 				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
 				.then(res => {
@@ -657,6 +785,42 @@ $idusuario = $_SESSION['usuaid_aif'];
 						this.$swal("Ok!", res.data.mensaje, "success")
 
 						this.getAllEquiposEliminados()
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+				})
+			},
+			eliminarEquipoDelegado : function(equi){
+
+				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
+				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
+
+				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
+				.then(res => {
+					
+					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+
+						this.getAllEquiposEliminados()
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+				})
+			},
+			eliminarEquiposDelegadoDefinitivo : function(equi){
+
+				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
+				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquiposdelegados');
+
+				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
+				.then(res => {
+					
+					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+
+						this.getAllEquiposNuevos()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
