@@ -130,11 +130,27 @@ switch ($accion) {
 		case 'insertarEquiposdelegados':
 		insertarEquiposdelegados($serviciosReferencias);
 		break;
+		case 'confirmarEquipos':
+		confirmarEquipos($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+	function confirmarEquipos($serviciosReferencias) {
+		$id = $_POST['idcabecera'];
+		$idestado = 2;
+
+		$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
+
+		$resV['error'] = false; 
+		$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!'; 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
 
 
 	function insertarEquiposdelegados($serviciosReferencias) {

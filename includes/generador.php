@@ -36,16 +36,19 @@ function query($sql,$accion) {
 
 
 $tablasAr	= array("equiposdelegados"        => "dbequiposdelegados",
-					"conectordelegados" 	=> "dbconectordelegados");
+					"conectordelegados" 	=> "dbconectordelegados",
+					"cabeceraconfirmacion" => "dbcabeceraconfirmacion");
 
 
 function recursiveTablas($ar, $tabla, $aliasTablaMadre) {
 	
 	$tablasArAux2	= array("equiposdelegados"        => "dbequiposdelegados",
-							"conectordelegados" 	=> "dbconectordelegados");
+							"conectordelegados" 	=> "dbconectordelegados",
+							"cabeceraconfirmacion" => "dbcabeceraconfirmacion");
 
 	$tablasArAux	= array("equiposdelegados"        => 3,
-							"conectordelegados" 	=> 5);
+							"conectordelegados" 	=> 5,
+							"cabeceraconfirmacion" => 3);
 	
 	$inner= '';
 	$sql	=	"show columns from ".$tabla;

@@ -148,6 +148,92 @@ function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$re
 	
 /* PARA Equiposdelegados */
 
+/* PARA Cabeceraconfirmacion */
+
+function existeCabeceraConfirmacion($reftemporadas,$refcountries) {
+	$sql = "select idcabeceraconfirmacion 
+			from dbcabeceraconfirmacion 
+			where reftemporadas = ".$reftemporadas." and refcountries = ".$refcountries;
+	
+	$res = $this->existeDevuelveId($sql);
+	return $res;
+}
+
+function insertarCabeceraconfirmacion($reftemporadas,$refcountries,$refestados,$usuacrea,$usuamodi) { 
+	$sql = "insert into dbcabeceraconfirmacion(idcabeceraconfirmacion,reftemporadas,refcountries,refestados,fechacrea,fechamodi,usuacrea,usuamodi) 
+	values ('',".$reftemporadas.",".$refcountries.",".$refestados.",'".date('Y-m-d')."','".date('Y-m-d')."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."')"; 
+	$res = $this->query($sql,1); 
+	return $res; 
+} 
+	
+	
+function modificarCabeceraconfirmacion($id,$reftemporadas,$refcountries,$refestados,$usuacrea,$usuamodi) { 
+	$sql = "update dbcabeceraconfirmacion 
+	set 
+	reftemporadas = ".$reftemporadas.",refcountries = ".$refcountries.",refestados = ".$refestados.",fechamodi = '".date('Y-m-d')."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."' 
+	where idcabeceraconfirmacion =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+} 
+
+function modificarCabeceraconfirmacionEstado($id,$refestados) { 
+	$sql = "update dbcabeceraconfirmacion 
+	set 
+	refestados = ".$refestados." 
+	where idcabeceraconfirmacion =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+} 
+	
+	
+function eliminarCabeceraconfirmacion($id) { 
+	$sql = "delete from dbcabeceraconfirmacion where idcabeceraconfirmacion =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+} 
+	
+	
+function traerCabeceraconfirmacion() { 
+	$sql = "select 
+	c.idcabeceraconfirmacion,
+	c.reftemporadas,
+	c.refcountries,
+	c.refestados,
+	c.fechacrea,
+	c.fechamodi,
+	c.usuacrea,
+	c.usuamodi
+	from dbcabeceraconfirmacion c 
+	order by 1"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+} 
+	
+	
+function traerCabeceraconfirmacionPorId($id) { 
+	$sql = "SELECT 
+				cc.idcabeceraconfirmacion,
+				cc.reftemporadas,
+				cc.refcountries,
+				cc.refestados,
+				cc.fechacrea,
+				cc.fechamodi,
+				cc.usuacrea,
+				cc.usuamodi,
+				est.estado
+			FROM
+				dbcabeceraconfirmacion cc
+			INNER JOIN
+				tbestados est ON est.idestado = cc.refestados
+			WHERE
+				idcabeceraconfirmacion =".$id; 
+	$res = $this->query($sql,0); 
+	return $res; 
+} 
+	
+	/* Fin */
+	/* /* Fin de la Tabla: dbcabeceraconfirmacion*/
+
 function traerCategorias() {
 	$sql = "select
 	c.idtcategoria,
@@ -217,11 +303,13 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 		di.division,
 		e.fechabaja,
 		(case when e.activo=1 then 'Si' else 'No' end) as activo,
+		est.estado,
 		e.refestados
 		from dbequiposdelegados e 
 		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
 		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
 		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		inner join tbestados est ON est.idestado = e.refestados
 		where e.activo = 1 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
 		order by 1"; 
 		
@@ -240,11 +328,13 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 		di.division,
 		e.fechabaja,
 		(case when e.activo=1 then 'Si' else 'No' end) as activo,
-		e.refestados
+		e.refestados,
+		est.estado
 		from dbequiposdelegados e 
 		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
 		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
 		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		inner join tbestados est ON est.idestado = e.refestados
 		where e.activo = 0 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
 		order by 1"; 
 		

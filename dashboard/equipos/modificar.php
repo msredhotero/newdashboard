@@ -110,10 +110,13 @@ $idusuario = $_SESSION['usuaid_aif'];
 
 $confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
 
-//die(var_dump($confirmo));
-if ($confirmo == 0) {
-	$serviciosReferencias->insertarCabeceraconfirmacion( $ultimaTemporada, $_SESSION['idclub_aif'], 1, $_SESSION['nombre_aif'], $_SESSION['nombre_aif']);
+if (($confirmo == 0) || ($confirmo == 1)) {
+	header('Location: index.php');
 }
+
+$resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($confirmo);
+
+$estado = mysql_result($resCabecera,0,'estado');
 
 ?>
 
@@ -225,7 +228,7 @@ if ($confirmo == 0) {
 						<div class="body table-responsive">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<h4>Equipos Activos Actuales</h4>
+										<h4>Equipos Generados</h4>
 										<p>Recuerde que el plantel del equipo se deberá cargar </p>
 										<div class="alert alert-warning animated shake">
 											<strong>Importante!</strong> Toda la información será confirmada por la Asociación.
@@ -244,6 +247,7 @@ if ($confirmo == 0) {
 													<th>Equipo</th>
 													<th>Categoria</th>
 													<th>Division</th>
+													<th>Estado</th>
 													<th>Acciones</th>
 												</tr>
 											</thead>
@@ -253,6 +257,7 @@ if ($confirmo == 0) {
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
+												<td>{{ equipo.estado }}</td>
 												
 												<td>
 												<?php
@@ -377,17 +382,13 @@ if ($confirmo == 0) {
 							<div>
 							<div class="alert bg-indigo">
 								<strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.
-							</div>
-							
-							</form>
-							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
+							</div>	
 							<div class="button-demo">
 								<button type="submit" class="btn bg-teal waves-effect">
                                     <i class="material-icons">save</i>
                                     <span>GUARDAR</span>
                                 </button>
-								<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
-								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
+
 							</div>
 							</form>
 							</div>							
@@ -726,21 +727,6 @@ if ($confirmo == 0) {
 				});
 
 				
-			},
-			confirmarEquipos (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						setTimeout(function(){
-							window.location.href = 'modificar.php';
-						}, 2000);
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-					
-				});
 			},
 			getAllEquipos () {
 					axios.post('../../ajax/ajax.php',paramsGetEquipos)
