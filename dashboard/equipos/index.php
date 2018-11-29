@@ -310,7 +310,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 												if ($permiteRegistrar == 1) {
 													if ($habilitado == 1) {	
 												?>
-													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquipoDelegado(equipo)">
+													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
 														<i class="material-icons">autorenew</i>
 														<span>Habilitar</span>
 													</button>
@@ -557,7 +557,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 
 
   <!-- use the modal component, pass in the prop -->
-  <modal2 v-if="showModalEquipo" @close="showModalEquipo = false">
+  <modal2 v-if="showModalEquipo" @close="showModalEquipo = false" @recargarequiposnuevos="getAllEquiposNuevos">
     <!--
       you can use custom content here to overwrite
       default content
@@ -621,7 +621,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
 
-	const activeEquiposNuevos = {}
+
 	
 
 	Vue.component('modal', {
@@ -648,8 +648,18 @@ $idusuario = $_SESSION['usuaid_aif'];
 		}
 	})
 
+
 	Vue.component('modal2', {
+		/*data () {
+			return {
+				activeEquiposNuevos: {}
+			}
+			
+		},*/
 		template: '#modal-template-equipo',
+		mounted () {
+			this.getAllEquiposNuevos()
+		},
 		methods: {
 			
 			crearEquipo () {
@@ -664,27 +674,32 @@ $idusuario = $_SESSION['usuaid_aif'];
 
 					if (res.data.error == '') {
 						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('close')	
-						this.getAllEquiposNuevos()
-						
+						//
+						//this.getAllEquiposNuevos()
+						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)	
+						this.$emit('close')
 						
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
 					
 				});
-			},
+			}
+			/*,
 			getAllEquiposNuevos () {
 					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
 					.then(res => {
                         
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
-						app.activeEquiposNuevos = res.data.datos
+						this.activeEquiposNuevos = res.data.datos
+						
 					})
-			}
+			}*/
 		}
 	})
 
+
+	
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -696,6 +711,7 @@ $idusuario = $_SESSION['usuaid_aif'];
 			activeDelegados: {},
 			activeEquipos: {},
 			activeEquiposEliminados: {},
+			activeEquiposNuevos: {},
 			showModal: false,
 			showModalEquipo: false	
 			
@@ -764,14 +780,6 @@ $idusuario = $_SESSION['usuaid_aif'];
 						this.activeEquiposEliminados = res.data.datos
 					})
 			},
-			getAllEquiposNuevos () {
-					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
-					.then(res => {
-                        
-                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
-						this.activeEquiposNuevos = res.data.datos
-					})
-			},
 			eliminarEquipoPasivo : function(equi){
 
 				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
@@ -819,12 +827,21 @@ $idusuario = $_SESSION['usuaid_aif'];
 					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
-
+						this.getAllEquiposEliminados()
 						this.getAllEquiposNuevos()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
 				})
+			},
+			getAllEquiposNuevos () {
+					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
+					.then(res => {
+                        
+                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
+						this.activeEquiposNuevos = res.data.datos
+						//this.$emit('close')	
+					})
 			}
 
 

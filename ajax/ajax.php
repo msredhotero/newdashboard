@@ -138,7 +138,7 @@ switch ($accion) {
 
 
 	function insertarEquiposdelegados($serviciosReferencias) {
-		$nombre = $_POST['nombre'];
+		$nombre = strtoupper( trim($_POST['nombre']));
 		$idtemporada = $_POST['idtemporada'];
 		$idusuario = $_POST['idusuario'];
 		$idcountrie = $_POST['idcountrie'];
