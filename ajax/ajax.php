@@ -133,11 +133,17 @@ switch ($accion) {
 		case 'confirmarEquipos':
 		confirmarEquipos($serviciosReferencias);
 		break;
+
+		case 'traerEquiposPorCountriesFinalizado':
+		traerEquiposPorCountriesFinalizado($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+
 
 	function confirmarEquipos($serviciosReferencias) {
 		$id = $_POST['idcabecera'];
@@ -217,6 +223,26 @@ switch ($accion) {
 			$resV['error'] = true; 
 			$resV['mensaje'] = 'No se pudo eliminar el Registro!'; 
 		} 
+		
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
+
+
+	function traerEquiposPorCountriesFinalizado($serviciosReferencias) {
+		$id = $_POST['idcountrie'];
+		$idtemporada = $_POST['idtemporada'];
+
+		$res = $serviciosReferencias->traerEquiposdelegadosPorCountrieFinalizado($id, $idtemporada); 
+		
+		$ar = array(); 
+		
+		while ($row = mysql_fetch_assoc($res)) { 
+			array_push($ar, $row); 
+		} 
+		
+		$resV['datos'] = $ar; 
+		
 		
 		header('Content-type: application/json'); 
 		echo json_encode($resV); 

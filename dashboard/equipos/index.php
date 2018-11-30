@@ -115,6 +115,10 @@ if ($confirmo == 0) {
 	$serviciosReferencias->insertarCabeceraconfirmacion( $ultimaTemporada, $_SESSION['idclub_aif'], 1, $_SESSION['nombre_aif'], $_SESSION['nombre_aif']);
 }
 
+if ($confirmo > 1) {
+	header('Location: modificar.php');
+}
+
 ?>
 
 <!DOCTYPE html>

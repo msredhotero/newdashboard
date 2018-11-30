@@ -36,7 +36,7 @@ $configuracion = $serviciosReferencias->traerConfiguracion();
 
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
-$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href="javascript:void(0)" class="navbar-brand"><i class="material-icons">navigate_next</i></a><a class="navbar-brand active" href="index.php">Equipos</a>';
+$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
 
 $club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
 
@@ -117,6 +117,20 @@ if (($confirmo == 0) || ($confirmo == 1)) {
 $resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($confirmo);
 
 $estado = mysql_result($resCabecera,0,'estado');
+
+$lblEstado = '';
+
+switch ($confirmo) {
+	case (2):
+		$lblEstado = 'label-warning';
+		break;
+	case (3):
+		$lblEstado = 'label-success';
+		break;
+	case (4):
+		$lblEstado = 'label-danger';
+		break;
+}
 
 ?>
 
@@ -228,7 +242,8 @@ $estado = mysql_result($resCabecera,0,'estado');
 						<div class="body table-responsive">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<h4>Equipos Generados</h4>
+										
+										<h3>Equipos Generados - ESTADO: <span class="label <?php echo $lblEstado; ?>"><?php echo $estado; ?></span></h3>
 										<p>Recuerde que el plantel del equipo se deberá cargar </p>
 										<div class="alert alert-warning animated shake">
 											<strong>Importante!</strong> Toda la información será confirmada por la Asociación.
@@ -248,7 +263,6 @@ $estado = mysql_result($resCabecera,0,'estado');
 													<th>Categoria</th>
 													<th>Division</th>
 													<th>Estado</th>
-													<th>Acciones</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -257,22 +271,8 @@ $estado = mysql_result($resCabecera,0,'estado');
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
-												<td>{{ equipo.estado }}</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipoPasivo(equipo)">
-														<i class="material-icons">delete</i>
-														<span>Eliminar</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
+												<td><h4><span :class="['label', equipo.label ]">{{ equipo.estado }}</span></h4></td>
+
 											</tr>
 						
 											</tbody>
@@ -282,114 +282,10 @@ $estado = mysql_result($resCabecera,0,'estado');
 									</div>
 								</div>
 								<hr>
-								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4>Equipos que seran Eliminados</h4>
-									</div>
-									
-									<form class="form" id="formCountryEquiposEliminados">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposEliminados" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">autorenew</i>
-														<span>Habilitar</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
-									
-									</div>
-
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									
-										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-											<h4>Equipos que seran Agregados</h4>
-										</div>
-										<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-											<button type="button" class="btn btn-success waves-effect" @click="showModalEquipo = true">
-                                    			<i class="material-icons">add_box</i>
-												<span>Agregar</span>
-											</button>
-										</div>
-									<form class="form" id="formCountryEquiposNuevos">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposNuevos" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquiposDelegadoDefinitivo' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">delete</i>
-														<span>Eliminar</span>
-													</button>
-													
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
-									
-									</div>
-								</div>
-								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
-								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
+								
 							
 							<div>
-							<div class="alert bg-indigo">
-								<strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.
-							</div>	
-							<div class="button-demo">
-								<button type="submit" class="btn bg-teal waves-effect">
-                                    <i class="material-icons">save</i>
-                                    <span>GUARDAR</span>
-                                </button>
-
-							</div>
+							
 							</form>
 							</div>							
 						</div>
@@ -469,65 +365,6 @@ $estado = mysql_result($resCabecera,0,'estado');
 
 
 
-<form class="form" @submit.prevent="insertarEquiposdelegados">
-<script type="text/x-template" id="modal-template-equipo">
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-
-          <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
-          </div>
-
-          <div class="modal-body">
-            <slot name="body">
-
-			  	<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Nombre</label>
-						<div class="form-group">
-							<div class="form-line">
-								<input value="" type="text" class="form-control" id="nombre" name="nombre" require />
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Categoria</label>
-						<select class="form-control show-tick" id="refcategorias" name="refcategorias" require >
-							<?php echo $cadRefCategorias; ?>
-						</select>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Division</label>
-						<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require >
-							<?php echo $cadRefDivisiones; ?>
-						</select>
-					</div>
-				</div>
-            </slot>
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-			<button class="btn bg-grey waves-effect" @click="$emit('close')">
-                CANCELAR
-			  </button>
-			  <button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
-					<i class="material-icons">send</i>
-					<span>CREAR</span>
-				</button>
-				
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
-</script>
-</form>
 
   
   <!-- use the modal component, pass in the prop -->
@@ -540,15 +377,6 @@ $estado = mysql_result($resCabecera,0,'estado');
   </modal>
 
 
-  <!-- use the modal component, pass in the prop -->
-  <modal2 v-if="showModalEquipo" @close="showModalEquipo = false" @recargarequiposnuevos="getAllEquiposNuevos">
-    <!--
-      you can use custom content here to overwrite
-      default content
-    -->
-	<h3 slot="header">Crear Equipo</h3>
-	
-  </modal2>
 
 											
 </main>
@@ -575,38 +403,11 @@ $estado = mysql_result($resCabecera,0,'estado');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 	
 	const paramsGetEquipos = new URLSearchParams();
-    paramsGetEquipos.append('accion','traerEquiposPorCountries');
+    paramsGetEquipos.append('accion','traerEquiposPorCountriesFinalizado');
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-
-	const paramsGetEquiposEliminados = new URLSearchParams();
-    paramsGetEquiposEliminados.append('accion','traerEquiposdelegadosEliminadosPorCountrie');
-	paramsGetEquiposEliminados.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposEliminados.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-
-	const paramsGetEquiposNuevos = new URLSearchParams();
-    paramsGetEquiposNuevos.append('accion','traerEquiposdelegadosPorCountrie');
-	paramsGetEquiposNuevos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-
-	const paramsCrearEquipo = new URLSearchParams();
-    paramsCrearEquipo.append('accion','insertarEquiposdelegados');
-	paramsCrearEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsCrearEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsCrearEquipo.append('idusuario',<?php echo  $idusuario; ?>);
-	paramsCrearEquipo.append('refcategorias',0);
-	paramsCrearEquipo.append('refdivisiones',0);
-	paramsCrearEquipo.append('nombre','');
-	
+	paramsGetEquipos.append('idtemporada',<?php echo $ultimaTemporada; ?>);
 
 
-	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
-    paramsGetEliminarEquipoPasivo.append('accion','');
-	paramsGetEliminarEquipoPasivo.append('id',0);
-	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
-
-
-	
 
 	Vue.component('modal', {
 		template: '#modal-template',
@@ -633,37 +434,6 @@ $estado = mysql_result($resCabecera,0,'estado');
 	})
 
 
-	Vue.component('modal2', {
-
-		template: '#modal-template-equipo',
-		mounted () {
-			this.getAllEquiposNuevos()
-		},
-		methods: {
-			
-			crearEquipo () {
-				paramsCrearEquipo.set('nombre',$('#nombre').val());
-				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
-				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
-				
-				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
-				.then(res => {
-
-					if (res.data.error == '') {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)	
-						this.$emit('close')
-						
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-					
-				});
-			}
-
-		}
-	})
-
 
 	
 	const app = new Vue({
@@ -676,8 +446,6 @@ $estado = mysql_result($resCabecera,0,'estado');
 			successMensaje: '',
 			activeDelegados: {},
 			activeEquipos: {},
-			activeEquiposEliminados: {},
-			activeEquiposNuevos: {},
 			showModal: false,
 			showModalEquipo: false	
 			
@@ -685,8 +453,6 @@ $estado = mysql_result($resCabecera,0,'estado');
 		mounted () {
 			this.getDelegado()
 			this.getAllEquipos()
-			this.getAllEquiposEliminados()
-			this.getAllEquiposNuevos()
 		},
 		computed: {
 			
@@ -734,75 +500,7 @@ $estado = mysql_result($resCabecera,0,'estado');
                         
 						this.activeEquipos = res.data.datos
 					})
-			},
-			getAllEquiposEliminados () {
-					axios.post('../../ajax/ajax.php',paramsGetEquiposEliminados)
-					.then(res => {
-                        
-						this.activeEquiposEliminados = res.data.datos
-					})
-			},
-			eliminarEquipoPasivo : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-					
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposEliminados()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			eliminarEquipoDelegado : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-					
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposEliminados()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			eliminarEquiposDelegadoDefinitivo : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquiposdelegados');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-					
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.getAllEquiposEliminados()
-						this.getAllEquiposNuevos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			getAllEquiposNuevos () {
-					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
-					.then(res => {
-                        
-						this.activeEquiposNuevos = res.data.datos
-
-					})
 			}
-
-
 		}
 	})
 </script>
