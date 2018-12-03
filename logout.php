@@ -5,118 +5,88 @@ session_destroy();
 
 
 ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Logout | AIF</title>
+    <!-- Favicon-->
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
 
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
-<meta http-equiv='refresh' content='1000' />
+    <!-- Bootstrap Core Css -->
+    <link href="../plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
 
+    <!-- Waves Effect Css -->
+    <link href="../plugins/node-waves/waves.css" rel="stylesheet" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Animation Css -->
+    <link href="../plugins/animate-css/animate.css" rel="stylesheet" />
 
+    <!-- Sweetalert Css -->
+    <link href="../plugins/sweetalert/sweetalert.css" rel="stylesheet" />
 
-
-<title>Facturación - Cuentas Por Cobrar</title>
-
-
-
-		<link rel="stylesheet" type="text/css" href="css/estilo.css"/>
-
-<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
-
-         <link rel="stylesheet" href="css/jquery-ui.css">
-
-    <script src="js/jquery-ui.js"></script>
-
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-
-        <!-- Optional theme -->
-        <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="bootstrap/js/bootstrap.min.js"></script>
-        
-      <script type="text/javascript">
-		$( document ).ready(function() {
-			$('#icoCate').click(function() {
-				$('#icoCate').hide();
-				$('.todoMenu').show(100, function() {
-					$('#menuCate').animate({'margin-left':'0px'}, {
-													duration: 800,
-													specialEasing: {
-													width: "linear",
-													height: "easeOutBounce"
-													}});
-				});
-			});
-			
-			$('.ocultar').click(function(){
-				$('#icoCate').show(100, function() {
-					$('#menuCate').animate({'margin-left':'-235px'}, {
-													duration: 800,
-													specialEasing: {
-													width: "linear",
-													height: "easeOutBounce"
-													}});
-				});
-				$('.todoMenu').hide();
-			});
-			
-			
-		
-
-		});
-	</script>
-
-<style>
-
-	label {
-		padding-top:6px;
-		padding-bottom:3px;
-	}
-	input-group {
-		padding:4px;
-	}
-	
-
-</style>
-
-        
-        
+    <!-- Custom Css -->
+    <link href="../css/style.css" rel="stylesheet">
 </head>
 
-
-
-<body>
-
-
-<div class="content">
-
-
-
-
-<div style=" background-color:#FFF; border:1px solid #F7F7F7;height: auto; position: relative;margin-bottom:35px; padding:12px;box-shadow: 2px 2px 5px #999;
-				-webkit-box-shadow: 2px 2px 5px #999;
-  				-moz-box-shadow: 2px 2px 5px #999;">
-        
+<body class="login-page">
+    <div class="login-box">
+        <div class="logo">
+            <a href="javascript:void(0);">Acceso <b>AIF</b></a>
+            <small>Administración de Equipos, Countries, Jugadores y Datos Personales</small>
+        </div>
+        <div class="card">
+            <div class="body">
                 
+                    <h3>Acaba de finalizar su sessión</h3>
 
-	<div class="row" style="height:160px;" align="center">
-<br>
-<h2>Acaba de salir del sistema. </h2>
+                    <div class="row js-sweetalert">
+                        <div class="col-xs-2">
+                            
+                        </div>
+                        <div class="col-xs-8">
+                            <button class="btn btn-block bg-pink waves-effect" onclick="volver()" data-type="" type="button" id="login">VOLVER A INGRESAR</button>
+                        </div>
+                    </div>
 
-<h4>Si quiere volver al Inicio presione <a href="index.php" style="color:#009; font-weight:bold;">AQUI</a></h4>
+                
+            </div>
+        </div>
+    </div>
 
+    <!-- Jquery Core Js -->
+    <script src="../plugins/jquery/jquery.min.js"></script>
 
-</div>
-</div>
+    <!-- Bootstrap Core Js -->
+    <script src="../plugins/bootstrap/js/bootstrap.js"></script>
 
-</div><!-- fin del content -->
+    <!-- Waves Effect Plugin Js -->
+    <script src="../plugins/node-waves/waves.js"></script>
 
+    <!-- Validation Plugin Js -->
+    <script src="../plugins/jquery-validation/jquery.validate.js"></script>
+
+    <!-- Custom Js -->
+    <script src="../js/admin.js"></script>
+    <script src="../js/pages/examples/sign-in.js"></script>
+
+    <!-- SweetAlert Plugin Js -->
+    <script src="../plugins/sweetalert/sweetalert.min.js"></script>
+
+    <script src="../js/pages/ui/dialogs.js"></script>
+	<script>
+		function volver() {
+			document.location.href = 'index.html';
+		}
+	</script>
+
+    
 </body>
 
 </html>

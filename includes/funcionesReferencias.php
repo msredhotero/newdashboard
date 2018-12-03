@@ -150,6 +150,15 @@ function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$re
 
 /* PARA Cabeceraconfirmacion */
 
+function devolverIdEstado($tabla,$id, $idlbl) {
+	$sql = "select refestados 
+			from ".$tabla." 
+			where ".$idlbl." = ".$id;
+	
+	$res = $this->existeDevuelveId($sql);
+	return $res;
+}
+
 function existeCabeceraConfirmacion($reftemporadas,$refcountries) {
 	$sql = "select idcabeceraconfirmacion 
 			from dbcabeceraconfirmacion 
@@ -333,7 +342,8 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 					'Aceptado' as estado,
 					cat.orden,
 					ee.refdivisiones,
-					'label-success' as label
+					'label-success' as label,
+					3 as refestados
 				FROM
 					dbequipos ee
 						LEFT JOIN
@@ -369,7 +379,8 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 						WHEN est.idestado = 2 THEN 'label-warning'
 						WHEN est.idestado = 3 THEN 'label-success'
 						WHEN est.idestado = 4 THEN 'label-danger'
-					END) AS label
+					END) AS label,
+					est.idestado as refestados
 				FROM
 					dbequiposdelegados e
 						INNER JOIN
@@ -1143,7 +1154,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	function traerCountriesPorId($id) {
 		$sql = "select idcountrie,direccion,
 			telefonoadministrativo,telefonocampo,email, 
-			concat('../../archivos/countries/', idcountrie,'/',imagen) as imagen 
+			concat('../../archivos/countries/', idcountrie,'/',imagen) as imagen , nombre
 			from dbcountries where idcountrie =".$id;
 		$res = $this->query($sql,0);
 		return $res;

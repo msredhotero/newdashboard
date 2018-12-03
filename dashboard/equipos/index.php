@@ -110,12 +110,15 @@ $idusuario = $_SESSION['usuaid_aif'];
 
 $confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
 
+$idEstado = 0;
 //die(var_dump($confirmo));
 if ($confirmo == 0) {
 	$serviciosReferencias->insertarCabeceraconfirmacion( $ultimaTemporada, $_SESSION['idclub_aif'], 1, $_SESSION['nombre_aif'], $_SESSION['nombre_aif']);
+
+	$idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$confirmo,"idcabeceraconfirmacion");
 }
 
-if ($confirmo > 1) {
+if ($idEstado > 1) {
 	header('Location: modificar.php');
 }
 
@@ -518,7 +521,7 @@ if ($confirmo > 1) {
 			<button class="btn bg-grey waves-effect" @click="$emit('close')">
                 CANCELAR
 			  </button>
-			  <button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
+			  	<button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
 					<i class="material-icons">send</i>
 					<span>CREAR</span>
 				</button>
