@@ -327,6 +327,7 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 		return $res; 
 	} 
 
+
 	function traerEquiposdelegadosPorCountrieFinalizado($id, $idtemporada) {
 		$sql = "SELECT 
 					ee.idequipo,
@@ -393,6 +394,84 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 					tbestados est ON est.idestado = e.refestados
 				WHERE
 					e.activo = 1 AND cou.idcountrie = ".$id."
+			AND e.reftemporadas = ".$idtemporada." 
+			order by 8,9"; 
+		
+		$res = $this->query($sql,0); 
+		
+		return $res; 
+	}
+
+
+	
+	function traerEquiposdelegadosPorCountrieFinalizadoPorEquipo($id, $idtemporada, $idequipo) {
+		$sql = "SELECT 
+					ee.idequipo,
+					cou.nombre AS countrie,
+					ee.nombre,
+					cat.categoria,
+					di.division,
+					ee.fachebaja,
+					(CASE
+						WHEN ee.activo = 1 THEN 'Si'
+						ELSE 'No'
+					END) AS activo,
+					'Aceptado' as estado,
+					cat.orden,
+					ee.refdivisiones,
+					'label-success' as label,
+					3 as refestados
+				FROM
+					dbequipos ee
+						LEFT JOIN
+					dbequiposdelegados e ON ee.idequipo = e.idequipo and e.reftemporadas = ".$idtemporada."
+						INNER JOIN
+					dbcountries cou ON cou.idcountrie = ee.refcountries
+						INNER JOIN
+					tbcategorias cat ON cat.idtcategoria = ee.refcategorias
+						INNER JOIN
+					tbdivisiones di ON di.iddivision = ee.refdivisiones
+				
+				WHERE
+					ee.activo = 1 AND cou.idcountrie = ".$id." and e.idequipo is null
+					and ee.idequipo = ".$idequipo."
+					
+				union all
+				
+				SELECT 
+					e.idequipo,
+					cou.nombre AS countrie,
+					e.nombre,
+					cat.categoria,
+					di.division,
+					e.fechabaja,
+					(CASE
+						WHEN e.activo = 1 THEN 'Si'
+						ELSE 'No'
+					END) AS activo,
+					est.estado,
+					cat.orden,
+					e.refdivisiones,
+					(CASE
+						WHEN est.idestado = 1 THEN 'label-info'
+						WHEN est.idestado = 2 THEN 'label-warning'
+						WHEN est.idestado = 3 THEN 'label-success'
+						WHEN est.idestado = 4 THEN 'label-danger'
+					END) AS label,
+					est.idestado as refestados
+				FROM
+					dbequiposdelegados e
+						INNER JOIN
+					dbcountries cou ON cou.idcountrie = e.refcountries
+						INNER JOIN
+					tbcategorias cat ON cat.idtcategoria = e.refcategorias
+						INNER JOIN
+					tbdivisiones di ON di.iddivision = e.refdivisiones
+						INNER JOIN
+					tbestados est ON est.idestado = e.refestados
+				WHERE
+					e.activo = 1 AND cou.idcountrie = ".$id."
+					and e.idequipo = ".$idequipo."
 			AND e.reftemporadas = ".$idtemporada." 
 			order by 8,9"; 
 		

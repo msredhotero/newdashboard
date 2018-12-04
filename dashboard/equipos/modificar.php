@@ -277,7 +277,7 @@ switch ($idEstado) {
 												<td style="text-align: center;"><h4><span :class="['label', equipo.label ]">{{ equipo.estado }}</span></h4></td>
 												<td style="text-align: center;">
 													<div v-if="equipo.refestados == 3">
-													<button v-if="confirmado == 3" type="button" class="btn bg-blue-grey waves-effect">
+													<button v-if="confirmado == 3" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
 														<i class="material-icons">group</i>
 													</button>
 													</div>
@@ -520,6 +520,9 @@ switch ($idEstado) {
                         
 						this.activeEquipos = res.data.datos
 					})
+			},
+			redirigir (id) {
+				window.location.href = 'plantel.php?id=' + id;
 			}
 		}
 	})

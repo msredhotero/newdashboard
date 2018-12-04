@@ -4,6 +4,7 @@
 .margTop {
   margin-top: 10px;
 }
+
 .navbar {
   font-family: "Roboto", sans-serif;
   -webkit-border-radius: 0;
@@ -2836,6 +2837,16 @@ section.content {
   -moz-border-radius: 2px;
   -ms-border-radius: 2px;
   border-radius: 2px; }
+  .card .card-image img {
+    display: block;
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
   .card .card-inside-title {
     margin-top: 25px;
     margin-bottom: 15px;
@@ -2955,6 +2966,33 @@ section.content {
     .card .bg-black .badge {
       background-color: #fff;
       color: #555; }
+  
+  .card .card-action {
+      background-color: inherit;
+      border-top: 1px solid rgba(160,160,160,0.2);
+      position: relative;
+      padding: 16px 24px;
+  }
+  .card .card-image .card-title {
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    max-width: 100%;
+    padding: 24px;
+}
+.card .card-title {
+    font-size: 24px;
+    font-weight: 300;
+}
+
+.card .card-action a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
+  color: #ffab40;
+  margin-right: 24px;
+  -webkit-transition: color .3s ease;
+  transition: color .3s ease;
+  text-transform: uppercase;
+}
   .card .header {
     color: #555;
     padding: 20px;
@@ -3058,6 +3096,10 @@ section.content {
     .card .body .col-md-12,
     .card .body .col-lg-12 {
       margin-bottom: 20px; }
+      .card .card-action:last-child {
+        border-radius: 0 0 2px 2px;
+    }
+    
 
 /* Infobox ===================================== */
 .info-box {

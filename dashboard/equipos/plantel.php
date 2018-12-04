@@ -44,48 +44,12 @@ $permiteRegistrar = 1;
 
 $habilitado = 1;
 
+$idequipo = $_GET['id'];
 
-/////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Country";
-
-$plural = "Countries";
-
-$eliminar = "eliminarJugadoresclub";
-
-$insertar = "insertarJugadoresclub";
-
-$tituloWeb = "Gestión: AIF";
-//////////////////////// Fin opciones ////////////////////////////////////////////////
+//////////////             validar que no entren por la url    ///////////////////////
 
 
-/////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbjugadoresclub";
-
-$lblCambio	 	= array("");
-$lblreemplazo	= array("");
-
-
-$cadRef 	= '';
-
-$refdescripcion = array();
-$refCampo 	=  array();
-//////////////////////////////////////////////  FIN de los opciones //////////////////////////
-
-
-
-$tabla 			= "dbdelegados";
-
-$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
-$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
-
-
-$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
-$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
-
-$refdescripcion = array(0 => $cadRef);
-$refCampo 	=  array("refusuarios");
-
-$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+///////////////////             fin                 ///////////////////////////////////
 
 
 $resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
@@ -98,13 +62,12 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 //die(var_dump($ultimaTemporada));
 
-$resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
+$resEquipos = $serviciosReferencias->traerEquiposdelegadosPorCountrieFinalizadoPorEquipo($_SESSION['idclub_aif'],$ultimaTemporada, $idequipo);
 
-$resCategorias 	= $serviciosReferencias->traerCategorias();
-$cadRefCategorias 	= $serviciosFunciones->devolverSelectBox($resCategorias,array(1),'');
-
-$resDivisiones 	= $serviciosReferencias->traerDivisiones();
-$cadRefDivisiones 	= $serviciosFunciones->devolverSelectBox($resDivisiones,array(1),'');
+$categoria = mysql_result($resEquipos,0,'categoria');
+$division = mysql_result($resEquipos,0,'division');
+$equipo = mysql_result($resEquipos,0,'nombre');
+$estado = mysql_result($resEquipos,0,'estado');
 
 $idusuario = $_SESSION['usuaid_aif'];
 
@@ -157,6 +120,8 @@ switch ($idEstado) {
 	
 	<!-- Animation Css -->
     <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
+
+	
 
 	<!-- VUE JS -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -228,7 +193,7 @@ switch ($idEstado) {
 					<div class="card ">
 						<div class="header bg-teal">
 							<h2>
-								Country: <?php echo $club; ?>
+								Equipo: <?php echo $equipo; ?>
 							</h2>
 							<ul class="header-dropdown m-r--5">
 								<li class="dropdown">
@@ -256,36 +221,31 @@ switch ($idEstado) {
 								</div>
 
 								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-									<form class="form" id="formCountryEquiposEstable">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>EQUIPO</th>
-													<th>CATEGORIA</th>
-													<th>DIVISION</th>
-													<th>ESTADO</th>
-													<th>ARMAR PLANTEL</th>
-												</tr>
-											</thead>
-											<tbody>
+									<div class="col-lg-6 col-md-6">
+										<div class="card">
+											<div class="header">
+											<div class="card-image">
+												<img src="../../imagenes/6.jpg">
+												<span class="card-title"><?php echo $equipo; ?></span>
+											</div>
+											</div>
 
-											<tr v-for="equipo in activeEquipos" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td style="text-align: center;"><h4><span :class="['label', equipo.label ]">{{ equipo.estado }}</span></h4></td>
-												<td style="text-align: center;">
-													<div v-if="equipo.refestados == 3">
-													<button v-if="confirmado == 3" type="button" class="btn bg-blue-grey waves-effect">
-														<i class="material-icons">group</i>
-													</button>
-													</div>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
+											<div class="body">
+												<h4 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>PLANTEL</b></h4>
+											</div>
+											
+											<div class="card-action">
+												<a href="javascript:void(0)"><?php echo $categoria; ?></a>
+												<a href="javascript:void(0)"><?php echo $division; ?></a>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<form class="form" id="formJugadores">
+									
 									</form>
 										
 									</div>
@@ -295,7 +255,7 @@ switch ($idEstado) {
 								<div class="button-demo">
 									<button v-if="confirmado == 2" type="button" class="btn bg-brown waves-effect imprimir">
 										<i class="material-icons">print</i>
-										<span>IMPRIMIR LISTA DE EQUIPOS</span>
+										<span>IMPRIMIR LISTA DE BUENA FE</span>
 									</button>
 									
 								</div>
@@ -423,10 +383,7 @@ switch ($idEstado) {
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 	
-	const paramsGetEquipos = new URLSearchParams();
-    paramsGetEquipos.append('accion','traerEquiposPorCountriesFinalizado');
-	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquipos.append('idtemporada',<?php echo $ultimaTemporada; ?>);
+
 
 	Vue.component('modal', {
 		template: '#modal-template',
@@ -464,15 +421,12 @@ switch ($idEstado) {
 			errorMensaje: '',
 			successMensaje: '',
 			activeDelegados: {},
-			activeEquipos: {},
 			showModal: false,
-			showModalEquipo: false,
 			confirmado: <?php echo $idEstado; ?>	
 			
 		},
 		mounted () {
 			this.getDelegado()
-			this.getAllEquipos()
 		},
 		computed: {
 			
@@ -513,13 +467,6 @@ switch ($idEstado) {
 				});
 
 				
-			},
-			getAllEquipos () {
-					axios.post('../../ajax/ajax.php',paramsGetEquipos)
-					.then(res => {
-                        
-						this.activeEquipos = res.data.datos
-					})
 			}
 		}
 	})
