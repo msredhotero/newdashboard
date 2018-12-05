@@ -58,20 +58,6 @@ $tituloWeb = "Gestión: AIF";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
-/////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbjugadoresclub";
-
-$lblCambio	 	= array("");
-$lblreemplazo	= array("");
-
-
-$cadRef 	= '';
-
-$refdescripcion = array();
-$refCampo 	=  array();
-//////////////////////////////////////////////  FIN de los opciones //////////////////////////
-
-
 
 $tabla 			= "dbdelegados";
 
@@ -85,7 +71,7 @@ $cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
 $refdescripcion = array(0 => $cadRef);
 $refCampo 	=  array("refusuarios");
 
-$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+$frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 
 $resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 

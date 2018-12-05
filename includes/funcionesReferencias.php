@@ -81,6 +81,18 @@ class ServiciosReferencias {
 
 
 
+	function traerDefinicionesPorTemporadaCategoriaTipoJugador($idTemporada, $idCategoria, $idTipoJugador) {
+		$sql = "select
+					max(dct.cantmaxjugadores) as cantmaxjugadores, max(dctj.edadmaxima) as edadmaxima, max(dctj.edadminima) as edadminima, max((dctj.edadmaxima + dctj.edadminima) /2) as promedio
+				from        dbdefinicionescategoriastemporadas dct
+				inner
+				join        dbdefinicionescategoriastemporadastipojugador dctj
+				on          dct.iddefinicioncategoriatemporada = dctj.refdefinicionescategoriastemporadas
+				where       dct.reftemporadas = ".$idTemporada." and refcategorias = ".$idCategoria." and reftipojugadores =".$idTipoJugador;
+		$res = $this->query($sql,0); 
+		return $res;    
+	}
+
 /* PARA Conectordelegados */
 
 function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados) { 
@@ -402,6 +414,23 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 		return $res; 
 	}
 
+	function traerEquiposFusionPorEquipo($idequipo, $idtemporada) {
+		$sql = "SELECT 
+					cc.nombre
+				FROM
+					dbfusionequipos f
+						INNER JOIN
+					dbcountries cc ON cc.idcountrie = f.refcountries
+						INNER JOIN
+					dbequiposdelegados ed ON ed.refcountries = f.refcountries
+						AND ed.idequipo = ".$idequipo."
+						AND ed.reftemporadas = ".$idtemporada;
+
+		$res = $this->query($sql,0); 
+
+		return $res; 
+	}
+
 
 	
 	function traerEquiposdelegadosPorCountrieFinalizadoPorEquipo($id, $idtemporada, $idequipo) {
@@ -420,7 +449,8 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 					cat.orden,
 					ee.refdivisiones,
 					'label-success' as label,
-					3 as refestados
+					3 as refestados,
+					ee.refcategorias
 				FROM
 					dbequipos ee
 						LEFT JOIN
@@ -458,7 +488,8 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 						WHEN est.idestado = 3 THEN 'label-success'
 						WHEN est.idestado = 4 THEN 'label-danger'
 					END) AS label,
-					est.idestado as refestados
+					est.idestado as refestados,
+					e.refcategorias
 				FROM
 					dbequiposdelegados e
 						INNER JOIN

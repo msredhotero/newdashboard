@@ -65,6 +65,8 @@ if (mysql_num_rows($resTemporadas)>0) {
 $resEquipos = $serviciosReferencias->traerEquiposdelegadosPorCountrieFinalizadoPorEquipo($_SESSION['idclub_aif'],$ultimaTemporada, $idequipo);
 
 $categoria = mysql_result($resEquipos,0,'categoria');
+$idcategoria = mysql_result($resEquipos,0,'refcategorias');
+
 $division = mysql_result($resEquipos,0,'division');
 $equipo = mysql_result($resEquipos,0,'nombre');
 $estado = mysql_result($resEquipos,0,'estado');
@@ -96,6 +98,23 @@ switch ($idEstado) {
 		$lblEstado = 'label-danger';
 		break;
 }
+
+
+
+
+$tabla 			= "dbdelegados";
+
+$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
+$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
+
+
+$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
+$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
+
+$refdescripcion = array(0 => $cadRef);
+$refCampo 	=  array("refusuarios");
+
+$frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 ?>
 
@@ -237,6 +256,25 @@ switch ($idEstado) {
 											<div class="card-action">
 												<a href="javascript:void(0)"><?php echo $categoria; ?></a>
 												<a href="javascript:void(0)"><?php echo $division; ?></a>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6">
+										<div class="col-lg-12 col-md-12">
+											<div class="alert bg-red animated shake">
+												<strong>Importante!</strong> Los jugadores deben cumplir esta regla para ingresar: <span class="regla">{{ activeDefinicion }}</span>
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12">
+											<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+												<label for="buscarlbl">Buscar Jugador:</label>
+											</div>
+											<div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+												<div class="form-group">
+													<div class="form-line">
+														<input type="text" id="buscar" class="form-control" placeholder="Ingrese los datos de la busqueda y presiona Enter" v-model="busqueda" v-on:keyup.enter="buscarJugadoresPorClub" />
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -383,6 +421,11 @@ switch ($idEstado) {
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 	
+	const paramsGeneral = new URLSearchParams();
+	paramsGeneral.append('accion', 'traerDefinicionesPorTemporadaCategoriaTipoJugador');
+	paramsGeneral.append('resTemporada', <?php echo $ultimaTemporada; ?>);
+	paramsGeneral.append('resCategoria', <?php echo $idcategoria; ?>);
+	paramsGeneral.append('resTipoJugador', 1);
 
 
 	Vue.component('modal', {
@@ -421,12 +464,14 @@ switch ($idEstado) {
 			errorMensaje: '',
 			successMensaje: '',
 			activeDelegados: {},
+			activeDefinicion: [],
 			showModal: false,
 			confirmado: <?php echo $idEstado; ?>	
 			
 		},
 		mounted () {
 			this.getDelegado()
+			this.getDefinicion()
 		},
 		computed: {
 			
@@ -448,11 +493,11 @@ switch ($idEstado) {
 
 			},
 			getDelegado () {
-					axios.post('../../ajax/ajax.php',paramsGetDelegado)
-					.then(res => {
-                        
-						this.activeDelegados = res.data.datos[0]
-					})
+				axios.post('../../ajax/ajax.php',paramsGetDelegado)
+				.then(res => {
+					
+					this.activeDelegados = res.data.datos[0]
+				})
 			},
 			guardarDelegado (e) {
 				axios.post('../../ajax/ajax.php', new FormData(e.target))
@@ -465,8 +510,13 @@ switch ($idEstado) {
 					}
 					
 				});
-
-				
+			},
+			getDefinicion () {
+				axios.post('../../ajax/ajax.php',paramsGeneral)
+				.then(res => {
+					
+					this.activeDefinicion = res.data.datos[0]
+				})
 			}
 		}
 	})

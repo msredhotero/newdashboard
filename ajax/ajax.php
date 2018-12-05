@@ -137,11 +137,40 @@ switch ($accion) {
 		case 'traerEquiposPorCountriesFinalizado':
 		traerEquiposPorCountriesFinalizado($serviciosReferencias);
 		break;
+
+		case 'traerDefinicionesPorTemporadaCategoriaTipoJugador':
+		traerDefinicionesPorTemporadaCategoriaTipoJugador($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+
+	function traerDefinicionesPorTemporadaCategoriaTipoJugador($serviciosReferencias) {
+		$idTemporada 	= $_POST['resTemporada'];
+		$idCategoria 	= $_POST['resCategoria'];
+		$idTipoJugador 	= $_POST['resTipoJugador'];
+		
+		$res = $serviciosReferencias->traerDefinicionesPorTemporadaCategoriaTipoJugador($idTemporada, $idCategoria, $idTipoJugador);	
+		$cad = '';
+		
+		if (mysql_num_rows($res)>0) {
+			$cad = array('Edad Minima: '.mysql_result($res,0,'edadminima').' - Edad Maxima: '.mysql_result($res,0,'edadmaxima'));
+			$resV['error'] = false; 
+			$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!'; 
+
+			$resV['datos'] = $cad; 
+		} else {
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'No se cargo la especificación para esta categoria!'; 
+		}
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+		
+	}
 
 
 

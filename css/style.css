@@ -2987,8 +2987,9 @@ section.content {
 }
 
 .card .card-action a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
-  color: #ffab40;
+  color: #009688;
   margin-right: 24px;
+  font-weight: bold;
   -webkit-transition: color .3s ease;
   transition: color .3s ease;
   text-transform: uppercase;

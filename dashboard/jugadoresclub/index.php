@@ -156,7 +156,7 @@ $cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
 $refdescripcion = array(0 => $cadRef);
 $refCampo 	=  array("refusuarios");
 
-$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+$frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 if ($_SESSION['refroll_aif'] != 1) {
 
@@ -248,7 +248,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 <!-- #Top Bar -->
 <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], $resMenu,'../../'); ?>
 <main id="app">
-<section class="content" style="margin-top:-15px;">
+<section class="content" style="margin-top:-25px;">
 
 	<div class="container-fluid">
 		<div class="row clearfix">
