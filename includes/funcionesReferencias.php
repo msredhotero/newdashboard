@@ -79,7 +79,11 @@ class ServiciosReferencias {
         return '';
     }
 
-
+	function traerCountriesMenosId($id) {
+		$sql = "select idcountrie, nombre from dbcountries where idcountrie <> ".$id." order by trim(nombre)";
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
 
 	function traerDefinicionesPorTemporadaCategoriaTipoJugador($idTemporada, $idCategoria, $idTipoJugador) {
 		$sql = "select

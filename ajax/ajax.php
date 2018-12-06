@@ -223,10 +223,11 @@ switch ($accion) {
 		$idcountrie = $_POST['idcountrie'];
 		$refcategorias = $_POST['refcategorias'];
 		$refdivisiones = $_POST['refdivisiones'];
+		$refcountries = $_POST['refcountries'];
 
-		$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,1); 
+		//$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,1); 
 		//die(var_dump($res));
-
+		$res = true;
 		if ($res) { 
 			$resV['error'] = false; 
 			$resV['mensaje'] = 'Registro Cargado con exito!.'; 

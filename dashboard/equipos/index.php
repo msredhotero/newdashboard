@@ -106,6 +106,10 @@ $cadRefCategorias 	= $serviciosFunciones->devolverSelectBox($resCategorias,array
 $resDivisiones 	= $serviciosReferencias->traerDivisiones();
 $cadRefDivisiones 	= $serviciosFunciones->devolverSelectBox($resDivisiones,array(1),'');
 
+$resCountries 	= $serviciosReferencias->traerCountriesMenosId($_SESSION['idclub_aif']);
+$cadRefCountries 	= $serviciosFunciones->devolverSelectBox($resCountries,array(1),'');
+
+
 $idusuario = $_SESSION['usuaid_aif'];
 
 $confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
@@ -524,6 +528,16 @@ if ($idEstado > 1) {
 							<?php echo $cadRefDivisiones; ?>
 						</select>
 					</div>
+
+					
+				</div>
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label class="form-label">Seleccione el Countrie para fusionarse de ser necesario</label>
+						<select multiple class="form-control bootstrap-select show-tick" id="fusioncountries" name="fusioncountries" require >
+							<?php echo $cadRefCountries; ?>
+						</select>
+					</div>
 				</div>
             </slot>
           </div>
@@ -614,6 +628,7 @@ if ($idEstado > 1) {
 	paramsCrearEquipo.append('refcategorias',0);
 	paramsCrearEquipo.append('refdivisiones',0);
 	paramsCrearEquipo.append('nombre','');
+	paramsCrearEquipo.append('refcountries','');
 
 	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
     paramsGetEliminarEquipoPasivo.append('accion','');
@@ -667,6 +682,9 @@ if ($idEstado > 1) {
 				paramsCrearEquipo.set('nombre',$('#nombre').val());
 				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
 				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
+				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
+				
+				
 				
 				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
 				.then(res => {
