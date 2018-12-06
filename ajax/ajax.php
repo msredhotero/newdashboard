@@ -113,6 +113,9 @@ switch ($accion) {
 		case 'traerEquiposPorCountries':
 			traerEquiposPorCountries($serviciosReferencias);
 		break;
+		case 'traerEquiposPorCountriesConFusion':
+			traerEquiposPorCountriesConFusion($serviciosReferencias);
+		break;
 
 		case 'traerEquiposdelegadosEliminadosPorCountrie':
 		traerEquiposdelegadosEliminadosPorCountrie($serviciosReferencias);
@@ -141,11 +144,36 @@ switch ($accion) {
 		case 'traerDefinicionesPorTemporadaCategoriaTipoJugador':
 		traerDefinicionesPorTemporadaCategoriaTipoJugador($serviciosReferencias);
 		break;
+
+		case 'verFusion':
+		verFusion($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+	function verFusion($serviciosReferencias) {
+		$idequipo 	= $_POST['idequipo'];
+		$idcountrie 	= $_POST['idcountrie'];
+
+		$res = $serviciosReferencias->traerFusionPorEquiposCountrie($idequipo, $idcountrie);
+
+		$cad = '';
+
+		while ($row = mysql_fetch_array($res)) { 
+			$cad = array($row['countrie'].'  ');
+		} 
+
+		$resV['error'] = false; 
+		$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!'; 
+
+		$resV['datos'] = $cad; 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
 
 
 	function traerDefinicionesPorTemporadaCategoriaTipoJugador($serviciosReferencias) {
@@ -322,6 +350,26 @@ function traerEquiposPorCountries($serviciosReferencias) {
 	$id = $_POST['idcountrie'];
 
 	$res = $serviciosReferencias->traerEquiposPorCountries($id); 
+	
+	$ar = array(); 
+	
+	while ($row = mysql_fetch_assoc($res)) { 
+		array_push($ar, $row); 
+	} 
+	
+	$resV['datos'] = $ar; 
+	
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+
+
+}
+
+
+function traerEquiposPorCountriesConFusion($serviciosReferencias) {
+	$id = $_POST['idcountrie'];
+
+	$res = $serviciosReferencias->traerEquiposPorCountriesConFusion($id); 
 	
 	$ar = array(); 
 	

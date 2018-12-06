@@ -1299,6 +1299,108 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		echo $res;
 	}
 
+	function traerFusionPorEquiposCountrie($idequipo, $idcountrie) {
+		$sql = "SELECT 
+					ce.nombre AS countrypadre,
+					e.nombre AS equipo,
+					c.nombre AS countrie,
+					cc.refcountries,
+					cc.refequipos
+				FROM
+					dbequipos e
+						INNER JOIN
+					dbconector cc ON cc.refequipos = e.idequipo
+						INNER JOIN
+					dbcountries c ON c.idcountrie = cc.refcountries
+						INNER JOIN
+					dbcountries ce ON ce.idcountrie = e.refcountries
+				WHERE
+					cc.activo = 1 AND cc.esfusion = 1
+						AND e.activo = 1
+						AND c.idcountrie <> ce.idcountrie
+						AND e.idequipo = ".$idequipo."
+						AND ce.idcountrie = ".$idcountrie."
+				GROUP BY ce.nombre , e.nombre , c.nombre , cc.refcountries , cc.refequipos";
+
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
+
+	function traerEquiposPorCountriesConFusion($idCountrie) {
+		$sql = "SELECT 
+					e.idequipo,
+					cou.nombre AS countrie,
+					e.nombre,
+					cat.categoria,
+					di.division,
+					con.nombre AS contacto,
+					e.fechaalta,
+					e.fachebaja,
+					(CASE
+						WHEN e.activo = 1 THEN 'Si'
+						ELSE 'No'
+					END) AS activo,
+					e.refcountries,
+					e.refcategorias,
+					e.refdivisiones,
+					e.refcontactos,
+					coalesce(max(r.refcountries),0) as esfusion
+				FROM
+					dbequipos e
+						INNER JOIN
+					dbcountries cou ON cou.idcountrie = e.refcountries
+						INNER JOIN
+					tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+						INNER JOIN
+					tbcategorias cat ON cat.idtcategoria = e.refcategorias
+						INNER JOIN
+					tbdivisiones di ON di.iddivision = e.refdivisiones
+						INNER JOIN
+					dbcontactos con ON con.idcontacto = e.refcontactos
+						INNER JOIN
+					tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
+						left join
+					(SELECT 
+						ce.nombre AS countrypadre,
+						e.nombre AS equipo,
+						c.nombre AS countrie,
+						cc.refcountries,
+						cc.refequipos
+					FROM
+						dbequipos e
+							INNER JOIN
+						dbconector cc ON cc.refequipos = e.idequipo
+							INNER JOIN
+						dbcountries c ON c.idcountrie = cc.refcountries
+							INNER JOIN
+						dbcountries ce ON ce.idcountrie = e.refcountries
+					WHERE
+						cc.activo = 1 AND cc.esfusion = 1
+							AND e.activo = 1
+							AND c.idcountrie <> ce.idcountrie
+					GROUP BY ce.nombre , e.nombre , c.nombre , cc.refcountries , cc.refequipos) r
+					on r.refequipos = e.idequipo
+				WHERE
+					cou.idcountrie = ".$idCountrie." AND e.activo = 1
+				group by e.idequipo,
+					cou.nombre ,
+					e.nombre,
+					cat.categoria,
+					di.division,
+					con.nombre ,
+					e.fechaalta,
+					e.fachebaja,
+					e.activo,
+					e.refcountries,
+					e.refcategorias,
+					e.refdivisiones,
+					e.refcontactos
+				ORDER BY cat.idtcategoria , di.iddivision , e.nombre";
+
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
+
 
 	function traerEquiposPorCountries($idCountrie) { 
 		$sql = "select 

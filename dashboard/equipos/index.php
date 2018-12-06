@@ -251,6 +251,7 @@ if ($idEstado > 1) {
 													<th>Equipo</th>
 													<th>Categoria</th>
 													<th>Division</th>
+													<th>Es Fusion</th>
 													<th>Acciones</th>
 												</tr>
 											</thead>
@@ -260,6 +261,12 @@ if ($idEstado > 1) {
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
+												<td>
+													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusion(equipo.idequipo)">
+														<i class="material-icons">search</i>
+														<span>Ver</span>
+													</button>
+												</td>
 												
 												<td>
 												<?php
@@ -269,6 +276,10 @@ if ($idEstado > 1) {
 													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipoPasivo(equipo)">
 														<i class="material-icons">delete</i>
 														<span>Eliminar</span>
+													</button>
+													<button type='button' class='btn btn-success waves-effect'>
+														<i class="material-icons">add</i>
+														<span>Mantener</span>
 													</button>
 												<?php
 													}
@@ -365,6 +376,7 @@ if ($idEstado > 1) {
 														<i class="material-icons">delete</i>
 														<span>Eliminar</span>
 													</button>
+													
 													
 												<?php
 													}
@@ -581,7 +593,7 @@ if ($idEstado > 1) {
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 	
 	const paramsGetEquipos = new URLSearchParams();
-    paramsGetEquipos.append('accion','traerEquiposPorCountries');
+    paramsGetEquipos.append('accion','traerEquiposPorCountriesConFusion');
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 
 	const paramsGetEquiposEliminados = new URLSearchParams();
@@ -602,14 +614,18 @@ if ($idEstado > 1) {
 	paramsCrearEquipo.append('refcategorias',0);
 	paramsCrearEquipo.append('refdivisiones',0);
 	paramsCrearEquipo.append('nombre','');
-	
-
 
 	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
     paramsGetEliminarEquipoPasivo.append('accion','');
 	paramsGetEliminarEquipoPasivo.append('id',0);
 	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
+
+	const paramsGeneral = new URLSearchParams();
+	paramsGeneral.append('accion','verFusion');
+	paramsGeneral.append('idequipo',0);
+	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+	
 
 
 	
@@ -762,6 +778,15 @@ if ($idEstado > 1) {
                         
 						this.activeEquiposEliminados = res.data.datos
 					})
+			},
+			verFusion : function(id) {
+				paramsGeneral.set('idequipo',id);
+
+				axios.post('../../ajax/ajax.php',paramsGeneral)
+				.then(res => {
+					this.$swal("Ok!", 'Fusion: ' + res.data.datos[0], "success")
+					
+				})
 			},
 			eliminarEquipoPasivo : function(equi){
 
