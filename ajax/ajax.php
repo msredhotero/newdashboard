@@ -224,11 +224,18 @@ switch ($accion) {
 		$refcategorias = $_POST['refcategorias'];
 		$refdivisiones = $_POST['refdivisiones'];
 		$refcountries = $_POST['refcountries'];
+		$nuevo = $_POST['nuevo'];
 
-		//$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,1); 
+		$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,1,$nuevo); 
 		//die(var_dump($res));
-		$res = true;
-		if ($res) { 
+		//$res = true;
+		if ((integer)$res > 0) { 
+			if ($refcountries != '') {
+				$arFusion = explode(',', $refcountries);
+				foreach ($arFusion as $valor) {
+					$fusion = $serviciosReferencias->insertarFusionEquipos($res, $valor, 1, '');
+				}
+			}
 			$resV['error'] = false; 
 			$resV['mensaje'] = 'Registro Cargado con exito!.'; 
 		} else { 

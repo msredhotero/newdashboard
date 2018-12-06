@@ -77,7 +77,33 @@ class ServiciosReferencias {
         rmdir("./".$directorio);
 
         return '';
-    }
+	}
+	
+
+	function insertarFusionEquipos($refequipos, $refcountries, $refestados, $observacion) {
+		$sql = "INSERT INTO dbfusionequipos
+				(idfusionequipo,
+				refequipos,
+				refcountries,
+				refestados,
+				observacion)
+				VALUES
+				('',
+				".$refequipos.",
+				".$refcountries.",
+				".$refestados.",
+				'".$observacion."')";
+
+		$res = $this->query($sql,1); 
+		return $res; 
+	}
+
+	function eliminarFusionEquipos($idfusionequipo) {
+		$sql = "delete from dbfusionequipos where idfusionequipo = ".$idfusionequipo;
+
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
 
 	function traerCountriesMenosId($id) {
 		$sql = "select idcountrie, nombre from dbcountries where idcountrie <> ".$id." order by trim(nombre)";
@@ -279,41 +305,41 @@ function traerDivisiones() {
 	return $res;
 }
 
-function devolverNuevoIdEquipo() {
-	$sql = "select
-			sum(r.idequipo) from (
-					select max(idequipo) as idequipo from dbequipos
-					union all
-					select coalesce( max(idequipo),0) as idequipo from dbequiposdelegados
-	) r";
+	function devolverNuevoIdEquipo() {
+		$sql = "select
+				sum(r.idequipo) from (
+						select max(idequipo) as idequipo from dbequipos
+						union all
+						select coalesce( max(idequipo),0) as idequipo from dbequiposdelegados
+		) r";
 
-	$res = $this->query($sql,0); 
+		$res = $this->query($sql,0); 
 
-	return mysql_result($res,0,0) + 1;
-}
+		return mysql_result($res,0,0) + 1;
+	}
 
-function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) { 
-	$id = $this->devolverNuevoIdEquipo();
-	
-	$sql = "insert into dbequiposdelegados(idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados) 
-	values (".$id.",".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.")"; 
-	$res = $this->query($sql,0); 
-	return $sql; 
+	function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados,$nuevo) { 
+		$id = $this->devolverNuevoIdEquipo();
+		
+		$sql = "insert into dbequiposdelegados(idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados, nuevo) 
+		values ('',".$id.",".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.",".$nuevo.")"; 
+		$res = $this->query($sql,0); 
+		return $id; 
 	} 
 	
 	
 	function modificarEquiposdelegados($id,$reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) { 
-	$sql = "update dbequiposdelegados 
-	set 
-	reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refcountries = ".$refcountries.",nombre = '".utf8_decode($nombre)."',refcategorias = ".$refcategorias.",refdivisiones = ".$refdivisiones.",fechabaja = '".utf8_decode($fechabaja)."',activo = ".$activo.",refestados = ".$refestados." 
-	where idequipo =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
+		$sql = "update dbequiposdelegados 
+		set 
+		reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refcountries = ".$refcountries.",nombre = '".utf8_decode($nombre)."',refcategorias = ".$refcategorias.",refdivisiones = ".$refdivisiones.",fechabaja = '".utf8_decode($fechabaja)."',activo = ".$activo.",refestados = ".$refestados." 
+		where idequipo =".$id; 
+		$res = $this->query($sql,0); 
+		return $res; 
 	} 
 	
 	
 	function eliminarEquiposdelegados($id) { 
-	$sql = "delete from dbequiposdelegados where idequipo =".$id; 
+	$sql = "delete from dbequiposdelegados where idequipodelegado =".$id; 
 	$res = $this->query($sql,0); 
 	return $res; 
 	} 
@@ -335,7 +361,7 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
 		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
 		inner join tbestados est ON est.idestado = e.refestados
-		where e.activo = 1 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
+		where e.activo = 1 and e.nuevo = 1 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
 		order by 1"; 
 		
 		$res = $this->query($sql,0); 
@@ -518,6 +544,7 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 
 	function traerEquiposdelegadosEliminadosPorCountrie($id, $idtemporada) { 
 		$sql = "select 
+		e.idequipodelegado,
 		e.idequipo,
 		cou.nombre as countrie,
 		e.nombre,
@@ -546,7 +573,8 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 		
 		$sql = "
 		INSERT INTO dbequiposdelegados
-					(idequipo,
+					(idequipodelegado,
+					idequipo,
 					reftemporadas,
 					refusuarios,
 					refcountries,
@@ -557,6 +585,7 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 					activo,
 					refestados)
 		select
+			'',
 			idequipo,
 			".$idtemporada.",
 			".$idusuario.",
@@ -577,9 +606,9 @@ function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nom
 	
 	
 	function traerEquiposdelegadosPorId($id) { 
-	$sql = "select idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados from dbequiposdelegados where idequipo =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
+		$sql = "select idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados from dbequiposdelegados where idequipodelegado =".$id; 
+		$res = $this->query($sql,0); 
+		return $res; 
 	} 
 	
 	/* Fin */

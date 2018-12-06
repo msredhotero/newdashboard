@@ -361,6 +361,7 @@ if ($idEstado > 1) {
 													<th>Equipo</th>
 													<th>Categoria</th>
 													<th>Division</th>
+													<th>Es Fusion</th>
 													<th>Acciones</th>
 												</tr>
 											</thead>
@@ -370,6 +371,12 @@ if ($idEstado > 1) {
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
+												<td>
+													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusion(equipo.idequipo)">
+														<i class="material-icons">search</i>
+														<span>Ver</span>
+													</button>
+												</td>
 												
 												<td>
 												<?php
@@ -619,6 +626,7 @@ if ($idEstado > 1) {
     paramsGetEquiposNuevos.append('accion','traerEquiposdelegadosPorCountrie');
 	paramsGetEquiposNuevos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+	paramsGetEquiposNuevos.append('nuevo',1);
 
 	const paramsCrearEquipo = new URLSearchParams();
     paramsCrearEquipo.append('accion','insertarEquiposdelegados');
