@@ -390,8 +390,9 @@ function traerEquiposdelegadosMantenidosPorCountrie($serviciosReferencias) {
 function traerEquiposdelegadosPorCountrie($serviciosReferencias) {
 	$id = $_POST['idcountrie'];
 	$idtemporada = $_POST['idtemporada'];
+	$nuevo = $_POST['nuevo'];
 
-	$res = $serviciosReferencias->traerEquiposdelegadosPorCountrie($id, $idtemporada); 
+	$res = $serviciosReferencias->traerEquiposdelegadosPorCountrie($id, $idtemporada, $nuevo); 
 	
 	$ar = array(); 
 	

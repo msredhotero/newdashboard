@@ -281,7 +281,7 @@ if ($idEstado > 1) {
 														<i class="material-icons">delete</i>
 														<span>Eliminar</span>
 													</button>
-													<button type='button' class='btn btn-success waves-effect'>
+													<button type='button' class='btn btn-success waves-effect' @click="mantenerEquipoPasivo(equipo)">
 														<i class="material-icons">add</i>
 														<span>Mantener</span>
 													</button>
@@ -302,7 +302,7 @@ if ($idEstado > 1) {
 								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4>Equipos que quedarán</h4>
+									<h4> <i class="material-icons">unarchive</i> Equipos que Quedarán</h4>
 									</div>
 									
 									<form class="form" id="formCountryEquiposMantenidos">
@@ -353,7 +353,7 @@ if ($idEstado > 1) {
 
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4>Equipos que seran Eliminados</h4>
+									<h4> <i class="material-icons">remove_circle</i> Equipos que seran Eliminados</h4>
 									</div>
 									
 									<form class="form" id="formCountryEquiposEliminados">
@@ -394,11 +394,12 @@ if ($idEstado > 1) {
 									
 									</div>
 								</div>
+								<hr>
 								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 									
 										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-											<h4>Equipos que seran Agregados</h4>
+											<h4> <i class="material-icons">add_circle</i> Equipos que seran Agregados</h4>
 										</div>
 										<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 											<button type="button" class="btn btn-success waves-effect" @click="showModalEquipo = true">
@@ -680,6 +681,12 @@ if ($idEstado > 1) {
 	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 	paramsGetEquiposNuevos.append('nuevo',1);
 
+	const paramsGetEquiposQuedan = new URLSearchParams();
+    paramsGetEquiposQuedan.append('accion','traerEquiposdelegadosPorCountrie');
+	paramsGetEquiposQuedan.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
+	paramsGetEquiposQuedan.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+	paramsGetEquiposQuedan.append('nuevo',0);
+
 	const paramsCrearEquipo = new URLSearchParams();
     paramsCrearEquipo.append('accion','insertarEquiposdelegados');
 	paramsCrearEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
@@ -778,6 +785,7 @@ if ($idEstado > 1) {
 			activeEquipos: {},
 			activeEquiposEliminados: {},
 			activeEquiposNuevos: {},
+			activeEquiposMantenidos: {},
 			showModal: false,
 			showModalEquipo: false	
 			
@@ -787,6 +795,7 @@ if ($idEstado > 1) {
 			this.getAllEquipos()
 			this.getAllEquiposEliminados()
 			this.getAllEquiposNuevos()
+			this.getAllEquiposQuedan()
 		},
 		computed: {
 			
@@ -930,12 +939,22 @@ if ($idEstado > 1) {
 				})
 			},
 			getAllEquiposNuevos () {
-					axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
-					.then(res => {
-                        
-						this.activeEquiposNuevos = res.data.datos
 
-					})
+				axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
+				.then(res => {
+					
+					this.activeEquiposNuevos = res.data.datos
+
+				})
+			},
+			getAllEquiposQuedan () {
+
+				axios.post('../../ajax/ajax.php',paramsGetEquiposQuedan)
+				.then(res => {
+					
+					this.activeEquiposMantenidos = res.data.datos
+
+				})
 			}
 
 

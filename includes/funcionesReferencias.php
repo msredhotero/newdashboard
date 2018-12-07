@@ -345,7 +345,7 @@ function traerDivisiones() {
 	} 
 	
 	
-	function traerEquiposdelegadosPorCountrie($id, $idtemporada) { 
+	function traerEquiposdelegadosPorCountrie($id, $idtemporada, $nuevo) { 
 		$sql = "select 
 		e.idequipodelegado,
 		e.idequipo,
@@ -364,7 +364,7 @@ function traerDivisiones() {
 		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
 		inner join tbestados est ON est.idestado = e.refestados
 		left join dbfusionequipos fe ON fe.refequiposdelegados = e.idequipodelegado
-		where e.activo = 1 and e.nuevo = 1 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
+		where e.activo = 1 and e.nuevo = ".$nuevo." and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
 		group by e.idequipodelegado,
 		e.idequipo,
 		cou.nombre,
