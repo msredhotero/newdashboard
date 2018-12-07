@@ -302,6 +302,57 @@ if ($idEstado > 1) {
 								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+									<h4>Equipos que quedarán</h4>
+									</div>
+									
+									<form class="form" id="formCountryEquiposMantenidos">
+										<table class="table table-bordered table-striped table-hover highlight" id="example">
+											<thead>
+												<tr>
+													<th>Equipo</th>
+													<th>Categoria</th>
+													<th>Division</th>
+													<th>Es Fusion</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+
+											<tr v-for="equipo in activeEquiposMantenidos" :key="equipo.idequipodelegado">
+												<td>{{ equipo.nombre }}</td>
+												<td>{{ equipo.categoria }}</td>
+												<td>{{ equipo.division }}</td>
+												<td>
+													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
+														<i class="material-icons">search</i>
+														<span>Ver</span>
+													</button>
+												</td>
+												
+												<td>
+												<?php
+												if ($permiteRegistrar == 1) {
+													if ($habilitado == 1) {	
+												?>
+													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
+														<i class="material-icons">autorenew</i>
+														<span>Habilitar</span>
+													</button>
+												<?php
+													}
+												}
+												?>
+												</td>
+											</tr>
+						
+											</tbody>
+										</table>
+									
+									</div>
+
+
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
 									<h4>Equipos que seran Eliminados</h4>
 									</div>
 									
@@ -342,7 +393,8 @@ if ($idEstado > 1) {
 										</table>
 									
 									</div>
-
+								</div>
+								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 									
 										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
@@ -367,12 +419,12 @@ if ($idEstado > 1) {
 											</thead>
 											<tbody>
 
-											<tr v-for="equipo in activeEquiposNuevos" :key="equipo.idequipo">
+											<tr v-for="equipo in activeEquiposNuevos" :key="equipo.idequipodelegado">
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
 												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusion(equipo.idequipo)">
+													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
 														<i class="material-icons">search</i>
 														<span>Ver</span>
 													</button>
@@ -646,7 +698,7 @@ if ($idEstado > 1) {
 
 	const paramsGeneral = new URLSearchParams();
 	paramsGeneral.append('accion','verFusion');
-	paramsGeneral.append('idequipo',0);
+	paramsGeneral.append('idequipodelegado',0);
 	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 	
 
@@ -691,7 +743,7 @@ if ($idEstado > 1) {
 				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
 				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
 				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
-				
+				paramsCrearEquipo.set('nuevo',1);
 				
 				
 				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
@@ -806,11 +858,23 @@ if ($idEstado > 1) {
 					})
 			},
 			verFusion : function(id) {
-				paramsGeneral.set('idequipo',id);
+				paramsGeneral.set('idequipodelegado',id);
+				paramsGeneral.set('accion','verFusion');
 
 				axios.post('../../ajax/ajax.php',paramsGeneral)
 				.then(res => {
 					this.$swal("Ok!", 'Fusion: ' + res.data.datos[0], "success")
+					
+				})
+			},
+			verFusionDelegados : function(id) {
+				paramsGeneral.set('idequipodelegado',id);
+				paramsGeneral.set('accion','traerFusionPorEquiposDelegados');
+
+				axios.post('../../ajax/ajax.php',paramsGeneral)
+				.then(res => {
+
+					this.$swal("Ok!", res.data.datos[0], "success")
 					
 				})
 			},
@@ -850,7 +914,7 @@ if ($idEstado > 1) {
 			},
 			eliminarEquiposDelegadoDefinitivo : function(equi){
 
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
+				paramsGetEliminarEquipoPasivo.set('id',equi.idequipodelegado);
 				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquiposdelegados');
 
 				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)

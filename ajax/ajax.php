@@ -123,6 +123,9 @@ switch ($accion) {
 		case 'traerEquiposdelegadosPorCountrie':
 		traerEquiposdelegadosPorCountrie($serviciosReferencias);
 		break;
+		case 'traerEquiposdelegadosMantenidosPorCountrie':
+		traerEquiposdelegadosMantenidosPorCountrie($serviciosReferencias);
+		break;
 
 		case 'eliminarEquipoPasivo':
 		eliminarEquipoPasivo($serviciosReferencias);
@@ -148,14 +151,42 @@ switch ($accion) {
 		case 'verFusion':
 		verFusion($serviciosReferencias);
 		break;
+		case 'traerFusionPorEquiposDelegados':
+		traerFusionPorEquiposDelegados($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
 
+	function traerFusionPorEquiposDelegados($serviciosReferencias) {
+		$idequipodelegado = $_POST['idequipodelegado'];
+
+		$res = $serviciosReferencias->traerFusionPorEquiposDelegados($idequipodelegado);
+
+		$ar = array();
+		$cad = '';
+
+		while ($row = mysql_fetch_array($res)) { 
+			//array_push($cad, $row['countrie'].'  - Estado: '.$row['estado'].'  ');
+			$cad .= utf8_encode( $row['countrie'].'  - Estado: '.$row['estado'].'  
+			');
+		} 
+
+		$ar = array($cad);
+
+		$resV['error'] = false; 
+		$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!'; 
+
+		$resV['datos'] = $ar; 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
+
 	function verFusion($serviciosReferencias) {
-		$idequipo 	= $_POST['idequipo'];
+		$idequipo 	= $_POST['idequipodelegado'];
 		$idcountrie 	= $_POST['idcountrie'];
 
 		$res = $serviciosReferencias->traerFusionPorEquiposCountrie($idequipo, $idcountrie);
@@ -333,6 +364,28 @@ function traerEquiposdelegadosEliminadosPorCountrie($serviciosReferencias) {
 
 
 }
+
+function traerEquiposdelegadosMantenidosPorCountrie($serviciosReferencias) {
+	$id = $_POST['idcountrie'];
+	$idtemporada = $_POST['idtemporada'];
+
+	$res = $serviciosReferencias->traerEquiposdelegadosMantenidosPorCountrie($id, $idtemporada); 
+	
+	$ar = array(); 
+	
+	while ($row = mysql_fetch_assoc($res)) { 
+		array_push($ar, $row); 
+	} 
+	
+	$resV['datos'] = $ar; 
+	
+	
+	header('Content-type: application/json'); 
+	echo json_encode($resV); 
+
+
+}
+
 
 function traerEquiposdelegadosPorCountrie($serviciosReferencias) {
 	$id = $_POST['idcountrie'];

@@ -83,7 +83,7 @@ class ServiciosReferencias {
 	function insertarFusionEquipos($refequipos, $refcountries, $refestados, $observacion) {
 		$sql = "INSERT INTO dbfusionequipos
 				(idfusionequipo,
-				refequipos,
+				refequiposdelegados,
 				refcountries,
 				refestados,
 				observacion)
@@ -323,8 +323,8 @@ function traerDivisiones() {
 		
 		$sql = "insert into dbequiposdelegados(idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados, nuevo) 
 		values ('',".$id.",".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.",".$nuevo.")"; 
-		$res = $this->query($sql,0); 
-		return $id; 
+		$res = $this->query($sql,1); 
+		return $res; 
 	} 
 	
 	
@@ -347,6 +347,7 @@ function traerDivisiones() {
 	
 	function traerEquiposdelegadosPorCountrie($id, $idtemporada) { 
 		$sql = "select 
+		e.idequipodelegado,
 		e.idequipo,
 		cou.nombre as countrie,
 		e.nombre,
@@ -355,14 +356,26 @@ function traerDivisiones() {
 		e.fechabaja,
 		(case when e.activo=1 then 'Si' else 'No' end) as activo,
 		est.estado,
-		e.refestados
+		e.refestados,
+		coalesce(max(fe.refequiposdelegados),0) as esfusion
 		from dbequiposdelegados e 
 		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
 		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
 		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
 		inner join tbestados est ON est.idestado = e.refestados
+		left join dbfusionequipos fe ON fe.refequiposdelegados = e.idequipodelegado
 		where e.activo = 1 and e.nuevo = 1 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
-		order by 1"; 
+		group by e.idequipodelegado,
+		e.idequipo,
+		cou.nombre,
+		e.nombre,
+		cat.categoria,
+		di.division,
+		e.fechabaja,
+		e.activo,
+		est.estado,
+		e.refestados
+		order by e.nombre"; 
 		
 		$res = $this->query($sql,0); 
 		
@@ -1330,6 +1343,18 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		$res = $this->query($sql,0);
 
 		echo $res;
+	}
+
+	function traerFusionPorEquiposDelegados($idequipodelegado) {
+		$sql = "select 
+					cc.idcountrie, cc.nombre as countrie , est.idestado, est.estado
+				from dbcountries cc 
+				inner join dbfusionequipos fe on fe.refcountries = cc.idcountrie
+				inner join tbestados est ON est.idestado = fe.refestados
+				where fe.refequiposdelegados = ".$idequipodelegado;
+		
+		$res = $this->query($sql,0); 
+		return $res; 	
 	}
 
 	function traerFusionPorEquiposCountrie($idequipo, $idcountrie) {
