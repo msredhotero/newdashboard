@@ -105,6 +105,13 @@ class ServiciosReferencias {
 		return $res; 
 	}
 
+	function eliminarFusionEquiposPorEquipo($refequiposdelegados) {
+		$sql = "delete from dbfusionequipos where refequiposdelegados = ".$refequiposdelegados;
+
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
+
 	function traerCountriesMenosId($id) {
 		$sql = "select idcountrie, nombre from dbcountries where idcountrie <> ".$id." order by trim(nombre)";
 		$res = $this->query($sql,0); 
@@ -339,10 +346,40 @@ function traerDivisiones() {
 	
 	
 	function eliminarEquiposdelegados($id) { 
-	$sql = "delete from dbequiposdelegados where idequipodelegado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
+		$this->eliminarFusionEquiposPorEquipo($id);
+		
+		$sql = "delete from dbequiposdelegados where idequipodelegado =".$id; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
 	} 
+
+	function traerEstadosFusionesAceptadasPorCountrie($idcountrie) {
+
+		$sql = "select 
+					coalesce(min(fe.refestados),1) as idestado
+				from dbfusionequipos fe 
+				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				where ed.refcountries = ".$idcountrie;
+		
+		$res = $this->existeDevuelveId($sql);
+		return $res; 
+
+	}
+
+
+	function traerEstadosFusionesAceptadasPorEquipo($idequiposdelegados ,$idcountrie) {
+		
+		$sql = "select 
+					coalesce(min(fe.refestados),1) as idestado
+				from dbfusionequipos fe 
+				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				where fe.refequiposdelegados = ".$idequiposdelegados." and ed.refcountries = ".$idcountrie;
+		
+		$res = $this->existeDevuelveId($sql);
+		return $res; 
+
+	}
 	
 	
 	function traerEquiposdelegadosPorCountrie($id, $idtemporada, $nuevo) { 
@@ -658,7 +695,7 @@ function traerDivisiones() {
 		if ($res > 0) {
 			$resFusion = $this->traerFusionPorEquiposCountrie($id, $idcountrie);
 			while ($row = mysql_fetch_array($resFusion)) {
-				$this->insertarFusionEquipos($res, $idcountrie, 1, '');
+				$this->insertarFusionEquipos($res, $row['refcountries'], 1, '');
 			}
 		}
 		

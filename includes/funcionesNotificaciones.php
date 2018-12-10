@@ -9,6 +9,82 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosNotificaciones {
 
+    function traerTareasGeneral() {
+        $sql = "SELECT idtarea,
+                    cc.nombre as countrie,
+                    tarea,
+                    est.estado,
+                    usuariocrea,
+                    fechacrea,
+                    usuariomodi,
+                    fechamodi,
+                    url,
+                    id1,
+                    id2,
+                    id3,
+                    refestados,
+                    refcountries,
+                    est.color,
+                    est.idestadotarea
+                FROM dbtareas t
+                inner join dbcountries cc ON cc.idcountrie = t.refcountries
+                inner join tbestadostareas est ON est.idestadotarea = t.refestados";
+        $res = $this->query($sql,0);
+        return $res;
+    }
+
+
+    function traerTareasGeneralPorCountrie($idcountrie) {
+        $sql = "SELECT idtarea,
+                    cc.nombre as countrie,
+                    tarea,
+                    est.estado,
+                    usuariocrea,
+                    fechacrea,
+                    usuariomodi,
+                    fechamodi,
+                    url,
+                    id1,
+                    id2,
+                    id3,
+                    refestados,
+                    refcountries,
+                    est.color,
+                    est.idestadotarea
+                FROM dbtareas t
+                inner join dbcountries cc ON cc.idcountrie = t.refcountries
+                inner join tbestadostareas est ON est.idestadotarea = t.refestados 
+                where cc.idcountrie = ".$idcountrie;
+        $res = $this->query($sql,0);
+        return $res;
+    }
+
+
+    function traerTareasGeneralPorCountrieIncompletas($idcountrie) {
+        $sql = "SELECT idtarea,
+                    cc.nombre as countrie,
+                    tarea,
+                    est.estado,
+                    usuariocrea,
+                    fechacrea,
+                    usuariomodi,
+                    fechamodi,
+                    url,
+                    id1,
+                    id2,
+                    id3,
+                    refestados,
+                    refcountries,
+                    est.color,
+                    est.idestadotarea
+                FROM dbtareas t
+                inner join dbcountries cc ON cc.idcountrie = t.refcountries
+                inner join tbestadostareas est ON est.idestadotarea = t.refestados 
+                where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,5)";
+        $res = $this->query($sql,0);
+        return $res;
+    }
+
     function insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) { 
         $sql = "insert into dbnotificaciones(mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,leido) 
         values ('".($mensaje)."',".$idpagina.",'".($autor)."','".($destinatario)."',".$id1.",".$id2.",".$id3.",'".($icono)."','".($estilo)."','".($fecha)."','".($url)."',0)"; 

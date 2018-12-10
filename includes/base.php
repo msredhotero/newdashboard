@@ -112,7 +112,7 @@ class BaseHTML {
         echo $cad;
     }
 
-    function cargarNAV($breadCumbs, $notificaciones='', $tareas='', $altura = '') {
+    function cargarNAV($breadCumbs, $notificaciones='', $tareas='', $altura = '', $lstTareas='') {
         $cad = '<nav class="navbar">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -146,12 +146,14 @@ class BaseHTML {
                                 <li class="dropdown">
                                     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">
                                         <i class="material-icons">flag</i>
-                                        <span class="label-count">0</span>
+                                        <span class="label-count tareas-cantidad">0</span>
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="header">Tareas</li>
                                         <li class="body">
-                                            
+                                            <ul class="menu tasks">
+    
+                                            </ul>
                                         </li>
                                         <li class="footer">
                                             <a href="javascript:void(0);">Ver Todas</a>

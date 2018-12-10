@@ -139,7 +139,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <!-- #Top Bar -->
     <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../'); ?>
     <main id="app">
-    <section class="content" style="margin-top:-10px;">
+    <section class="content" style="margin-top:-35px;">
     
         <div class="container-fluid">
             <div class="row clearfix">
@@ -213,6 +213,31 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     
                 e.preventDefault();
             });
+
+            function traerTareas() {
+                $.ajax({
+                    dataType: "json",
+                    data:  { 
+                        idcountrie: <?php echo $_SESSION['idclub_aif']; ?>, 
+                        accion: 'traerTareasGeneralPorCountrieIncompletas'
+                    },
+                    url:   '../ajax/ajax.php',
+                    type:  'post',
+                    beforeSend: function () {
+                        $('.tasks').html('');
+                    },
+                    success:  function (response) {
+                        $('.tasks').html(response.respuesta);
+                        $('.tareas-cantidad').html(response.cantidad);
+                    }
+                });
+            }
+            
+            traerTareas();
+
+            setInterval(function() {
+                traerTareas();
+            },5000);
         });
     </script>
 

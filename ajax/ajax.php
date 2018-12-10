@@ -36,7 +36,11 @@ switch ($accion) {
         break;
 	case 'registrar':
 		registrar($serviciosUsuarios);
-        break;
+		break;
+	
+	case 'traerTareasGeneralPorCountrieIncompletas':
+		traerTareasGeneralPorCountrieIncompletas($serviciosNotificaciones);
+	break;
 
 
 		case 'insertarDelegados': 
@@ -163,6 +167,76 @@ switch ($accion) {
 
 }
 /* Fin */
+
+	function traerTareasGeneralPorCountrieIncompletas($serviciosNotificaciones) {
+		$id = $_POST['idcountrie'];
+
+		$res = $serviciosNotificaciones->traerTareasGeneralPorCountrieIncompletas($id);
+
+		$cad = '';
+		$porcentaje = 0;
+		$cantidad = 0;
+		while ($row = mysql_fetch_array($res)) { 
+			$cantidad += 1;
+			if ($row['idestadotarea'] == 1) {
+				$porcentaje = 0;
+			} else {
+				if ($row['idestadotarea'] == 2) {
+					$porcentaje = 20;
+				} else {
+					if ($row['idestadotarea'] == 3) {
+						$porcentaje = 100;
+					
+					} else {
+						if ($row['idestadotarea'] == 5) {
+							$porcentaje = 85;
+						
+						} else {
+							$porcentaje = 0;
+						}
+					}
+					
+				}
+			}
+			$cad .= '<li>
+						<a href="javascript:void(0);" class=" waves-effect waves-block">
+							<h4>
+								'.$row['tarea'].'
+								<small>'.$porcentaje.'%</small>
+							</h4>
+							<div class="progress">
+								<div class="progress-bar '.$row['color'].'" role="progressbar" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$porcentaje.'%">
+								</div>
+							</div>
+						</a>
+					</li>';
+		} 
+		$cad .= '';
+		
+		
+		//echo array('respuesta' => $cad, 'cantidad' => $cantidad);
+		header('Content-type: application/json'); 
+		echo json_encode(array('respuesta' => $cad, 'cantidad' => $cantidad));
+	}
+
+
+	function VtraerTareasIncompletasPorCountries($serviciosNotificaciones) {
+		$id = $_POST['idcountrie'];
+
+		$res = $serviciosNotificaciones->traerTareasIncompletasPorCountries($id);
+
+		$ar = array(); 
+		
+		while ($row = mysql_fetch_assoc($res)) { 
+			array_push($ar, $row); 
+		} 
+		
+		$resV['datos'] = $ar; 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+
+	}
 
 	function traerFusionPorEquiposDelegados($serviciosReferencias) {
 		$idequipodelegado = $_POST['idequipodelegado'];
