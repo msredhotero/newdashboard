@@ -130,6 +130,10 @@ switch ($accion) {
 		case 'eliminarEquipoPasivo':
 		eliminarEquipoPasivo($serviciosReferencias);
 		break;
+		case 'mantenerEquipoPasivo':
+		mantenerEquipoPasivo($serviciosReferencias);
+		break;
+
 		case 'eliminarEquiposdelegados':
 		eliminarEquiposdelegados($serviciosReferencias);
 		break;
@@ -296,11 +300,40 @@ switch ($accion) {
 				$resV['mensaje'] = 'Registro Eliminado con exito!.'; 
 			} else { 
 				$resV['error'] = true; 
-				$resV['mensaje'] = 'No se pudo eliminar el Registro!'; 
+				$resV['mensaje'] = 'No se pudo eliminar/mantener el Registro!'; 
 			} 
 		} else {
 			$resV['error'] = true; 
-			$resV['mensaje'] = 'Ya fue eliminado!';
+			$resV['mensaje'] = 'Ya fue eliminado o fue marcado como estable!';
+		}
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	} 
+
+
+	function mantenerEquipoPasivo($serviciosReferencias) { 
+		$id = $_POST['id'];
+		$idtemporada = $_POST['idtemporada'];
+		$idusuario = $_POST['idusuario'];
+		$idcountrie = $_POST['idcountrie'];
+		
+		$sqlExiste = "select idequipo from dbequiposdelegados where idequipo = ".$id." and reftemporadas =".$idtemporada;
+		$resExiste = $serviciosReferencias->existeDevuelveId($sqlExiste);
+
+		if ($resExiste == 0) {
+			$res = $serviciosReferencias->mantenerEquipoPasivo($id, $idtemporada, $idusuario, $idcountrie); 
+			
+			if ($res > 0) { 
+				$resV['error'] = false; 
+				$resV['mensaje'] = 'Registro cargado con exito!.'; 
+			} else { 
+				$resV['error'] = true; 
+				$resV['mensaje'] = 'No se pudo cargar el Registro!'; 
+			} 
+		} else {
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'Ya fue eliminado o fue marcado como estable!';
 		}
 
 		header('Content-type: application/json'); 
@@ -430,8 +463,9 @@ function traerEquiposPorCountries($serviciosReferencias) {
 
 function traerEquiposPorCountriesConFusion($serviciosReferencias) {
 	$id = $_POST['idcountrie'];
+	$idtemporada = $_POST['idtemporada'];
 
-	$res = $serviciosReferencias->traerEquiposPorCountriesConFusion($id); 
+	$res = $serviciosReferencias->traerEquiposPorCountriesConFusion($id, $idtemporada); 
 	
 	$ar = array(); 
 	

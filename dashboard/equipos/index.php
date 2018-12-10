@@ -334,9 +334,9 @@ if ($idEstado > 1) {
 												if ($permiteRegistrar == 1) {
 													if ($habilitado == 1) {	
 												?>
-													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">autorenew</i>
-														<span>Habilitar</span>
+													<button type='button' class='btn bg-red waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
+														<i class="material-icons">clear</i>
+														<span>Sacar</span>
 													</button>
 												<?php
 													}
@@ -465,7 +465,7 @@ if ($idEstado > 1) {
 							</form>
 							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
 							<div class="button-demo">
-								<button type="submit" class="btn bg-teal waves-effect">
+								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
                                     <i class="material-icons">save</i>
                                     <span>GUARDAR</span>
                                 </button>
@@ -669,6 +669,7 @@ if ($idEstado > 1) {
 	const paramsGetEquipos = new URLSearchParams();
     paramsGetEquipos.append('accion','traerEquiposPorCountriesConFusion');
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+	paramsGetEquipos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 
 	const paramsGetEquiposEliminados = new URLSearchParams();
     paramsGetEquiposEliminados.append('accion','traerEquiposdelegadosEliminadosPorCountrie');
@@ -702,6 +703,13 @@ if ($idEstado > 1) {
 	paramsGetEliminarEquipoPasivo.append('id',0);
 	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
+
+	const paramsMantenerEquipo = new URLSearchParams();
+	paramsMantenerEquipo.append('accion','mantenerEquipoPasivo');
+	paramsMantenerEquipo.append('id',0);
+	paramsMantenerEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
+	paramsMantenerEquipo.append('idusuario',<?php echo  $idusuario; ?>);
+	paramsMantenerEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 
 	const paramsGeneral = new URLSearchParams();
 	paramsGeneral.append('accion','verFusion');
@@ -899,11 +907,31 @@ if ($idEstado > 1) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
 						this.getAllEquiposEliminados()
+						this.getAllEquipos()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
 				})
 			},
+			mantenerEquipoPasivo : function(equi){
+
+				paramsMantenerEquipo.set('id',equi.idequipo);
+
+				axios.post('../../ajax/ajax.php',paramsMantenerEquipo)
+				.then(res => {
+					
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+
+						this.getAllEquiposQuedan()
+						this.getAllEquipos()
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+				})
+			},
+			
+
 			eliminarEquipoDelegado : function(equi){
 
 				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
@@ -916,6 +944,7 @@ if ($idEstado > 1) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
 						this.getAllEquiposEliminados()
+						this.getAllEquipos()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
@@ -933,6 +962,8 @@ if ($idEstado > 1) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 						this.getAllEquiposEliminados()
 						this.getAllEquiposNuevos()
+						this.getAllEquiposQuedan()
+						this.getAllEquipos()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}

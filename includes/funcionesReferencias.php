@@ -596,7 +596,8 @@ function traerDivisiones() {
 					refdivisiones,
 					fechabaja,
 					activo,
-					refestados)
+					refestados,
+					nuevo)
 		select
 			'',
 			idequipo,
@@ -608,10 +609,58 @@ function traerDivisiones() {
 			refdivisiones,
 			fachebaja,
 			0,
-			1
+			1,
+			0
 		from dbequipos where idequipo = ".$id;
 
 		$res = $this->query($sql,0); 
+		
+		return $res; 
+
+	}
+
+
+	function mantenerEquipoPasivo($id, $idtemporada, $idusuario, $idcountrie) {
+
+		//verifico si ya existe el equipo eliminado
+		
+		$sql = "
+		INSERT INTO dbequiposdelegados
+					(idequipodelegado,
+					idequipo,
+					reftemporadas,
+					refusuarios,
+					refcountries,
+					nombre,
+					refcategorias,
+					refdivisiones,
+					fechabaja,
+					activo,
+					refestados,
+					nuevo)
+		select
+			'',
+			idequipo,
+			".$idtemporada.",
+			".$idusuario.",
+			refcountries,
+			nombre,
+			refcategorias,
+			refdivisiones,
+			fachebaja,
+			1,
+			1,
+			0
+		from dbequipos where idequipo = ".$id;
+
+		$res = $this->query($sql,1); 
+
+		if ($res > 0) {
+			$resFusion = $this->traerFusionPorEquiposCountrie($id, $idcountrie);
+			while ($row = mysql_fetch_array($resFusion)) {
+				$this->insertarFusionEquipos($res, $idcountrie, 1, '');
+			}
+		}
 		
 		return $res; 
 
@@ -1384,7 +1433,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		return $res; 
 	}
 
-	function traerEquiposPorCountriesConFusion($idCountrie) {
+	function traerEquiposPorCountriesConFusion($idCountrie, $idtemporada) {
 		$sql = "SELECT 
 					e.idequipo,
 					cou.nombre AS countrie,
@@ -1418,6 +1467,8 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 						INNER JOIN
 					tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
 						left join
+					dbequiposdelegados ed ON ed.idequipo = e.idequipo and ed.reftemporadas = ".$idtemporada."
+						left join
 					(SELECT 
 						ce.nombre AS countrypadre,
 						e.nombre AS equipo,
@@ -1439,7 +1490,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 					GROUP BY ce.nombre , e.nombre , c.nombre , cc.refcountries , cc.refequipos) r
 					on r.refequipos = e.idequipo
 				WHERE
-					cou.idcountrie = ".$idCountrie." AND e.activo = 1
+					cou.idcountrie = ".$idCountrie." AND e.activo = 1 and ed.idequipodelegado is null
 				group by e.idequipo,
 					cou.nombre ,
 					e.nombre,
