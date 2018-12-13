@@ -9,6 +9,39 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosNotificaciones {
 
+    function insertarTareas($refcountries, $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$id1,$id2,$id3) {
+        
+        $sql = "INSERT INTO dbtareas
+                (idtarea,
+                refcountries,
+                tarea,
+                usuariocrea,
+                fechacrea,
+                usuariomodi,
+                fechamodi,
+                refestados,
+                url,
+                id1,
+                id2,
+                id3)
+                VALUES
+                ('',
+                ".$refcountries.",
+                '".$tarea."',
+                '".$usuariocrea."',
+                '".$fechacrea."',
+                '".$usuariomodi."',
+                '".$fechamodi."',
+                ".$refestados.",
+                '".$url."',
+                ".$id1.",
+                ".$id2.",
+                ".$id3.")";
+        
+        $res = $this->query($sql,1);
+        return $res;
+    }
+
     function traerTareasGeneral() {
         $sql = "SELECT idtarea,
                     cc.nombre as countrie,

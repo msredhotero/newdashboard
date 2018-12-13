@@ -145,7 +145,7 @@ switch ($accion) {
 		insertarEquiposdelegados($serviciosReferencias);
 		break;
 		case 'confirmarEquipos':
-		confirmarEquipos($serviciosReferencias);
+		confirmarEquipos($serviciosReferencias, $serviciosNotificaciones);
 		break;
 
 		case 'traerEquiposPorCountriesFinalizado':
@@ -206,7 +206,7 @@ switch ($accion) {
 		$ar = array(); 
 		
 		while ($row = mysql_fetch_assoc($res)) { 
-			array_push($ar, $row); 
+			array_push($ar,  $row); 
 		} 
 		
 		$resV['datos'] = $ar; 
@@ -359,11 +359,39 @@ switch ($accion) {
 
 
 
-	function confirmarEquipos($serviciosReferencias) {
+	function confirmarEquipos($serviciosReferencias, $serviciosNotificaciones) {
+		session_start();
+
+		$contacto = $_SESSION['email_aif'];
+
 		$id = $_POST['idcabecera'];
 		$idestado = 2;
 
 		$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
+
+		$resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($id);
+
+		$idcountrie = mysql_result($resCabecera,0,'refcountries');
+		$idtemporada = mysql_result($resCabecera,0,'reftemporadas');
+
+		$resFusiones = $serviciosReferencias->traerFusionesPorCoutriePadre($idcountrie, $idtemporada);
+
+		$refcountries 	= $idcountrie;
+		$tarea 			= 'Aprobar Fusion con Equipo';
+		$usuariocrea 	= $contacto;
+		$fechacrea 		= date('Y-m-d');
+		$usuariomodi 	= $contacto;
+		$fechamodi 		= date('Y-m-d');
+		$refestados 	= 1;
+		$url 			= 'fusiones/index.php?id=';
+		$id1 			= 0;
+		$id2 			= 0;
+		$id3 			= 0;
+
+		while ($row = mysql_fetch_array($resFusiones)) {
+			$tareas = $serviciosNotificaciones->insertarTareas($row['refcountries'], $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$row['idfusionequipo'],$id2,$id3);
+		}
+
 
 		$resV['error'] = false; 
 		$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!'; 

@@ -432,6 +432,30 @@ function traerDivisiones() {
 		return $res; 
 
 	}
+
+	function traerFusionesPorCoutriePadre($idcountrie, $idtemporada) {
+		
+		$sql = "select 
+					fe.idfusionequipo,
+					cp.nombre as countriepadre,
+					cat.categoria,
+					di.division,
+					ed.nombre,
+					est.estado,
+					est.idestado,
+                    fe.refcountries
+				from dbfusionequipos fe 
+				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				inner join dbcountries cp on cp.idcountrie = ed.refcountries
+				inner join tbcategorias cat on cat.idtcategoria = ed.refcategorias
+				inner join tbdivisiones di on di.iddivision = ed.refdivisiones
+				inner join tbestados est on est.idestado = fe.refestados
+				where cp.idcountrie = ".$idcountrie." and ed.reftemporadas = ".$idtemporada;
+		
+		$res = $this->query($sql,0);
+		return $res; 
+
+	}
 	
 	
 	function traerEquiposdelegadosPorCountrie($id, $idtemporada, $nuevo) { 

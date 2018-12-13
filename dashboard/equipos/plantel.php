@@ -116,6 +116,12 @@ $refCampo 	=  array("refusuarios");
 
 $frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
+
+////////////////////////////		 verifico si existe alguna fusion donde no se confirmaron los countries /////////////////////////
+$verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountrie($_SESSION['idclub_aif']);
+
+////////////////////////////// 				FIN				  /////////////////////////
+
 ?>
 
 <!DOCTYPE html>
@@ -466,7 +472,8 @@ $frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblC
 			activeDelegados: {},
 			activeDefinicion: [],
 			showModal: false,
-			confirmado: <?php echo $idEstado; ?>	
+			confirmado: <?php echo $idEstado; ?>,
+			verificarFusion: <?php echo $verificarFusion; ?>	
 			
 		},
 		mounted () {

@@ -254,19 +254,26 @@ $idequipodelegado = $_GET['id'];
 														<div v-else-if="fusion.idestado == 3">
 															<span class="label label-success">{{ fusion.estado }}</span>
 														</div>
+														<div v-else-if="fusion.idestado == 5">
+															<span class="label label-warning">{{ fusion.estado }}</span>
+														</div>
 														<div v-else="fusion.idestado == 3">
 															<span class="label label-danger">{{ fusion.estado }}</span>
 														</div>
 													</td>
 													<td>
-														<div v-if="fusion.idestado == 1">
-															<button type='button' class='btn bg-green waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 3)">
+														<div v-if="fusion.idestado == 1 || fusion.idestado == 5">
+															<button style="margin-top:3px;" type='button' class='btn bg-green waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 3)">
 																<i class="material-icons">done</i>
 																<span>Aprobar</span>
 															</button>
-															<button type='button' class='btn bg-red waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 4)">
+															<button style="margin-top:3px;" type='button' class='btn bg-red waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 4)">
 																<i class="material-icons">clear</i>
 																<span>Rechazar</span>
+															</button>
+															<button style="margin-top:3px;" type='button' class='btn bg-blue waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 4)">
+																<i class="material-icons">update</i>
+																<span>Marcar en Curso</span>
 															</button>
 														</div>
 														

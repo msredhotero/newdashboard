@@ -469,7 +469,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 							
 							</form>
 							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
-							<div class="button-demo" v-show="verificarFusion == 3">
+							<div class="button-demo">
 								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
                                     <i class="material-icons">save</i>
                                     <span>GUARDAR</span>
@@ -800,8 +800,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			activeEquiposNuevos: {},
 			activeEquiposMantenidos: {},
 			showModal: false,
-			showModalEquipo: false,
-			verificarFusion: <?php echo $verificarFusion; ?>	
+			showModalEquipo: false	
 			
 		},
 		mounted () {
