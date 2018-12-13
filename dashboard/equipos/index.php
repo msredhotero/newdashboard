@@ -119,8 +119,9 @@ $idEstado = 0;
 if ($confirmo == 0) {
 	$serviciosReferencias->insertarCabeceraconfirmacion( $ultimaTemporada, $_SESSION['idclub_aif'], 1, $_SESSION['nombre_aif'], $_SESSION['nombre_aif']);
 
-	$idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$confirmo,"idcabeceraconfirmacion");
 }
+
+$idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$confirmo,"idcabeceraconfirmacion");
 
 if ($idEstado > 1) {
 	header('Location: modificar.php');

@@ -409,6 +409,18 @@ function traerDivisiones() {
 
 	}
 
+	function traerEstadosFusionesPorEquipo($idequiposdelegados, $idcountrie) {
+		$sql = "select 
+					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
+                    
+				from dbfusionequipos fe 
+				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				where fe.refequiposdelegados = ".$idequiposdelegados." and ed.refcountries = ".$idcountrie;
+
+		$res = $this->existeDevuelveId($sql);
+		return $res; 
+	}
+
 
 	function traerFusionesPorEquipo($idequiposdelegados ,$idcountrie) {
 		
@@ -498,38 +510,6 @@ function traerDivisiones() {
 
 	function traerEquiposdelegadosPorCountrieFinalizado($id, $idtemporada) {
 		$sql = "SELECT 
-					ee.idequipo,
-					cou.nombre AS countrie,
-					ee.nombre,
-					cat.categoria,
-					di.division,
-					ee.fachebaja,
-					(CASE
-						WHEN ee.activo = 1 THEN 'Si'
-						ELSE 'No'
-					END) AS activo,
-					'Aceptado' as estado,
-					cat.orden,
-					ee.refdivisiones,
-					'label-success' as label,
-					3 as refestados
-				FROM
-					dbequipos ee
-						LEFT JOIN
-					dbequiposdelegados e ON ee.idequipo = e.idequipo and e.reftemporadas = ".$idtemporada."
-						INNER JOIN
-					dbcountries cou ON cou.idcountrie = ee.refcountries
-						INNER JOIN
-					tbcategorias cat ON cat.idtcategoria = ee.refcategorias
-						INNER JOIN
-					tbdivisiones di ON di.iddivision = ee.refdivisiones
-				
-				WHERE
-					ee.activo = 1 AND cou.idcountrie = ".$id." and e.idequipo is null
-					
-				union all
-				
-				SELECT 
 					e.idequipo,
 					cou.nombre AS countrie,
 					e.nombre,
@@ -549,7 +529,14 @@ function traerDivisiones() {
 						WHEN est.idestado = 3 THEN 'label-success'
 						WHEN est.idestado = 4 THEN 'label-danger'
 					END) AS label,
-					est.idestado as refestados
+					est.idestado as refestados,
+                    coalesce(max(fe.refcountries),0) as esfusion,
+                    e.idequipodelegado,
+                    (select 
+					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
+					from dbfusionequipos fe 
+					inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion
 				FROM
 					dbequiposdelegados e
 						INNER JOIN
@@ -560,9 +547,23 @@ function traerDivisiones() {
 					tbdivisiones di ON di.iddivision = e.refdivisiones
 						INNER JOIN
 					tbestados est ON est.idestado = e.refestados
+						left JOIN
+					dbfusionequipos fe ON fe.refequiposdelegados = e.idequipodelegado
 				WHERE
-					e.activo = 1 AND cou.idcountrie = ".$id."
-			AND e.reftemporadas = ".$idtemporada." 
+					(e.nuevo = 1 or (e.activo = 1 and e.nuevo = 0))  AND cou.idcountrie = ".$id."
+			AND e.reftemporadas = ".$idtemporada."
+            group by e.idequipo,
+					cou.nombre,
+					e.nombre,
+					cat.categoria,
+					di.division,
+					e.fechabaja,
+					e.activo,
+					est.estado,
+					cat.orden,
+					e.refdivisiones,
+					est.idestado,
+					est.idestado
 			order by 8,9"; 
 		
 		$res = $this->query($sql,0); 

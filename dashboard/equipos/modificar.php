@@ -251,6 +251,7 @@ switch ($idEstado) {
 													<th>CATEGORIA</th>
 													<th>DIVISION</th>
 													<th>ESTADO</th>
+													<th>FUSION</th>
 													<th>ARMAR PLANTEL</th>
 												</tr>
 											</thead>
@@ -261,6 +262,18 @@ switch ($idEstado) {
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
 												<td style="text-align: center;"><h4><span :class="['label', equipo.label ]">{{ equipo.estado }}</span></h4></td>
+												<td>
+													<div v-if="equipo.esfusion > 0">
+													<button v-if="equipo.fusion == 0" type='button' class='btn btn-warning waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
+														<i class="material-icons">search</i>
+														<span>Ver - No Cumple</span>
+													</button>
+													<button v-if="equipo.fusion == 3" type='button' class='btn btn-success waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
+														<i class="material-icons">search</i>
+														<span>Ver</span>
+													</button>
+													</div>
+												</td>
 												<td style="text-align: center;">
 													<div v-if="equipo.refestados == 3">
 													<button v-if="confirmado == 3" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
@@ -414,6 +427,12 @@ switch ($idEstado) {
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 	paramsGetEquipos.append('idtemporada',<?php echo $ultimaTemporada; ?>);
 
+
+	const paramsGeneral = new URLSearchParams();
+	paramsGeneral.append('accion','verFusion');
+	paramsGeneral.append('idequipodelegado',0);
+	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
+
 	Vue.component('modal', {
 		template: '#modal-template',
 		methods: {
@@ -509,6 +528,17 @@ switch ($idEstado) {
 			},
 			redirigir (id) {
 				window.location.href = 'plantel.php?id=' + id;
+			},
+			verFusionDelegados : function(id) {
+				paramsGeneral.set('idequipodelegado',id);
+				paramsGeneral.set('accion','traerFusionPorEquiposDelegados');
+
+				axios.post('../../ajax/ajax.php',paramsGeneral)
+				.then(res => {
+
+					this.$swal("Ok!", res.data.datos[0], "success")
+					
+				})
 			}
 		}
 	})

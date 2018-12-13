@@ -169,11 +169,34 @@ switch ($accion) {
 		case 'cambiarEstadoFusion':
 		cambiarEstadoFusion($serviciosReferencias);
 		break;
+		case 'cambiarEstadoTareas':
+		cambiarEstadoTareas($serviciosNotificaciones);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+	function cambiarEstadoTareas($serviciosNotificaciones) {
+		$id = $_POST['idfusionequipo'];
+		$refestados = $_POST['refestados'];
+
+		$res = $serviciosNotificaciones->cambiarEstadoTareas(0,$refestados,$id,'dbfusionequipos');
+
+		if ($res) { 
+			$resV['error'] = false; 
+			$resV['mensaje'] = 'Registro Modificado con exito!.'; 
+
+		} else { 
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'No se pudo modificar el Registro!'; 
+		} 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+
+	}
 
 	function cambiarEstadoFusion($serviciosReferencias) {
 		$id = $_POST['idfusionequipo'];

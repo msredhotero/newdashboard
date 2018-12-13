@@ -271,7 +271,7 @@ $idequipodelegado = $_GET['id'];
 																<i class="material-icons">clear</i>
 																<span>Rechazar</span>
 															</button>
-															<button style="margin-top:3px;" type='button' class='btn bg-blue waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 4)">
+															<button style="margin-top:3px;" type='button' class='btn bg-blue waves-effect' @click="cambiarEstadoTareas(fusion.idfusionequipo, 2)">
 																<i class="material-icons">update</i>
 																<span>Marcar en Curso</span>
 															</button>
@@ -406,7 +406,7 @@ $idequipodelegado = $_GET['id'];
 	
 
 	const paramsAcciones = new URLSearchParams();
-	paramsAcciones.append('accion','cambiarEstadoFusion');
+	paramsAcciones.append('accion','');
 	paramsAcciones.append('idfusionequipo',0);
 	paramsAcciones.append('refestados',0);
 
@@ -490,6 +490,26 @@ $idequipodelegado = $_GET['id'];
 			},
 			modificarEstadoFusion (id, estado) {
 
+				paramsAcciones.append('accion','cambiarEstadoFusion');
+				paramsAcciones.set('idfusionequipo', id);
+				paramsAcciones.set('refestados', estado);
+
+				axios.post('../../ajax/ajax.php',paramsAcciones)
+				.then(res => {
+                    
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+
+						this.getFusiones()
+
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+				})
+			},
+			cambiarEstadoTareas (id, estado) {
+
+				paramsAcciones.append('accion','cambiarEstadoTareas');
 				paramsAcciones.set('idfusionequipo', id);
 				paramsAcciones.set('refestados', estado);
 

@@ -9,6 +9,25 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosNotificaciones {
 
+    function cambiarEstadoTareas($idtarea=0, $refestado, $idpadre=0, $tablaMadre='') {
+        if ($idpadre != 0) {
+            switch ($tablaMadre) {
+                case 'dbfusionequipos':
+                        $sql = "update dbtareas set refestados = ".$refestado." where id1 = ".$idpadre;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+        } else {
+            $sql = "update dbtareas set refestados = ".$refestado." where idtarea = ".$idtarea;
+        }
+        
+        $res = $this->query($sql,0); 
+        return $res; 
+    }
+
     function insertarTareas($refcountries, $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$id1,$id2,$id3) {
         
         $sql = "INSERT INTO dbtareas
