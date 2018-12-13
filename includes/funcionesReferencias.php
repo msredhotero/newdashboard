@@ -79,6 +79,24 @@ class ServiciosReferencias {
         return '';
 	}
 
+
+	function traerJugadoresPorCountries($lstCountries) {
+	    $sql = "select
+	            j.nrodocumento,
+	            concat(j.apellido,', ',j.nombres) as apyn,
+	            j.email,
+	            j.fechanacimiento,
+	            j.observaciones
+	            from        dbjugadores j
+	            inner
+	            join        dbcountries cc
+	            on          cc.idcountrie = j.refcountries
+	            where       cc.idcountrie in (".$idCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00') 
+	            order by concat(j.apellido,', ',j.nombres)";    
+	    $res = $this->query($sql,0);
+	    return $res;
+	}
+
 	function cambiarEstadoTareas($idtarea=0, $refestado, $idpadre=0, $tablaMadre='') {
 		if ($idpadre != 0) {
 			switch ($tablaMadre) {

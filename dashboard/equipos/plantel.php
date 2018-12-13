@@ -122,6 +122,21 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 ////////////////////////////// 				FIN				  /////////////////////////
 
+/////////////////////////      BUSCO SI TIENE ALGUNA FUSION   ////////////////////////
+
+$resFusiones = $serviciosReferencias->traerFusionPorEquiposCountrie($idequipo, $_SESSION['idclub_aif']);
+$cadCountries = $_SESSION['idclub_aif'];
+if (mysql_num_rows($resFusiones) > 0) {
+	while ($row = mysql_fetch_array($resFusiones)) {
+		$cadCountries .= ','.$row['refcountries'];
+	}
+}
+
+
+/////////////////////////		FIN 						/////////////////////////
+
+$lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
+
 ?>
 
 <!DOCTYPE html>
@@ -271,6 +286,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												<strong>Importante!</strong> Los jugadores deben cumplir esta regla para ingresar: <span class="regla">{{ activeDefinicion }}</span>
 											</div>
 										</div>
+										<!--
 										<div class="col-lg-12 col-md-12">
 											<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
 												<label for="buscarlbl">Buscar Jugador:</label>
@@ -283,6 +299,20 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												</div>
 											</div>
 										</div>
+										-->
+										<div class="col-lg-12 col-md-12">
+											<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+												<label for="buscarlbl">Buscar Jugador:</label>
+											</div>
+											<div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+												<select class="form-control show-tick" data-live-search="true" id="refjugadores" name="refjugadores">
+			                                        <option>Hot Dog, Fries and a Soda</option>
+			                                        <option>Burger, Shake and a Smile</option>
+			                                        <option>Sugar, Spice and all things nice</option>
+			                                    </select>
+											</div>
+										</div>
+										
 									</div>
 								</div>
 
