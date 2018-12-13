@@ -162,11 +162,59 @@ switch ($accion) {
 		case 'traerFusionPorEquiposDelegados':
 		traerFusionPorEquiposDelegados($serviciosReferencias);
 		break;
+
+		case 'traerFusionesPorEquipo':
+		traerFusionesPorEquipo($serviciosReferencias);
+		break;
+		case 'cambiarEstadoFusion':
+		cambiarEstadoFusion($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+	function cambiarEstadoFusion($serviciosReferencias) {
+		$id = $_POST['idfusionequipo'];
+		$refestados = $_POST['refestados'];
+
+		$res = $serviciosReferencias->cambiarEstadoFusion($id, $refestados);
+
+		if ($res) { 
+			$resV['error'] = false; 
+			$resV['mensaje'] = 'Registro Modificado con exito!.'; 
+
+			$cambio = $serviciosReferencias->cambiarEstadoTareas(0,3,$id,'dbfusionequipos');
+
+		} else { 
+			$resV['error'] = true; 
+			$resV['mensaje'] = 'No se pudo modificar el Registro!'; 
+		} 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+
+	}
+
+	function traerFusionesPorEquipo($serviciosReferencias) {
+		$id = $_POST['idequipodelegado'];
+		$idcountrie = $_POST['idcountrie'];
+
+		$res = $serviciosReferencias->traerFusionesPorEquipo($id, $idcountrie);
+
+		$ar = array(); 
+		
+		while ($row = mysql_fetch_assoc($res)) { 
+			array_push($ar, $row); 
+		} 
+		
+		$resV['datos'] = $ar; 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+
+	}
 
 	function traerTareasGeneralPorCountrieIncompletas($serviciosNotificaciones) {
 		$id = $_POST['idcountrie'];
@@ -199,7 +247,7 @@ switch ($accion) {
 				}
 			}
 			$cad .= '<li>
-						<a href="javascript:void(0);" class=" waves-effect waves-block">
+						<a href="'.$row['url'].$row['id1'].'" class=" waves-effect waves-block">
 							<h4>
 								'.$row['tarea'].'
 								<small>'.$porcentaje.'%</small>

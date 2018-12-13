@@ -78,6 +78,34 @@ class ServiciosReferencias {
 
         return '';
 	}
+
+	function cambiarEstadoTareas($idtarea=0, $refestado, $idpadre=0, $tablaMadre='') {
+		if ($idpadre != 0) {
+			switch ($tablaMadre) {
+				case 'dbfusionequipos':
+						$sql = "update dbtareas set refestados = ".$refestado." where id1 = ".$idpadre;
+					break;
+				
+				default:
+					# code...
+					break;
+			}
+		} else {
+			$sql = "update dbtareas set refestados = ".$refestado." where idtarea = ".$idtarea;
+		}
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
+
+	function cambiarEstadoFusion($id, $refestados) {
+		$sql = "update dbfusionequipos 
+					set refestados = ".$refestados." 
+				where idfusionequipo = ".$id;
+
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
 	
 
 	function insertarFusionEquipos($refequipos, $refcountries, $refestados, $observacion) {
@@ -377,6 +405,30 @@ function traerDivisiones() {
 				where fe.refequiposdelegados = ".$idequiposdelegados." and ed.refcountries = ".$idcountrie;
 		
 		$res = $this->existeDevuelveId($sql);
+		return $res; 
+
+	}
+
+
+	function traerFusionesPorEquipo($idequiposdelegados ,$idcountrie) {
+		
+		$sql = "select 
+					fe.idfusionequipo,
+					cp.nombre as countriepadre,
+					cat.categoria,
+					di.division,
+					ed.nombre,
+					est.estado,
+					est.idestado
+				from dbfusionequipos fe 
+				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				inner join dbcountries cp on cp.idcountrie = ed.refcountries
+				inner join tbcategorias cat on cat.idtcategoria = ed.refcategorias
+				inner join tbdivisiones di on di.iddivision = ed.refdivisiones
+				inner join tbestados est on est.idestado = fe.refestados
+				where fe.idfusionequipo = ".$idequiposdelegados." and fe.refcountries = ".$idcountrie;
+		
+		$res = $this->query($sql,0);
 		return $res; 
 
 	}

@@ -112,22 +112,8 @@ $cadRefCountries 	= $serviciosFunciones->devolverSelectBox($resCountries,array(1
 
 $idusuario = $_SESSION['usuaid_aif'];
 
-$confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
-
-$idEstado = 0;
-//die(var_dump($confirmo));
-if ($confirmo == 0) {
-	$serviciosReferencias->insertarCabeceraconfirmacion( $ultimaTemporada, $_SESSION['idclub_aif'], 1, $_SESSION['nombre_aif'], $_SESSION['nombre_aif']);
-
-	$idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$confirmo,"idcabeceraconfirmacion");
-}
-
-if ($idEstado > 1) {
-	header('Location: modificar.php');
-}
-
-////////////////////////////		 verifico si existe alguna fusion donde no se confirmaron los countries /////////////////////////
-$verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountrie($_SESSION['idclub_aif']);
+////////////////////////////		 verifico que no entre por url de otro countrie /////////////////////////
+$idequipodelegado = $_GET['id'];
 
 ////////////////////////////// 				FIN				  /////////////////////////
 
@@ -241,244 +227,58 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 						<div class="body table-responsive">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<h4>Equipos Activos Actuales</h4>
-										<p>Recuerde que el plantel del equipo se deberá cargar </p>
-										<div class="alert alert-warning animated shake">
-											<strong>Importante!</strong> Toda la información será confirmada por la Asociación.
-										</div>
+										<h4>Fusion de Equipos</h4>
+										<form class="form" id="formCountryEquiposMantenidos">
+										<table class="table table-bordered table-striped table-hover highlight">
+											<thead>
+												<tr>
 
+												</tr>
+												<th>Countrie</th>
+												<th>Categoria</th>
+												<th>Division</th>
+												<th>Equipo</th>
+												<th>Estado Actual</th>
+												<th>Acciones</th>
+											</thead>
+											<tbody>
+												<tr v-for="fusion in fusiones" :key="fusion.idfusionequipo">
+													<td>{{ fusion.countriepadre }}</td>
+													<td>{{ fusion.categoria }}</td>
+													<td>{{ fusion.division }}</td>
+													<td>{{ fusion.nombre }}</td>
+													<td style="font-size:22px;">
+														<div v-if="fusion.idestado == 1">
+															<span class="label label-primary">{{ fusion.estado }}</span>
+														</div>
+														<div v-else-if="fusion.idestado == 3">
+															<span class="label label-success">{{ fusion.estado }}</span>
+														</div>
+														<div v-else="fusion.idestado == 3">
+															<span class="label label-danger">{{ fusion.estado }}</span>
+														</div>
+													</td>
+													<td>
+														<div v-if="fusion.idestado == 1">
+															<button type='button' class='btn bg-green waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 3)">
+																<i class="material-icons">done</i>
+																<span>Aprobar</span>
+															</button>
+															<button type='button' class='btn bg-red waves-effect' @click="modificarEstadoFusion(fusion.idfusionequipo, 4)">
+																<i class="material-icons">clear</i>
+																<span>Rechazar</span>
+															</button>
+														</div>
+														
+													</td>
+												</tr>
+											</tbody>
+										</table>
+										</form>
 									</div>
 									
 								</div>
-
-								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-									<form class="form" id="formCountryEquiposEstable">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Es Fusion</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquipos" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusion(equipo.idequipo)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
-												</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipoPasivo(equipo)">
-														<i class="material-icons">delete</i>
-														<span>Eliminar</span>
-													</button>
-													<button type='button' class='btn btn-success waves-effect' @click="mantenerEquipoPasivo(equipo)">
-														<i class="material-icons">add</i>
-														<span>Mantener</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
-									</form>
-										
-									</div>
-								</div>
-								<hr>
-								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4> <i class="material-icons">unarchive</i> Equipos que Quedarán</h4>
-									</div>
-									
-									<form class="form" id="formCountryEquiposMantenidos">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Es Fusion</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposMantenidos" :key="equipo.idequipodelegado">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
-												</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn bg-red waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">clear</i>
-														<span>Sacar</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
-									
-									</div>
-
-
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4> <i class="material-icons">remove_circle</i> Equipos que seran Eliminados</h4>
-									</div>
-									
-									<form class="form" id="formCountryEquiposEliminados">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposEliminados" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">autorenew</i>
-														<span>Habilitar</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
-									
-									</div>
-								</div>
-								<hr>
-								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									
-										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-											<h4> <i class="material-icons">add_circle</i> Equipos que seran Agregados</h4>
-										</div>
-										<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-											<button type="button" class="btn btn-success waves-effect" @click="showModalEquipo = true">
-                                    			<i class="material-icons">add_box</i>
-												<span>Agregar</span>
-											</button>
-										</div>
-									<form class="form" id="formCountryEquiposNuevos">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Es Fusion</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposNuevos" :key="equipo.idequipodelegado">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
-												</td>
-												
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
-												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquiposDelegadoDefinitivo' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">delete</i>
-														<span>Eliminar</span>
-													</button>
-													
-													
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-						
-											</tbody>
-										</table>
-									
-									</div>
-								</div>
-								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
-								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
-							
-							<div>
-							<div class="alert bg-indigo">
-								<strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.
-							</div>
-							
-							</form>
-							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
-							<div class="button-demo" v-show="verificarFusion == 3">
-								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
-                                    <i class="material-icons">save</i>
-                                    <span>GUARDAR</span>
-                                </button>
-								<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
-								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
-							</div>
-							</form>
-							</div>							
+					
 						</div>
 					</div>
 				</div>
@@ -556,76 +356,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 
 
-<form class="form" @submit.prevent="insertarEquiposdelegados">
-<script type="text/x-template" id="modal-template-equipo">
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-
-          <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
-          </div>
-
-          <div class="modal-body">
-            <slot name="body">
-
-			  	<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Nombre</label>
-						<div class="form-group">
-							<div class="form-line">
-								<input value="" type="text" class="form-control" id="nombre" name="nombre" require />
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Categoria</label>
-						<select class="form-control show-tick" id="refcategorias" name="refcategorias" require >
-							<?php echo $cadRefCategorias; ?>
-						</select>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Division</label>
-						<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require >
-							<?php echo $cadRefDivisiones; ?>
-						</select>
-					</div>
-
-					
-				</div>
-				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-						<label class="form-label">Seleccione el Countrie para fusionarse de ser necesario</label>
-						<select multiple class="form-control bootstrap-select show-tick" id="fusioncountries" name="fusioncountries" require >
-							<?php echo $cadRefCountries; ?>
-						</select>
-					</div>
-				</div>
-            </slot>
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-			<button class="btn bg-grey waves-effect" @click="$emit('close')">
-                CANCELAR
-			  </button>
-			  	<button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
-					<i class="material-icons">send</i>
-					<span>CREAR</span>
-				</button>
-				
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
-</script>
-</form>
-
   
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
@@ -637,17 +367,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
   </modal>
 
 
-  <!-- use the modal component, pass in the prop -->
-  <modal2 v-if="showModalEquipo" @close="showModalEquipo = false" @recargarequiposnuevos="getAllEquiposNuevos">
-    <!--
-      you can use custom content here to overwrite
-      default content
-    -->
-	<h3 slot="header">Crear Equipo</h3>
-	
-  </modal2>
-
-											
 </main>
 
 
@@ -671,56 +390,18 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 	
-	const paramsGetEquipos = new URLSearchParams();
-    paramsGetEquipos.append('accion','traerEquiposPorCountriesConFusion');
-	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquipos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 
-	const paramsGetEquiposEliminados = new URLSearchParams();
-    paramsGetEquiposEliminados.append('accion','traerEquiposdelegadosEliminadosPorCountrie');
-	paramsGetEquiposEliminados.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposEliminados.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-
-	const paramsGetEquiposNuevos = new URLSearchParams();
-    paramsGetEquiposNuevos.append('accion','traerEquiposdelegadosPorCountrie');
-	paramsGetEquiposNuevos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquiposNuevos.append('nuevo',1);
-
-	const paramsGetEquiposQuedan = new URLSearchParams();
-    paramsGetEquiposQuedan.append('accion','traerEquiposdelegadosPorCountrie');
-	paramsGetEquiposQuedan.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposQuedan.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquiposQuedan.append('nuevo',0);
-
-	const paramsCrearEquipo = new URLSearchParams();
-    paramsCrearEquipo.append('accion','insertarEquiposdelegados');
-	paramsCrearEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsCrearEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsCrearEquipo.append('idusuario',<?php echo  $idusuario; ?>);
-	paramsCrearEquipo.append('refcategorias',0);
-	paramsCrearEquipo.append('refdivisiones',0);
-	paramsCrearEquipo.append('nombre','');
-	paramsCrearEquipo.append('refcountries','');
-
-	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
-    paramsGetEliminarEquipoPasivo.append('accion','');
-	paramsGetEliminarEquipoPasivo.append('id',0);
-	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
-
-	const paramsMantenerEquipo = new URLSearchParams();
-	paramsMantenerEquipo.append('accion','mantenerEquipoPasivo');
-	paramsMantenerEquipo.append('id',0);
-	paramsMantenerEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsMantenerEquipo.append('idusuario',<?php echo  $idusuario; ?>);
-	paramsMantenerEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 
 	const paramsGeneral = new URLSearchParams();
-	paramsGeneral.append('accion','verFusion');
-	paramsGeneral.append('idequipodelegado',0);
+	paramsGeneral.append('accion','traerFusionesPorEquipo');
+	paramsGeneral.append('idequipodelegado',<?php echo $idequipodelegado; ?>);
 	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 	
+
+	const paramsAcciones = new URLSearchParams();
+	paramsAcciones.append('accion','cambiarEstadoFusion');
+	paramsAcciones.append('idfusionequipo',0);
+	paramsAcciones.append('refestados',0);
 
 
 	
@@ -750,66 +431,22 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	})
 
 
-	Vue.component('modal2', {
-
-		template: '#modal-template-equipo',
-		mounted () {
-			this.getAllEquiposNuevos()
-		},
-		methods: {
-			
-			crearEquipo () {
-				paramsCrearEquipo.set('nombre',$('#nombre').val());
-				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
-				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
-				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
-				paramsCrearEquipo.set('nuevo',1);
-				
-				
-				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
-				.then(res => {
-
-					if (res.data.error == '') {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)	
-						this.$emit('close')
-						
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-					
-				});
-			}
-
-		}
-	})
 
 
 	
 	const app = new Vue({
 		el: "#app",
 		data: {
-			pag: 1,
-			idclub: 5,
 			activeClass: 'waves-effect',
 			errorMensaje: '',
 			successMensaje: '',
 			activeDelegados: {},
-			activeEquipos: {},
-			activeEquiposEliminados: {},
-			activeEquiposNuevos: {},
-			activeEquiposMantenidos: {},
-			showModal: false,
-			showModalEquipo: false,
-			verificarFusion: <?php echo $verificarFusion; ?>	
-			
+			fusiones: {},
+			showModal: false
 		},
 		mounted () {
 			this.getDelegado()
-			this.getAllEquipos()
-			this.getAllEquiposEliminados()
-			this.getAllEquiposNuevos()
-			this.getAllEquiposQuedan()
+			this.getFusiones()
 		},
 		computed: {
 			
@@ -831,166 +468,35 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 			},
 			getDelegado () {
-					axios.post('../../ajax/ajax.php',paramsGetDelegado)
-					.then(res => {
-                        
-						this.activeDelegados = res.data.datos[0]
-					})
-			},
-			guardarDelegado (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
+				axios.post('../../ajax/ajax.php',paramsGetDelegado)
 				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-					
-				});
-
-				
+                    
+					this.activeDelegados = res.data.datos[0]
+				})
 			},
-			confirmarEquipos (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						setTimeout(function(){
-							window.location.href = 'modificar.php';
-						}, 2000);
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-					
-				});
-			},
-			getAllEquipos () {
-					axios.post('../../ajax/ajax.php',paramsGetEquipos)
-					.then(res => {
-                        
-						this.activeEquipos = res.data.datos
-					})
-			},
-			getAllEquiposEliminados () {
-					axios.post('../../ajax/ajax.php',paramsGetEquiposEliminados)
-					.then(res => {
-                        
-						this.activeEquiposEliminados = res.data.datos
-					})
-			},
-			verFusion : function(id) {
-				paramsGeneral.set('idequipodelegado',id);
-				paramsGeneral.set('accion','verFusion');
-
+			getFusiones () {
 				axios.post('../../ajax/ajax.php',paramsGeneral)
 				.then(res => {
-					this.$swal("Ok!", 'Fusion: ' + res.data.datos[0], "success")
-					
+                    
+					this.fusiones = res.data.datos
 				})
 			},
-			verFusionDelegados : function(id) {
-				paramsGeneral.set('idequipodelegado',id);
-				paramsGeneral.set('accion','traerFusionPorEquiposDelegados');
+			modificarEstadoFusion (id, estado) {
 
-				axios.post('../../ajax/ajax.php',paramsGeneral)
+				paramsAcciones.set('idfusionequipo', id);
+				paramsAcciones.set('refestados', estado);
+
+				axios.post('../../ajax/ajax.php',paramsAcciones)
 				.then(res => {
-
-					this.$swal("Ok!", res.data.datos[0], "success")
-					
-				})
-			},
-			eliminarEquipoPasivo : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-					
+                    
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
-						this.getAllEquiposEliminados()
-						this.getAllEquipos()
+						this.getFusiones()
+
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-				})
-			},
-			mantenerEquipoPasivo : function(equi){
-
-				paramsMantenerEquipo.set('id',equi.idequipo);
-
-				axios.post('../../ajax/ajax.php',paramsMantenerEquipo)
-				.then(res => {
-					
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposQuedan()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			
-
-			eliminarEquipoDelegado : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-					
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposEliminados()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			eliminarEquiposDelegadoDefinitivo : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipodelegado);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquiposdelegados');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-					
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.getAllEquiposEliminados()
-						this.getAllEquiposNuevos()
-						this.getAllEquiposQuedan()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			getAllEquiposNuevos () {
-
-				axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
-				.then(res => {
-					
-					this.activeEquiposNuevos = res.data.datos
-
-				})
-			},
-			getAllEquiposQuedan () {
-
-				axios.post('../../ajax/ajax.php',paramsGetEquiposQuedan)
-				.then(res => {
-					
-					this.activeEquiposMantenidos = res.data.datos
-
 				})
 			}
 
