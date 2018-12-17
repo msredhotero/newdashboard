@@ -122,6 +122,11 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 ////////////////////////////// 				FIN				  /////////////////////////
 
+
+$resTipoJugador		=	$serviciosReferencias->traerTipojugadores();
+$cadRefTipoJug		=	$serviciosFunciones->devolverSelectBox($resTipoJugador,array(1),'');
+
+
 /////////////////////////      BUSCO SI TIENE ALGUNA FUSION   ////////////////////////
 
 $resFusiones = $serviciosReferencias->traerFusionPorEquiposCountrie($idequipo, $_SESSION['idclub_aif']);
@@ -134,8 +139,10 @@ if (mysql_num_rows($resFusiones) > 0) {
 
 
 /////////////////////////		FIN 						/////////////////////////
-
-$lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
+/*
+$lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries($cadCountries);
+$cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCountries,array(1,2),' - ');
+*/
 
 ?>
 
@@ -182,6 +189,10 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 
 		
 	</style>
+
+	<!-- CSS file -->
+	<link rel="stylesheet" href="../../css/easy-autocomplete.min.css">
+	<link rel="stylesheet" href="../../css/easy-autocomplete.themes.min.css">
 	
 
 </head>
@@ -272,6 +283,9 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 
 											<div class="body">
 												<h4 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>PLANTEL</b></h4>
+												<div class="lstPlantel">
+
+												</div>
 											</div>
 											
 											<div class="card-action">
@@ -281,36 +295,60 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 										</div>
 									</div>
 									<div class="col-lg-6 col-md-6">
+										<div class="row">
 										<div class="col-lg-12 col-md-12">
 											<div class="alert bg-red animated shake">
 												<strong>Importante!</strong> Los jugadores deben cumplir esta regla para ingresar: <span class="regla">{{ activeDefinicion }}</span>
 											</div>
 										</div>
-										<!--
+										</div>
+										<div class="row">
 										<div class="col-lg-12 col-md-12">
-											<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
 												<label for="buscarlbl">Buscar Jugador:</label>
 											</div>
-											<div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
-												<div class="form-group">
-													<div class="form-line">
-														<input type="text" id="buscar" class="form-control" placeholder="Ingrese los datos de la busqueda y presiona Enter" v-model="busqueda" v-on:keyup.enter="buscarJugadoresPorClub" />
-													</div>
+											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
+					                        	<div style="position: relative; height: 80px;">
+					                                
+					                                <input id="round" class="countrie" style="widows:100%;"/>
+					                            </div>
+					                            <div id="selction-ajax"></div>
+					                            
+					                        
+											</div>
+										</div>
+										</div>
+										<div class="row">
+										<div class="col-lg-12 col-md-12">
+											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+												<label for="buscarlbl">Tipo Jugador:</label>
+											</div>
+											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
+												<select class="form-control show-tick" data-live-search="true" id="reftipojugadores" name="reftipojugadores">
+			                                        <?php echo $cadRefTipoJug; ?>
+			                                    </select>
+											</div>
+										</div>
+										</div>
+										<div class="row">
+										<div class="col-lg-12 col-md-12">
+											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+												<label for="buscarlbl">Solicitar Habilitación:</label>
+											</div>
+
+											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
+												<div class='switch'>
+												<label><input type='checkbox' id="habilita" name="habilita"/><span class='lever switch-col-green'></span></label>
 												</div>
 											</div>
 										</div>
-										-->
+										</div>
+										<div class="row">
 										<div class="col-lg-12 col-md-12">
-											<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
-												<label for="buscarlbl">Buscar Jugador:</label>
+											<div class="alert bg-orange animated bounce delay-5s">
+												<i class="material-icons">assignment_late</i> <strong>Aclaración!</strong> La habilitación la autorizará la asociación
 											</div>
-											<div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
-												<select class="form-control show-tick" data-live-search="true" id="refjugadores" name="refjugadores">
-			                                        <option>Hot Dog, Fries and a Soda</option>
-			                                        <option>Burger, Shake and a Smile</option>
-			                                        <option>Sugar, Spice and all things nice</option>
-			                                    </select>
-											</div>
+										</div>
 										</div>
 										
 									</div>
@@ -331,6 +369,11 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 										<i class="material-icons">print</i>
 										<span>IMPRIMIR LISTA DE BUENA FE</span>
 									</button>
+
+									<button type="button" class="btn bg-teal waves-effect imprimir">
+										<i class="material-icons">done</i>
+										<span>FINALIZAR</span>
+									</button>
 									
 								</div>
 								
@@ -340,6 +383,43 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 							</form>
 							</div>							
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row clearfix">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="card">
+					<div class="header">
+						<h2>
+							SELECCIONE LA IMAGEN DEL ESCUDO DEL EQUIPO PARA SUBIR
+						</h2>
+						<ul class="header-dropdown m-r--5">
+							<li class="dropdown">
+								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+									<i class="material-icons">more_vert</i>
+								</a>
+								<ul class="dropdown-menu pull-right">
+									
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div class="body">
+						<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
+							<div class="dz-message">
+								<div class="drag-icon-cph">
+									<i class="material-icons">touch_app</i>
+								</div>
+								<h3>Arrastre y suelte una imagen aqui o haga click y busque una imagen en su ordenador.</h3>
+								
+							</div>
+							<div class="fallback">
+								<input name="file" type="file" id="archivos" />
+								
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -357,7 +437,12 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 
 <script src="../../js/pages/ui/animations.js"></script>
 
+<script src="../../js/jquery.easy-autocomplete.min.js"></script> 
 
+<script src="../../js/pages/ui/tooltips-popovers.js"></script>
+
+<!-- Dropzone Plugin Js -->
+<script src="../../plugins/dropzone/dropzone.js"></script>
 
 <!-- Modal Large Size -->
 <transition name="fade">
@@ -440,10 +525,188 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 	
 
 	$(document).ready(function(){
+		function traerImagen() {
+			$.ajax({
+				data:  {id: <?php echo $idequipo; ?>, 
+						accion: 'traerImgenEquipo'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+						
+				},
+				success:  function (response) {
+
+					$(".thumbnail img").attr("src",response);
+						
+				}
+			});
+		}
+
+		Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
+
+		Dropzone.options.frmFileUpload = {
+			maxFilesize: 2,
+			addRemoveLinks: true,
+			acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+			accept: function(file, done) {
+				done();
+			},
+			init: function() {
+				this.on('success', function( file, resp ){
+					traerImagen();
+					swal("Correcto!", resp.replace("1", ""), "success");
+				});
+
+				this.on('error', function( file, resp ){
+					swal("Error!", resp.replace("1", ""), "warning");
+				});
+			}
+		};
 
 		$('.imprimir').click(function() {
 			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');	
 		});
+
+		function eliminarJugadorDePlantel(id) {
+			$.ajax({
+				data:  {id: id, 
+						accion: 'eliminarConectorDefinitivamenteDelegado'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+						
+				},
+				success:  function (response) {
+					traerJugadoresPlantel();
+						
+				}
+			});
+		}
+
+
+		function showConfirmMessage(id) {
+		    swal({
+		        title: "¿Desea Eliminar al jugador del Plantel?",
+		        text: "Solo eliminara el jugador del plantel, no eliminara al jugador de la base de datos!",
+		        type: "warning",
+		        showCancelButton: true,
+		        confirmButtonColor: "#DD6B55",
+		        confirmButtonText: "Si!",
+		        closeOnConfirm: false
+		    }, function () {
+		    	eliminarJugadorDePlantel(id);
+		        swal("Eliminado!", "El jugador fue eliminado con exito.", "success");
+		    });
+		}
+
+
+		$(document).on('click', '.varEliminarJugador', function(e){
+
+			  if (!isNaN($(this).attr("id"))) {
+				
+				showConfirmMessage($(this).attr("id"));
+
+			  } else {
+				alert("Error, vuelva a realizar la acción.");	
+			  }
+		});//fin del boton eliminar
+
+		function traerJugadoresPlantel() {
+			
+			$.ajax({
+				data:  {id: <?php echo $idequipo; ?>, 
+						reftemporadas: <?php echo $ultimaTemporada; ?>, 
+						accion: 'traerConectorActivosPorEquiposDelegado'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+				
+				},
+				success:  function (response) {
+					
+					$('.lstPlantel').html(response);
+					
+				}
+			});	
+		}
+
+		traerJugadoresPlantel();
+
+		function agregarJugador(refjugadores, reftipojugadores, refequipos, refcountries, refcategorias, reftemporada) {
+		
+			$.ajax({
+				data:  {refjugadores: refjugadores, 
+						reftipojugadores: reftipojugadores, 
+						refequipos: refequipos, 
+						reftemporada: reftemporada,
+						refcountries: refcountries,
+						refcategorias: refcategorias,
+						habilita: $('#habilita').prop('checked') ? 1 : 0,
+						accion: 'insertarConectorAjax'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+				
+				},
+				success:  function (response) {
+					if (response == '') {
+						traerJugadoresPlantel();
+					} else {
+						swal("Error!", response, "error");
+					}
+					
+				}
+			});	
+		}
+		
+		$(document).on('click', '.agregarJugador', function(e){
+			agregarJugador($(this).attr("id"), $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>);
+			
+		});//fin del boton modificar
+
+
+		var options = {
+
+		  url: function(phrase) {
+			return "../../json/jugadoresPorEquipos.php?countrie='<?php echo $cadCountries; ?>'";
+		  },
+		
+		  getValue: function(element) {
+			return element.name;
+		  },
+		
+		  ajaxSettings: {
+			dataType: "json",
+			method: "GET",
+			data: {
+			  dataType: "json"
+			}
+		  },
+		
+		  preparePostData: function(data) {
+			data.phrase = $("#round").val();
+			return data;
+		  },
+		  
+		  list: {
+				onClickEvent: function() {
+					var value = $("#round").getSelectedItemData().id;
+		
+					$('#selction-ajax').html('<button type="button" id="' + value + '" class="btn bg-green waves-effect agregarJugador"> \
+													<i class="material-icons">add</i> \
+													<span>CARGAR</span> \
+												</button>');
+				},
+				
+				match: {
+					enabled: true
+				}
+		  },
+		  theme: "round",
+		  requestDelay: 100
+		};
+		
+		$("#round").easyAutocomplete(options);
 		
 
 	});
@@ -456,6 +719,11 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
+
+	const paramsBasico = new URLSearchParams();
+    paramsBasico.append('accion','traerJugadoresPorCountries');
+	paramsBasico.append('lstcountries',<?php echo $cadCountries; ?>);
+
 	
 	const paramsGeneral = new URLSearchParams();
 	paramsGeneral.append('accion', 'traerDefinicionesPorTemporadaCategoriaTipoJugador');
@@ -500,6 +768,7 @@ $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries();
 			errorMensaje: '',
 			successMensaje: '',
 			activeDelegados: {},
+			activeJugadores: {},
 			activeDefinicion: [],
 			showModal: false,
 			confirmado: <?php echo $idEstado; ?>,

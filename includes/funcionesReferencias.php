@@ -80,10 +80,73 @@ class ServiciosReferencias {
 	}
 
 
+	function existeConectorJugadorEquipo($reftemporadas, $refJugador, $refEquipo) {
+	    $sql = "select idconector from dbconectordelegados where refjugadores =".$refJugador." and refequipos = ".$refEquipo." and activo = 1 and reftemporadas = ".$reftemporadas;
+	    $res = $this->query($sql,0);
+	    
+	    if (mysql_num_rows($res)>0) {
+	        return 1;   
+	    }
+	    return 0;
+	}
+
+	/****** VERIFICO LA EDAD ******/////
+	function verificarEdad($refjugador) {
+	    $sql = "select DATE_FORMAT(fechanacimiento, '%Y') as fechanacimiento from dbjugadores where idjugador =".$refjugador;
+	    $res = $this->query($sql,0);
+	    
+	    $fechactual = date('Y');
+	    $edadJuagador = mysql_result($res,0,'fechanacimiento');
+	    
+	    $edad = $fechactual - $edadJuagador;
+	    
+	    return $edad;   
+	}
+
+	/******   COMPRUEBO SI PUEDO JUGAR EN ESA CATEGORIA Y TIPO DE JUGADOR, POR LA EDAD     *************/
+	function verificaEdadCategoriaJugador($refjugador, $refcategoria, $tipoJugador) {
+	    //## falta chocar contra una temporada
+	    $edad = $this->verificarEdad($refjugador);
+	    
+	    $sql = "SELECT 
+	                count(*) as verificado
+	            FROM
+	                dbdefinicionescategoriastemporadastipojugador dc
+	                    INNER JOIN
+	                (SELECT 
+	                    iddefinicioncategoriatemporada
+	                FROM
+	                    dbdefinicionescategoriastemporadas ct
+	                WHERE
+	                    ct.refcategorias = ".$refcategoria."
+	                ORDER BY iddefinicioncategoriatemporada DESC
+	                LIMIT 1) c
+	                on c.iddefinicioncategoriatemporada = dc.refdefinicionescategoriastemporadas
+	                where dc.reftipojugadores = ".$tipoJugador." and ".$edad." between dc.edadminima and dc.edadmaxima";
+	    $res = $this->query($sql,0);
+	    
+	    return mysql_result($res,0,0);
+	}
+
+	function traerTipojugadores() { 
+		$sql = "select 
+		t.idtipojugador,
+		t.tipojugador,
+		t.abreviatura
+		from tbtipojugadores t 
+		order by 1"; 
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+
+
 	function traerJugadoresPorCountries($lstCountries) {
 	    $sql = "select
+	    		j.idjugador,
 	            j.nrodocumento,
 	            concat(j.apellido,', ',j.nombres) as apyn,
+	            j.apellido,
+	            j.nombres,
 	            j.email,
 	            j.fechanacimiento,
 	            j.observaciones
@@ -91,11 +154,18 @@ class ServiciosReferencias {
 	            inner
 	            join        dbcountries cc
 	            on          cc.idcountrie = j.refcountries
-	            where       cc.idcountrie in (".$idCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00') 
+	            where       cc.idcountrie in (".$lstCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00') 
 	            order by concat(j.apellido,', ',j.nombres)";    
 	    $res = $this->query($sql,0);
 	    return $res;
 	}
+
+	function traerJugadoresPorId($id) { 
+		$sql = "select idjugador,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,fechabaja,refcountries,observaciones from dbjugadores where idjugador =".$id; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
 
 	function cambiarEstadoTareas($idtarea=0, $refestado, $idpadre=0, $tablaMadre='') {
 		if ($idpadre != 0) {
@@ -178,9 +248,9 @@ class ServiciosReferencias {
 
 /* PARA Conectordelegados */
 
-function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados) { 
-	$sql = "insert into dbconectordelegados(idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados) 
-	values ('',".$reftemporadas.",".$refusuarios.",".$refjugadores.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.",".$refestados.")"; 
+function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados,$habilitacionpendiente) { 
+	$sql = "insert into dbconectordelegados(idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados,habilitacionpendiente) 
+	values ('',".$reftemporadas.",'".$refusuarios."',".$refjugadores.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.",".$refestados.",".$habilitacionpendiente.")"; 
 	$res = $this->query($sql,1); 
 	return $res; 
 	} 
@@ -1037,7 +1107,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 	}
 	
 	
-	function traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, $refusuarios) {
+	function traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, $refusuarios='') {
 	$sql = "select 
 		c.idconector,
 		cat.categoria,
@@ -1057,7 +1127,8 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tip.idtipojugador,
 		year(now()) - year(jug.fechanacimiento) as edad,
 		jug.fechabaja,
-		jug.fechaalta
+		jug.fechaalta,
+		(case when c.habilitacionpendiente = 1 then 'Si' else 'No' end) as habilitacionpendiente
 	
 	from
 	dbconectordelegados c
@@ -1070,17 +1141,15 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 			inner join
 		tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
 			inner join
-		dbequipos equ ON equ.idequipo = c.refequipos
+		dbequiposdelegados equ ON equ.idequipo = c.refequipos
 			inner join
 		tbdivisiones di ON di.iddivision = equ.refdivisiones
-			inner join
-		dbcontactos con ON con.idcontacto = equ.refcontactos
 			inner join
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
 		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
-				and c.refusuarios = ".$refusuarios."
+				or c.refusuarios = '".$refusuarios."'
 	order by concat(jug.apellido,', ',jug.nombres)";
 	$res = $this->query($sql,0);
 	return $res;

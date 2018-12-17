@@ -172,11 +172,171 @@ switch ($accion) {
 		case 'cambiarEstadoTareas':
 		cambiarEstadoTareas($serviciosNotificaciones);
 		break;
+
+		case 'traerJugadoresPorCountries':
+		traerJugadoresPorCountries($serviciosReferencias);
+		break;
+		case 'traerConectorActivosPorEquiposDelegado':
+		traerConectorActivosPorEquiposDelegado($serviciosReferencias);
+		break;
+		case 'eliminarConectorDefinitivamenteDelegado':
+		eliminarConectorDefinitivamenteDelegado($serviciosReferencias);
+		break;
+		case 'insertarConectorAjax':
+		insertarConectorAjax($serviciosReferencias);
+		break;
 		
 /* Fin */
 
 }
 /* Fin */
+
+	function eliminarConectorDefinitivamenteDelegado($serviciosReferencias) {
+
+		$id = $_POST['id']; 
+	
+		//verifico que no esta cargado en ningun fixture sino le doy una baja logica  //eliminarConector
+		$res = $serviciosReferencias->eliminarConectorDefinitivamenteDelegado($id); 
+		echo $res; 
+	} 
+
+	function traerConectorActivosPorEquiposDelegado($serviciosReferencias) {
+		$refEquipos = $_POST['id'];
+		$reftemporadas = $_POST['reftemporadas'];
+
+		$res = $serviciosReferencias->traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, '');
+
+		$cad = '';
+		
+		$habilitacionpendiente = '';
+		while ($row = mysql_fetch_array($res)) {
+
+			
+			$cad .= '<div class="row">';
+
+			$cad .= '<div class="col-lg-1 col-md-1 col-xs-2 col-sm-2">';
+			if ($row['habilitacionpendiente'] == 'Si') {
+				$cad .= '<p style="margin-top:6px; color:#FF5722;"><i class="material-icons">assignment_late</i></p>';
+			} else {
+				$cad .= '<p></p>';
+			}
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-5 col-md-5 col-xs-8 col-sm-8">';
+			if ($row['habilitacionpendiente'] == 'Si') {
+				$cad .= '<h4>'.strtoupper($row['nombrecompleto']).'<h4>';
+			} else {
+				$cad .= '<h4>'.strtoupper($row['nombrecompleto']).'<h4>';
+			}
+			
+			$cad .= '</div>';
+			
+			$cad .= '<div class="col-lg-2 col-md-2 col-xs-4 col-sm-4">';
+			$cad .= '<p>'.$row['nrodocumento'].' <b>Edad: '.$row['edad'].'</b></p>';
+			$cad .= '</div>';
+			
+			$cad .= '<div class="col-lg-2 col-md-2 col-xs-6 col-sm-6">';
+			$cad .= '<p>'.$row['tipojugador'].'</p>';
+			$cad .= '</div>';
+			
+			$cad .= '<div class="col-lg-2 col-md-2 col-xs-6 col-sm-6">';
+			$cad .= '<button type="button" id="'.$row['idconector'].'" class="btn bg-red btn-circle waves-effect waves-circle waves-float varEliminarJugador">
+                        <i class="material-icons">remove_circle</i>
+                    </button>';
+			$cad .= '</div>';
+
+			$cad .= '<hr></div>';
+
+		}
+
+		echo $cad;
+	}
+
+	function insertarConectorAjax($serviciosReferencias) { 
+		$refjugadores = $_POST['refjugadores']; 
+		$reftipojugadores = $_POST['reftipojugadores']; 
+		$refequipos = $_POST['refequipos']; 
+		$reftemporada = $_POST['reftemporada'];
+		$refcountries = $_POST['refcountries'];
+		$refcategorias = $_POST['refcategorias'];
+		$habilita = $_POST['habilita'];
+
+		$resJugador = $serviciosReferencias->traerJugadoresPorId($refjugadores);
+
+		$refcountriesaux = mysql_result($resJugador,0,'refcountries'); 
+		
+		$refestados = 1;
+
+		session_start();
+
+		$contacto = $_SESSION['email_aif'];
+
+		$refusuarios = $_SESSION['usua_aif'];
+
+		$refusuarios = '';
+		
+		if ($refcountriesaux <> $refcountries) { 
+			$refcountries = $refcountriesaux;
+			$esfusion	= 1; 
+		} else { 
+			$esfusion = 0; 
+		} 
+		
+		$activo	= 1; 
+
+		$cad = '';
+		
+		//// verifico si el jugador ya fue cargado 1=existe, 0=no existe /////
+		$existeJugador = $serviciosReferencias->existeConectorJugadorEquipo($reftemporada, $refjugadores, $refequipos);	
+		
+		///  verifico si cumple con la edad 	1=ok, 0=mal	/////
+		$vEdad = $serviciosReferencias->verificaEdadCategoriaJugador($refjugadores, $refcategorias, $reftipojugadores);
+		
+
+		if ($existeJugador == 0) {
+			if (($vEdad == 1) || ($habilita == 1)) {
+				$res = $serviciosReferencias->insertarConectordelegados($reftemporada,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados, $habilita); 
+				if ((integer)$res > 0) { 
+					
+					$cad = '';
+					
+					echo $cad; 
+				} else { 
+					echo 'Huvo un error al insertar datos';	 
+				} 
+			} else {
+				echo 'El jugador no cumple con la edad';	
+			}
+		} else {
+			echo 'El jugador ya fue cargado en este equipo';	
+		}
+		
+	} 
+
+	function traerJugadoresPorCountries($serviciosReferencias) {
+		$lstcountries = $_POST['lstcountries'];
+
+		$res = $serviciosReferencias->traerJugadoresPorCountries($lstcountries);
+
+		$ar = array(); 
+		
+		while ($row = mysql_fetch_assoc($res)) { 
+
+			$arNuevo = array('apyn'=> utf8_encode($row['apyn']),
+						'nrodocumento'=>$row['nrodocumento'],
+						'idjugador'=>$row['idjugador'],
+						'fechanacimiento' => $row['fechanacimiento']
+			);
+			
+			array_push($ar, $arNuevo); 
+
+		} 
+		
+		$resV['datos'] = $ar; 
+
+		header('Content-type: application/json'); 
+		echo json_encode($resV); 
+	}
 
 	function cambiarEstadoTareas($serviciosNotificaciones) {
 		$id = $_POST['idfusionequipo'];
