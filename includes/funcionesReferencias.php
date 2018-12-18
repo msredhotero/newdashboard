@@ -624,7 +624,11 @@ function traerDivisiones() {
 					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
 					from dbfusionequipos fe 
 					inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
-					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion
+					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion,
+					(CASE
+						WHEN e.nuevo = 1 THEN 'Si'
+						ELSE 'No'
+					END) AS nuevo
 				FROM
 					dbequiposdelegados e
 						INNER JOIN
@@ -658,7 +662,8 @@ function traerDivisiones() {
 		
 		return $res; 
 	}
-
+	
+	
 	function traerEquiposFusionPorEquipo($idequipo, $idtemporada) {
 		$sql = "SELECT 
 					cc.nombre
