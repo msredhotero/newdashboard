@@ -1624,11 +1624,13 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 						INNER JOIN
 					dbconector cc ON cc.refequipos = e.idequipo
 						INNER JOIN
-					dbcountries c ON c.idcountrie = cc.refcountries
+					dbjugadores jug on jug.idjugador = cc.refjugadores
+						INNER JOIN
+					dbcountries c ON c.idcountrie = jug.refcountries
 						INNER JOIN
 					dbcountries ce ON ce.idcountrie = e.refcountries
 				WHERE
-					cc.activo = 1 AND cc.esfusion = 1
+					cc.activo = 1
 						AND e.activo = 1
 						AND c.idcountrie <> ce.idcountrie
 						AND e.idequipo = ".$idequipo."
@@ -1686,11 +1688,13 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 							INNER JOIN
 						dbconector cc ON cc.refequipos = e.idequipo
 							INNER JOIN
-						dbcountries c ON c.idcountrie = cc.refcountries
+						dbjugadores jug on jug.idjugador = cc.refjugadores
+							INNER JOIN
+						dbcountries c ON c.idcountrie = jug.refcountries
 							INNER JOIN
 						dbcountries ce ON ce.idcountrie = e.refcountries
 					WHERE
-						cc.activo = 1 AND cc.esfusion = 1
+						cc.activo = 1
 							AND e.activo = 1
 							AND c.idcountrie <> ce.idcountrie
 					GROUP BY ce.nombre , e.nombre , c.nombre , cc.refcountries , cc.refequipos) r
