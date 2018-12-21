@@ -98,7 +98,7 @@ $habilitado = 0;
 if (mysql_num_rows($resHabilitado)>0) {
 	$habilitado = 1;
 } else {
-	$habilitado = 1;
+	$habilitado = 0;
 }
 /////////////////////// Opciones para la creacion del view  apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email/////////////////////
 
@@ -306,7 +306,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 									<td>{{ jugador.apellido }}</td>
 									<td>{{ jugador.nombres }}</td>
 									<td>{{ jugador.nrodocumento }}</td>
-									<td><input class='form-control' type='text' name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/></td>
+									<td><input class='form-control' type='text' readonly="readonly" name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/></td>
 									<td>
 									<div class='switch'>
 										<label><input type='checkbox' v-model="jugador.fechabajacheck"/><span class='lever switch-col-green'></span></label>
@@ -375,10 +375,12 @@ if ($_SESSION['refroll_aif'] != 1) {
                         </div>
                         <div class="body table-responsive">
 							<div class="row" style="margin-bottom:10px;">
+							<?php if ($habilitado == 1) { ?>
 							<button type="button" class="btn btn-success waves-effect" data-toggle="modal" data-target="#myModal3" id="agregarContacto">
 								<i class="material-icons">add_circle</i>
 								<span>Agregar Jugador</span>
 							</button>
+							<?php } ?>
 							</div>
 						<form class="form-inline formulario" role="form">
 						<table class="table table-bordered table-striped table-hover js-basic-example dataTable highlight" id="example1">
@@ -605,7 +607,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 <!-- Modal Large Size -->
 <transition name="fade">
 <form class="form" @submit.prevent="guardarDelegado">
-<?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
+<?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
 </form>
 </transition>
 
@@ -675,6 +677,15 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 <script>
 	$(document).ready(function(){
+
+		$('#btnImprimir').click(function() {
+			window.open("../../reportes/rptJugadoresPorCountries.php?refcountries1=" + <?php echo $refClub; ?> + "&bajas1=0" ,'_blank');
+		});
+
+
+		$('#btnCondicionJugador').click(function() {
+			window.open("../../reportes/rptCondicionJugadorManual.php?id=0&reftemporada=" + <?php echo $ultimaTemporada; ?> + "&bajaequipos=1" + "&refcountries=" + <?php echo $refClub; ?> + "&anio=" + $('#anio').val() ,'_blank');
+		});
 
 		var $demoMaskedInput = $('.demo-masked-input');
 

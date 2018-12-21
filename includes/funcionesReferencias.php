@@ -79,6 +79,331 @@ class ServiciosReferencias {
         return '';
 	}
 
+	function traerDefinicionesPorTemporadaCategoria($idTemporada, $idCategoria) {
+	    $sql = "select
+	                max(dct.cantmaxjugadores) as cantmaxjugadores, max(dctj.edadmaxima) as edadmaxima, max(dctj.edadminima) as edadminima, max((dctj.edadmaxima + dctj.edadminima) /2) as promedio
+	            from        dbdefinicionescategoriastemporadas dct
+	            inner
+	            join        dbdefinicionescategoriastemporadastipojugador dctj
+	            on          dct.iddefinicioncategoriatemporada = dctj.refdefinicionescategoriastemporadas
+	            where       dct.reftemporadas = ".$idTemporada." and refcategorias = ".$idCategoria;
+	    $res = $this->query($sql,0); 
+	    return $res;    
+	}
+
+
+	function traerConectorActivosPorEquipos($refEquipos) {
+		$sql = "select 
+		    c.idconector,
+		    cat.categoria,
+		    equ.nombre as equipo,
+		    co.nombre as countrie,
+		    tip.tipojugador,
+		    (case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+		    (case when c.activo = 1 then 'Si' else 'No' end) as activo,
+		    c.refjugadores,
+		    c.reftipojugadores,
+		    c.refequipos,
+		    c.refcountries,
+		    c.refcategorias,
+		    concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+		    jug.nrodocumento,
+		    jug.fechanacimiento,
+		    tip.idtipojugador,
+		    year(now()) - year(jug.fechanacimiento) as edad,
+		    jug.fechabaja,
+		    jug.fechaalta
+
+		from
+		    dbconector c
+		        inner join
+		    dbjugadores jug ON jug.idjugador = c.refjugadores
+		        inner join
+		    tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+		        inner join
+		    dbcountries co ON co.idcountrie = jug.refcountries
+		        inner join
+		    tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+		        inner join
+		    dbequipos equ ON equ.idequipo = c.refequipos
+		        inner join
+		    tbdivisiones di ON di.iddivision = equ.refdivisiones
+		        inner join
+		    dbcontactos con ON con.idcontacto = equ.refcontactos
+		        inner join
+		    tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+		        inner join
+		    tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		    where equ.idequipo = ".$refEquipos." and c.activo = 1
+		order by concat(jug.apellido,', ',jug.nombres)";
+		
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function traerConectorActivosPorEquiposEdades($refEquipos) {
+		$sql = "select 
+		    min(year(now()) - year(jug.fechanacimiento)) as edadMinima,
+		    max(year(now()) - year(jug.fechanacimiento)) as edadMaxima,
+		    count(*) as cantidadJugadores,
+		    round((max(year(now()) - year(jug.fechanacimiento)) + min(year(now()) - year(jug.fechanacimiento)))/2,2) as edadPromedio 
+		from
+		    dbconector c
+		        inner join
+		    dbjugadores jug ON jug.idjugador = c.refjugadores
+		        inner join
+		    tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+		        inner join
+		    dbcountries co ON co.idcountrie = jug.refcountries
+		        inner join
+		    tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+		        inner join
+		    dbequipos equ ON equ.idequipo = c.refequipos
+		        inner join
+		    tbdivisiones di ON di.iddivision = equ.refdivisiones
+		        inner join
+		    dbcontactos con ON con.idcontacto = equ.refcontactos
+		        inner join
+		    tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+		        inner join
+		    tbcategorias cat ON cat.idtcategoria = c.refcategorias
+		    where equ.idequipo = ".$refEquipos." and c.activo = 1";
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function verificarEdadAnioManual($refjugador, $anio) {
+	    $sql = "select DATE_FORMAT(fechanacimiento, '%Y') as fechanacimiento from dbjugadores where idjugador =".$refjugador;
+	    $res = $this->query($sql,0);
+	    
+	    $fechactual = $anio;
+	    $edadJuagador = mysql_result($res,0,'fechanacimiento');
+	    
+	    $edad = $fechactual - $edadJuagador;
+	    
+	    return $edad;   
+	}
+
+
+	function verificaEdadCategoriaJugadorAnioManual($refjugador, $refcategoria, $tipoJugador, $anio) {
+	    //## falta chocar contra una temporada
+	    $edad = $this->verificarEdadAnioManual($refjugador, $anio);
+	    
+	    $sql = "SELECT 
+	                count(*) as verificado
+	            FROM
+	                dbdefinicionescategoriastemporadastipojugador dc
+	                    INNER JOIN
+	                (SELECT 
+	                    iddefinicioncategoriatemporada
+	                FROM
+	                    dbdefinicionescategoriastemporadas ct
+	                WHERE
+	                    ct.refcategorias = ".$refcategoria."
+	                ORDER BY iddefinicioncategoriatemporada DESC
+	                LIMIT 1) c
+	                on c.iddefinicioncategoriatemporada = dc.refdefinicionescategoriastemporadas
+	                where dc.reftipojugadores = ".$tipoJugador." and ".$edad." between dc.edadminima and dc.edadmaxima";
+	    $res = $this->query($sql,0);
+	    
+	    return mysql_result($res,0,0);
+	}
+
+
+	function traerJugadoresdocumentacionPorJugadorValores($idJugador) { 
+	$sql = "select
+	            r.refdocumentaciones,
+	            r.descripcion,
+	            r.obligatoria,
+	            (case when r.valor = 1 then 'Si' else 'No' end) as valor,
+	            (case when coalesce(r.contravalor,0) = 1 then 'Si' else 'No' end) as contravalor,
+	            r.refjugadores,
+	            r.idjugadordocumentacion,
+	            r.observaciones,
+	            coalesce(r.contravalordesc,'') as contravalordesc
+	            from
+	            (
+	            SELECT 
+	                j.refdocumentaciones,
+	                doc.descripcion,
+	                (CASE
+	                    WHEN doc.obligatoria = 1 THEN 'Si'
+	                    ELSE 'No'
+	                END) AS obligatoria,
+	                j.valor,
+	                (SELECT 
+	                        v.habilita
+	                    FROM
+	                        tbvaloreshabilitacionestransitorias v
+	                    inner join dbjugadoresvaloreshabilitacionestransitorias vh
+	                    on v.idvalorhabilitaciontransitoria = vh.refvaloreshabilitacionestransitorias
+	                    WHERE
+	                        refdocumentaciones = doc.iddocumentacion and vh.refjugadores = jug.idjugador) AS contravalor,
+	                (SELECT 
+	                        v.descripcion
+	                    FROM
+	                        tbvaloreshabilitacionestransitorias v
+	                    inner join dbjugadoresvaloreshabilitacionestransitorias vh
+	                    on v.idvalorhabilitaciontransitoria = vh.refvaloreshabilitacionestransitorias
+	                    WHERE
+	                        refdocumentaciones = doc.iddocumentacion and vh.refjugadores = jug.idjugador) AS contravalordesc,
+	                j.refjugadores,
+	                j.idjugadordocumentacion,
+	                j.observaciones
+	            FROM
+	                dbjugadoresdocumentacion j
+	                    INNER JOIN
+	                dbjugadores jug ON jug.idjugador = j.refjugadores
+	                    INNER JOIN
+	                tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones
+	            WHERE
+	                j.refjugadores = ".$idJugador."
+	                ) as r"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+
+
+
+	function traerJugadoresmotivoshabilitacionestransitoriasPorJugadorDeportiva($idJugador, $reftemporada, $refcategoria, $refequipos) { 
+	$sql = "select 
+	j.iddbjugadormotivohabilitaciontransitoria,
+	tem.temporada,
+	doc.descripcion as documentacion,
+	mot.descripcion as motivos,
+	equ.nombre as equipo,
+	cat.categoria,
+	j.reftemporadas,
+	j.refjugadores,
+	j.refdocumentaciones,
+	j.refmotivoshabilitacionestransitorias,
+	j.refequipos,
+	j.refcategorias,
+	j.fechalimite,
+	j.observaciones
+	from dbjugadoresmotivoshabilitacionestransitorias j 
+	inner join tbtemporadas tem ON tem.idtemporadas = j.reftemporadas 
+	inner join dbjugadores jug ON jug.idjugador = j.refjugadores 
+	inner join tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones 
+	inner join tbmotivoshabilitacionestransitorias mot ON mot.idmotivoshabilitacionestransitoria = j.refmotivoshabilitacionestransitorias 
+	inner join dbequipos equ ON equ.idequipo = j.refequipos 
+	inner join tbcategorias cat ON cat.idtcategoria = j.refcategorias 
+	where j.refjugadores = ".$idJugador." and mot.descripcion = 'Edad'
+	      and j.reftemporadas = ".$reftemporada."
+	      and j.refequipos = ".$refequipos."
+	      and j.refcategorias = ".$refcategoria."
+	      and (now() < j.fechalimite or j.fechalimite is null)
+	order by 1"; 
+	$res = $this->query($sql,0); 
+	return $res; 
+	} 
+
+
+	function traerJugadoresmotivoshabilitacionestransitoriasPorJugadorAdministrativaDocumentacion($idJugador, $idDocumentacion) { 
+
+		$resTemporadas = $this->traerUltimaTemporada(); 
+
+		if (mysql_num_rows($resTemporadas)>0) {
+		    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+		} else {
+		    $ultimaTemporada = 0;   
+		}
+		    
+		$sql = "select 
+		j.iddbjugadormotivohabilitaciontransitoria,
+		tem.temporada,
+		doc.descripcion as documentacion,
+		mot.descripcion as motivos,
+		equ.nombre as equipo,
+		cat.categoria,
+		j.reftemporadas,
+		j.refjugadores,
+		j.refdocumentaciones,
+		j.refmotivoshabilitacionestransitorias,
+		j.refequipos,
+		j.refcategorias,
+		j.fechalimite,
+		j.observaciones
+		from dbjugadoresmotivoshabilitacionestransitorias j 
+		inner join tbtemporadas tem ON tem.idtemporadas = j.reftemporadas 
+		inner join dbjugadores jug ON jug.idjugador = j.refjugadores 
+		inner join tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones 
+		inner join tbmotivoshabilitacionestransitorias mot ON mot.idmotivoshabilitacionestransitoria = j.refmotivoshabilitacionestransitorias 
+		left join dbequipos equ ON equ.idequipo = j.refequipos 
+		left join tbcategorias cat ON cat.idtcategoria = j.refcategorias 
+		where j.refjugadores = ".$idJugador." and doc.descripcion <> 'Edad' and doc.iddocumentacion = ".$idDocumentacion." and tem.idtemporadas = ".$ultimaTemporada."
+		order by 1"; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	}
+
+
+	function traerEquiposPorCountriesActivosInactivos($idCountrie, $baja) { 
+		$sql = "select 
+		e.idequipo,
+		cou.nombre as countrie,
+		e.nombre,
+		cat.categoria,
+		di.division,
+		con.nombre as contacto,
+		e.fechaalta,
+		e.fachebaja,
+		(case when e.activo=1 then 'Si' else 'No' end) as activo,
+		e.refcountries,
+		e.refcategorias,
+		e.refdivisiones,
+		e.refcontactos
+		from dbequipos e 
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
+		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
+		where cou.idcountrie = ".$idCountrie." and e.activo = ".$baja."
+		order by 1"; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+
+	function traerEquiposPorEquipo($idEquipo) { 
+		$sql = "select 
+		e.idequipo,
+		cou.nombre as countrie,
+		e.nombre,
+		cat.categoria,
+		di.division,
+		con.nombre as contacto,
+		e.fechaalta,
+		e.fachebaja,
+		(case when e.activo=1 then 'Si' else 'No' end) as activo,
+		e.refcountries,
+		e.refcategorias,
+		e.refdivisiones,
+		e.refcontactos
+		from dbequipos e 
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
+		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
+		where e.idequipo =".$idEquipo." 
+		order by 1"; 
+		
+		$res = $this->query($sql,0); 
+		return $res; 
+	} 
+
+	function traerTemporadasPorId($id) {
+		$sql = "select idtemporadas,temporada from tbtemporadas where idtemporadas =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function existeConectorJugadorEquipo($reftemporadas, $refJugador, $refEquipo) {
 	    $sql = "select idconector from dbconectordelegados where refjugadores =".$refJugador." and refequipos = ".$refEquipo." and activo = 1 and reftemporadas = ".$reftemporadas;
@@ -1521,7 +1846,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	function traerJugadoresClubPorCountrieActivosPaginador($idCountrie, $pagina, $cantidad, $busqueda='') { 
 
 		$resTemporada = $this->traerUltimaTemporada();
-		$temporada = mysql_result($resTemporada,0,1);
+		$temporada = (integer)mysql_result($resTemporada,0,1);
 
 		$sql = "select 
 		j.idjugador,

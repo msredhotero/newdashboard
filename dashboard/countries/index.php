@@ -343,7 +343,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 <!-- Modal Large Size -->
 <transition name="fade">
 <form class="form" @submit.prevent="guardarDelegado">
-<?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
+<?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
 </form>
 </transition>
 
