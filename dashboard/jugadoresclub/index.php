@@ -118,7 +118,7 @@ $resTipoDoc 	= $serviciosReferencias->traerTipodocumentos();
 $cadRefj 	= $serviciosFunciones->devolverSelectBox($resTipoDoc,array(1),'');
 
 $resCountries 	= $serviciosReferencias->traerCountriesPorId($refClub);
-$cadRef2j 	= $serviciosFunciones->devolverSelectBox($resCountries,array(1),'');
+$cadRef2j 	= $serviciosFunciones->devolverSelectBox($resCountries,array(6),'');
 
 $resUsua = $serviciosUsuario->traerUsuarioId($_SESSION['usuaid_aif']);
 $cadRef3j 	= $serviciosFunciones->devolverSelectBox($resUsua,array(3),'');
@@ -689,7 +689,9 @@ if ($_SESSION['refroll_aif'] != 1) {
 		var $demoMaskedInput = $('.demo-masked-input');
 
 		//Date
-		$demoMaskedInput.find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
+		$demoMaskedInput.find('.date').inputmask('dd-mm-yyyy', { placeholder: '__-__-____' });
+
+		$('#fechaalta').val('<?php echo date('d-m-Y'); ?>');
 
 		$('#menuPerfil').click(function() {
 			$('#modalPerfil').modal();
@@ -748,7 +750,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 				success:  function (response) {
 					$('.modificarJugadorNuevo').html(response);
 
-					$('.modificarJugadorNuevo').find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
+					$('.modificarJugadorNuevo').find('.date').inputmask('dd-mm-yyyy', { placeholder: '__-__-____' });
 						
 				}
 			});
