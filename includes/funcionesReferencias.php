@@ -79,6 +79,29 @@ class ServiciosReferencias {
         return '';
 	}
 
+
+
+	function traerJugadoresPorCountriesBaja($idCountries) {
+	    $sql = "select
+	            j.nrodocumento,
+	            concat(j.apellido,', ',j.nombres) as apyn,
+	            j.email,
+	            j.fechanacimiento,
+	            j.observaciones,
+	            j.fechabaja
+	            from        dbjugadores j
+	            inner
+	            join        dbcountries cc
+	            on          cc.idcountrie = j.refcountries
+	            where       cc.idcountrie = ".$idCountries." and (j.fechabaja <> '1900-01-01' and j.fechabaja <> '0000-00-00') 
+	            order by concat(j.apellido,', ',j.nombres)";    
+	    $res = $this->query($sql,0);
+	    return $res;
+	}
+
+
+	
+
 	function traerDefinicionesPorTemporadaCategoria($idTemporada, $idCategoria) {
 	    $sql = "select
 	                max(dct.cantmaxjugadores) as cantmaxjugadores, max(dctj.edadmaxima) as edadmaxima, max(dctj.edadminima) as edadminima, max((dctj.edadmaxima + dctj.edadminima) /2) as promedio
@@ -1867,7 +1890,8 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		(case when jc.fechabaja = 1 then true else false end) as fechabajacheck,
 		(case when jc.articulo = 1 then true else false end) as articulocheck,
 		coalesce( jc.numeroserielote,coalesce( jp.numeroserielote,'')) as numeroserielote,
-		concat(j.apellido, ' ', j.nombres) as apyn
+		concat(j.apellido, ' ', j.nombres) as apyn,
+		coalesce( jc.numeroserielote,coalesce( jp.numeroserielote,'')) as marcalote
 		from dbjugadores j 
 		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
 		inner join dbcountries cou ON cou.idcountrie = j.refcountries 

@@ -306,7 +306,15 @@ if ($_SESSION['refroll_aif'] != 1) {
 									<td>{{ jugador.apellido }}</td>
 									<td>{{ jugador.nombres }}</td>
 									<td>{{ jugador.nrodocumento }}</td>
-									<td><input class='form-control' type='text' readonly="readonly" name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/></td>
+									<td>
+										<div v-if="jugador.numeroserielote != ''">
+											<input class='form-control' type='text' readonly="readonly" name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/>
+										</div>
+										<div v-else>
+											<input class='form-control' type='text' name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/>
+										</div>
+										
+									</td>
 									<td>
 									<div class='switch'>
 										<label><input type='checkbox' v-model="jugador.fechabajacheck"/><span class='lever switch-col-green'></span></label>

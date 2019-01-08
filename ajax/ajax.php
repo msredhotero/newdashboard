@@ -1119,7 +1119,7 @@ function guardarJugadorClubSimple($serviciosReferencias) {
 	$fechabaja 		= $_POST['fechabaja'];
 	$articulo 		= $_POST['articulo'];
 
-	if (trim($numeroSerie) == '') {
+	if ((trim($numeroSerie) == '') && ($fechabaja == 0) && ($articulo == 0)) {
 		$resV['error'] = true; 
 		$resV['mensaje'] = 'No se pudo cargar el Registro!, Debe cargar el Nro de Serie/Lote'; 
 	} else {
