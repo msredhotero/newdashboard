@@ -21,57 +21,57 @@ class ServiciosReferencias {
 
 	function sanear_string($string)
 	{
-	
+
 		$string = trim($string);
-	
+
 		$string = str_replace(
 			array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
 			array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
 			$string
 		);
-	
+
 		$string = str_replace(
 			array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
 			array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'),
 			$string
 		);
-	
+
 		$string = str_replace(
 			array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
 			array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'),
 			$string
 		);
-	
+
 		$string = str_replace(
 			array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
 			array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
 			$string
 		);
-	
+
 		$string = str_replace(
 			array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
 			array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'),
 			$string
 		);
-	
+
 		$string = str_replace(
 			array('ñ', 'Ñ', 'ç', 'Ç'),
 			array('n', 'N', 'c', 'C',),
 			$string
 		);
-	
-	
-	
+
+
+
 		return $string;
 	}
 
 	function borrarDirecctorio($dir) {
-        array_map('unlink', glob($dir."/*.*")); 
-    
+        array_map('unlink', glob($dir."/*.*"));
+
     }
 
 	function borrarArchivos($directorio) {
-        
+
         $res =  $this->borrarDirecctorio("./".$directorio);
 
         rmdir("./".$directorio);
@@ -93,14 +93,14 @@ class ServiciosReferencias {
 	            inner
 	            join        dbcountries cc
 	            on          cc.idcountrie = j.refcountries
-	            where       cc.idcountrie = ".$idCountries." and (j.fechabaja <> '1900-01-01' and j.fechabaja <> '0000-00-00') 
-	            order by concat(j.apellido,', ',j.nombres)";    
+	            where       cc.idcountrie = ".$idCountries." and (j.fechabaja <> '1900-01-01' and j.fechabaja <> '0000-00-00')
+	            order by concat(j.apellido,', ',j.nombres)";
 	    $res = $this->query($sql,0);
 	    return $res;
 	}
 
 
-	
+
 
 	function traerDefinicionesPorTemporadaCategoria($idTemporada, $idCategoria) {
 	    $sql = "select
@@ -110,13 +110,13 @@ class ServiciosReferencias {
 	            join        dbdefinicionescategoriastemporadastipojugador dctj
 	            on          dct.iddefinicioncategoriatemporada = dctj.refdefinicionescategoriastemporadas
 	            where       dct.reftemporadas = ".$idTemporada." and refcategorias = ".$idCategoria;
-	    $res = $this->query($sql,0); 
-	    return $res;    
+	    $res = $this->query($sql,0);
+	    return $res;
 	}
 
 
 	function traerConectorActivosPorEquipos($refEquipos) {
-		$sql = "select 
+		$sql = "select
 		    c.idconector,
 		    cat.categoria,
 		    equ.nombre as equipo,
@@ -159,18 +159,18 @@ class ServiciosReferencias {
 		    tbcategorias cat ON cat.idtcategoria = c.refcategorias
 		    where equ.idequipo = ".$refEquipos." and c.activo = 1
 		order by concat(jug.apellido,', ',jug.nombres)";
-		
+
 		$res = $this->query($sql,0);
 		return $res;
 	}
 
 
 	function traerConectorActivosPorEquiposEdades($refEquipos) {
-		$sql = "select 
+		$sql = "select
 		    min(year(now()) - year(jug.fechanacimiento)) as edadMinima,
 		    max(year(now()) - year(jug.fechanacimiento)) as edadMaxima,
 		    count(*) as cantidadJugadores,
-		    round((max(year(now()) - year(jug.fechanacimiento)) + min(year(now()) - year(jug.fechanacimiento)))/2,2) as edadPromedio 
+		    round((max(year(now()) - year(jug.fechanacimiento)) + min(year(now()) - year(jug.fechanacimiento)))/2,2) as edadPromedio
 		from
 		    dbconector c
 		        inner join
@@ -200,26 +200,26 @@ class ServiciosReferencias {
 	function verificarEdadAnioManual($refjugador, $anio) {
 	    $sql = "select DATE_FORMAT(fechanacimiento, '%Y') as fechanacimiento from dbjugadores where idjugador =".$refjugador;
 	    $res = $this->query($sql,0);
-	    
+
 	    $fechactual = $anio;
 	    $edadJuagador = mysql_result($res,0,'fechanacimiento');
-	    
+
 	    $edad = $fechactual - $edadJuagador;
-	    
-	    return $edad;   
+
+	    return $edad;
 	}
 
 
 	function verificaEdadCategoriaJugadorAnioManual($refjugador, $refcategoria, $tipoJugador, $anio) {
 	    //## falta chocar contra una temporada
 	    $edad = $this->verificarEdadAnioManual($refjugador, $anio);
-	    
-	    $sql = "SELECT 
+
+	    $sql = "SELECT
 	                count(*) as verificado
 	            FROM
 	                dbdefinicionescategoriastemporadastipojugador dc
 	                    INNER JOIN
-	                (SELECT 
+	                (SELECT
 	                    iddefinicioncategoriatemporada
 	                FROM
 	                    dbdefinicionescategoriastemporadas ct
@@ -230,12 +230,12 @@ class ServiciosReferencias {
 	                on c.iddefinicioncategoriatemporada = dc.refdefinicionescategoriastemporadas
 	                where dc.reftipojugadores = ".$tipoJugador." and ".$edad." between dc.edadminima and dc.edadmaxima";
 	    $res = $this->query($sql,0);
-	    
+
 	    return mysql_result($res,0,0);
 	}
 
 
-	function traerJugadoresdocumentacionPorJugadorValores($idJugador) { 
+	function traerJugadoresdocumentacionPorJugadorValores($idJugador) {
 	$sql = "select
 	            r.refdocumentaciones,
 	            r.descripcion,
@@ -248,7 +248,7 @@ class ServiciosReferencias {
 	            coalesce(r.contravalordesc,'') as contravalordesc
 	            from
 	            (
-	            SELECT 
+	            SELECT
 	                j.refdocumentaciones,
 	                doc.descripcion,
 	                (CASE
@@ -256,7 +256,7 @@ class ServiciosReferencias {
 	                    ELSE 'No'
 	                END) AS obligatoria,
 	                j.valor,
-	                (SELECT 
+	                (SELECT
 	                        v.habilita
 	                    FROM
 	                        tbvaloreshabilitacionestransitorias v
@@ -264,7 +264,7 @@ class ServiciosReferencias {
 	                    on v.idvalorhabilitaciontransitoria = vh.refvaloreshabilitacionestransitorias
 	                    WHERE
 	                        refdocumentaciones = doc.iddocumentacion and vh.refjugadores = jug.idjugador) AS contravalor,
-	                (SELECT 
+	                (SELECT
 	                        v.descripcion
 	                    FROM
 	                        tbvaloreshabilitacionestransitorias v
@@ -283,15 +283,15 @@ class ServiciosReferencias {
 	                tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones
 	            WHERE
 	                j.refjugadores = ".$idJugador."
-	                ) as r"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
+	                ) as r";
+	$res = $this->query($sql,0);
+	return $res;
+	}
 
 
 
-	function traerJugadoresmotivoshabilitacionestransitoriasPorJugadorDeportiva($idJugador, $reftemporada, $refcategoria, $refequipos) { 
-	$sql = "select 
+	function traerJugadoresmotivoshabilitacionestransitoriasPorJugadorDeportiva($idJugador, $reftemporada, $refcategoria, $refequipos) {
+	$sql = "select
 	j.iddbjugadormotivohabilitaciontransitoria,
 	tem.temporada,
 	doc.descripcion as documentacion,
@@ -306,35 +306,35 @@ class ServiciosReferencias {
 	j.refcategorias,
 	j.fechalimite,
 	j.observaciones
-	from dbjugadoresmotivoshabilitacionestransitorias j 
-	inner join tbtemporadas tem ON tem.idtemporadas = j.reftemporadas 
-	inner join dbjugadores jug ON jug.idjugador = j.refjugadores 
-	inner join tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones 
-	inner join tbmotivoshabilitacionestransitorias mot ON mot.idmotivoshabilitacionestransitoria = j.refmotivoshabilitacionestransitorias 
-	inner join dbequipos equ ON equ.idequipo = j.refequipos 
-	inner join tbcategorias cat ON cat.idtcategoria = j.refcategorias 
+	from dbjugadoresmotivoshabilitacionestransitorias j
+	inner join tbtemporadas tem ON tem.idtemporadas = j.reftemporadas
+	inner join dbjugadores jug ON jug.idjugador = j.refjugadores
+	inner join tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones
+	inner join tbmotivoshabilitacionestransitorias mot ON mot.idmotivoshabilitacionestransitoria = j.refmotivoshabilitacionestransitorias
+	inner join dbequipos equ ON equ.idequipo = j.refequipos
+	inner join tbcategorias cat ON cat.idtcategoria = j.refcategorias
 	where j.refjugadores = ".$idJugador." and mot.descripcion = 'Edad'
 	      and j.reftemporadas = ".$reftemporada."
 	      and j.refequipos = ".$refequipos."
 	      and j.refcategorias = ".$refcategoria."
 	      and (now() < j.fechalimite or j.fechalimite is null)
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
 
 
-	function traerJugadoresmotivoshabilitacionestransitoriasPorJugadorAdministrativaDocumentacion($idJugador, $idDocumentacion) { 
+	function traerJugadoresmotivoshabilitacionestransitoriasPorJugadorAdministrativaDocumentacion($idJugador, $idDocumentacion) {
 
-		$resTemporadas = $this->traerUltimaTemporada(); 
+		$resTemporadas = $this->traerUltimaTemporada();
 
 		if (mysql_num_rows($resTemporadas)>0) {
-		    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+		    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 		} else {
-		    $ultimaTemporada = 0;   
+		    $ultimaTemporada = 0;
 		}
-		    
-		$sql = "select 
+
+		$sql = "select
 		j.iddbjugadormotivohabilitaciontransitoria,
 		tem.temporada,
 		doc.descripcion as documentacion,
@@ -349,23 +349,23 @@ class ServiciosReferencias {
 		j.refcategorias,
 		j.fechalimite,
 		j.observaciones
-		from dbjugadoresmotivoshabilitacionestransitorias j 
-		inner join tbtemporadas tem ON tem.idtemporadas = j.reftemporadas 
-		inner join dbjugadores jug ON jug.idjugador = j.refjugadores 
-		inner join tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones 
-		inner join tbmotivoshabilitacionestransitorias mot ON mot.idmotivoshabilitacionestransitoria = j.refmotivoshabilitacionestransitorias 
-		left join dbequipos equ ON equ.idequipo = j.refequipos 
-		left join tbcategorias cat ON cat.idtcategoria = j.refcategorias 
+		from dbjugadoresmotivoshabilitacionestransitorias j
+		inner join tbtemporadas tem ON tem.idtemporadas = j.reftemporadas
+		inner join dbjugadores jug ON jug.idjugador = j.refjugadores
+		inner join tbdocumentaciones doc ON doc.iddocumentacion = j.refdocumentaciones
+		inner join tbmotivoshabilitacionestransitorias mot ON mot.idmotivoshabilitacionestransitoria = j.refmotivoshabilitacionestransitorias
+		left join dbequipos equ ON equ.idequipo = j.refequipos
+		left join tbcategorias cat ON cat.idtcategoria = j.refcategorias
 		where j.refjugadores = ".$idJugador." and doc.descripcion <> 'Edad' and doc.iddocumentacion = ".$idDocumentacion." and tem.idtemporadas = ".$ultimaTemporada."
-		order by 1"; 
-		
-		$res = $this->query($sql,0); 
-		return $res; 
+		order by 1";
+
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 
-	function traerEquiposPorCountriesActivosInactivos($idCountrie, $baja) { 
-		$sql = "select 
+	function traerEquiposPorCountriesActivosInactivos($idCountrie, $baja) {
+		$sql = "select
 		e.idequipo,
 		cou.nombre as countrie,
 		e.nombre,
@@ -379,22 +379,22 @@ class ServiciosReferencias {
 		e.refcategorias,
 		e.refdivisiones,
 		e.refcontactos
-		from dbequipos e 
-		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
-		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
-		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
-		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
-		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
+		from dbequipos e
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones
+		inner join dbcontactos con ON con.idcontacto = e.refcontactos
+		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
 		where cou.idcountrie = ".$idCountrie." and e.activo = ".$baja."
-		order by 1"; 
-		
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		order by 1";
 
-	function traerEquiposPorEquipo($idEquipo) { 
-		$sql = "select 
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerEquiposPorEquipo($idEquipo) {
+		$sql = "select
 		e.idequipo,
 		cou.nombre as countrie,
 		e.nombre,
@@ -408,19 +408,19 @@ class ServiciosReferencias {
 		e.refcategorias,
 		e.refdivisiones,
 		e.refcontactos
-		from dbequipos e 
-		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
-		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
-		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
-		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
-		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
-		where e.idequipo =".$idEquipo." 
-		order by 1"; 
-		
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		from dbequipos e
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones
+		inner join dbcontactos con ON con.idcontacto = e.refcontactos
+		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
+		where e.idequipo =".$idEquipo."
+		order by 1";
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function traerTemporadasPorId($id) {
 		$sql = "select idtemporadas,temporada from tbtemporadas where idtemporadas =".$id;
@@ -431,9 +431,9 @@ class ServiciosReferencias {
 	function existeConectorJugadorEquipo($reftemporadas, $refJugador, $refEquipo) {
 	    $sql = "select idconector from dbconectordelegados where refjugadores =".$refJugador." and refequipos = ".$refEquipo." and activo = 1 and reftemporadas = ".$reftemporadas;
 	    $res = $this->query($sql,0);
-	    
+
 	    if (mysql_num_rows($res)>0) {
-	        return 1;   
+	        return 1;
 	    }
 	    return 0;
 	}
@@ -442,26 +442,26 @@ class ServiciosReferencias {
 	function verificarEdad($refjugador) {
 	    $sql = "select DATE_FORMAT(fechanacimiento, '%Y') as fechanacimiento from dbjugadores where idjugador =".$refjugador;
 	    $res = $this->query($sql,0);
-	    
+
 	    $fechactual = date('Y');
 	    $edadJuagador = mysql_result($res,0,'fechanacimiento');
-	    
+
 	    $edad = $fechactual - $edadJuagador;
-	    
-	    return $edad;   
+
+	    return $edad;
 	}
 
 	/******   COMPRUEBO SI PUEDO JUGAR EN ESA CATEGORIA Y TIPO DE JUGADOR, POR LA EDAD     *************/
 	function verificaEdadCategoriaJugador($refjugador, $refcategoria, $tipoJugador) {
 	    //## falta chocar contra una temporada
 	    $edad = $this->verificarEdad($refjugador);
-	    
-	    $sql = "SELECT 
+
+	    $sql = "SELECT
 	                count(*) as verificado
 	            FROM
 	                dbdefinicionescategoriastemporadastipojugador dc
 	                    INNER JOIN
-	                (SELECT 
+	                (SELECT
 	                    iddefinicioncategoriatemporada
 	                FROM
 	                    dbdefinicionescategoriastemporadas ct
@@ -472,20 +472,20 @@ class ServiciosReferencias {
 	                on c.iddefinicioncategoriatemporada = dc.refdefinicionescategoriastemporadas
 	                where dc.reftipojugadores = ".$tipoJugador." and ".$edad." between dc.edadminima and dc.edadmaxima";
 	    $res = $this->query($sql,0);
-	    
+
 	    return mysql_result($res,0,0);
 	}
 
-	function traerTipojugadores() { 
-		$sql = "select 
+	function traerTipojugadores() {
+		$sql = "select
 		t.idtipojugador,
 		t.tipojugador,
 		t.abreviatura
-		from tbtipojugadores t 
-		order by 1"; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		from tbtipojugadores t
+		order by 1";
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 
 	function traerJugadoresPorCountries($lstCountries) {
@@ -502,18 +502,18 @@ class ServiciosReferencias {
 	            inner
 	            join        dbcountries cc
 	            on          cc.idcountrie = j.refcountries
-	            where       cc.idcountrie in (".$lstCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00') 
-	            order by concat(j.apellido,', ',j.nombres)";    
+	            where       cc.idcountrie in (".$lstCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00')
+	            order by concat(j.apellido,', ',j.nombres)";
 	    $res = $this->query($sql,0);
 	    return $res;
 	}
 
-	function traerJugadoresPorId($id) { 
-		$sql = "select idjugador,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,fechabaja,refcountries,observaciones from dbjugadores where idjugador =".$id; 
-		
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+	function traerJugadoresPorId($id) {
+		$sql = "select idjugador,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,fechabaja,refcountries,observaciones from dbjugadores where idjugador =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function cambiarEstadoTareas($idtarea=0, $refestado, $idpadre=0, $tablaMadre='') {
 		if ($idpadre != 0) {
@@ -521,7 +521,7 @@ class ServiciosReferencias {
 				case 'dbfusionequipos':
 						$sql = "update dbtareas set refestados = ".$refestado." where id1 = ".$idpadre;
 					break;
-				
+
 				default:
 					# code...
 					break;
@@ -529,20 +529,20 @@ class ServiciosReferencias {
 		} else {
 			$sql = "update dbtareas set refestados = ".$refestado." where idtarea = ".$idtarea;
 		}
-		
-		$res = $this->query($sql,0); 
-		return $res; 
+
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function cambiarEstadoFusion($id, $refestados) {
-		$sql = "update dbfusionequipos 
-					set refestados = ".$refestados." 
+		$sql = "update dbfusionequipos
+					set refestados = ".$refestados."
 				where idfusionequipo = ".$id;
 
-		$res = $this->query($sql,0); 
-		return $res; 
+		$res = $this->query($sql,0);
+		return $res;
 	}
-	
+
 
 	function insertarFusionEquipos($refequipos, $refcountries, $refestados, $observacion) {
 		$sql = "INSERT INTO dbfusionequipos
@@ -558,28 +558,28 @@ class ServiciosReferencias {
 				".$refestados.",
 				'".$observacion."')";
 
-		$res = $this->query($sql,1); 
-		return $res; 
+		$res = $this->query($sql,1);
+		return $res;
 	}
 
 	function eliminarFusionEquipos($idfusionequipo) {
 		$sql = "delete from dbfusionequipos where idfusionequipo = ".$idfusionequipo;
 
-		$res = $this->query($sql,0); 
-		return $res; 
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function eliminarFusionEquiposPorEquipo($refequiposdelegados) {
 		$sql = "delete from dbfusionequipos where refequiposdelegados = ".$refequiposdelegados;
 
-		$res = $this->query($sql,0); 
-		return $res; 
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function traerCountriesMenosId($id) {
 		$sql = "select idcountrie, nombre from dbcountries where idcountrie <> ".$id." order by trim(nombre)";
-		$res = $this->query($sql,0); 
-		return $res; 
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function traerDefinicionesPorTemporadaCategoriaTipoJugador($idTemporada, $idCategoria, $idTipoJugador) {
@@ -590,39 +590,39 @@ class ServiciosReferencias {
 				join        dbdefinicionescategoriastemporadastipojugador dctj
 				on          dct.iddefinicioncategoriatemporada = dctj.refdefinicionescategoriastemporadas
 				where       dct.reftemporadas = ".$idTemporada." and refcategorias = ".$idCategoria." and reftipojugadores =".$idTipoJugador;
-		$res = $this->query($sql,0); 
-		return $res;    
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 /* PARA Conectordelegados */
 
-function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados,$habilitacionpendiente) { 
-	$sql = "insert into dbconectordelegados(idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados,habilitacionpendiente) 
-	values ('',".$reftemporadas.",'".$refusuarios."',".$refjugadores.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.",".$refestados.",".$habilitacionpendiente.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarConectordelegados($id,$reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados) { 
-	$sql = "update dbconectordelegados 
-	set 
-	reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refjugadores = ".$refjugadores.",reftipojugadores = ".$reftipojugadores.",refequipos = ".$refequipos.",refcountries = ".$refcountries.",refcategorias = ".$refcategorias.",esfusion = ".$esfusion.",activo = ".$activo.",refestados = ".$refestados." 
-	where idconector =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarConectordelegados($id) { 
-	$sql = "delete from dbconectordelegados where idconector =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerConectordelegados() { 
-	$sql = "select 
+function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados,$habilitacionpendiente) {
+	$sql = "insert into dbconectordelegados(idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados,habilitacionpendiente)
+	values ('',".$reftemporadas.",'".$refusuarios."',".$refjugadores.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.",".$refestados.",".$habilitacionpendiente.")";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarConectordelegados($id,$reftemporadas,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados) {
+	$sql = "update dbconectordelegados
+	set
+	reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refjugadores = ".$refjugadores.",reftipojugadores = ".$reftipojugadores.",refequipos = ".$refequipos.",refcountries = ".$refcountries.",refcategorias = ".$refcategorias.",esfusion = ".$esfusion.",activo = ".$activo.",refestados = ".$refestados."
+	where idconector =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarConectordelegados($id) {
+	$sql = "delete from dbconectordelegados where idconector =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerConectordelegados() {
+	$sql = "select
 	c.idconector,
 	c.reftemporadas,
 	c.refusuarios,
@@ -634,89 +634,89 @@ function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$re
 	c.esfusion,
 	c.activo,
 	c.refestados
-	from dbconectordelegados c 
-	inner join jug ON jug. = c.refjugadores 
-	inner join tip ON tip. = c.reftipojugadores 
-	inner join equ ON equ. = c.refequipos 
-	inner join cou ON cou. = c.refcountries 
-	inner join cat ON cat. = c.refcategorias 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerConectordelegadosPorId($id) { 
-	$sql = "select idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados from dbconectordelegados where idconector =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
+	from dbconectordelegados c
+	inner join jug ON jug. = c.refjugadores
+	inner join tip ON tip. = c.reftipojugadores
+	inner join equ ON equ. = c.refequipos
+	inner join cou ON cou. = c.refcountries
+	inner join cat ON cat. = c.refcategorias
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerConectordelegadosPorId($id) {
+	$sql = "select idconector,reftemporadas,refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo,refestados from dbconectordelegados where idconector =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: dbconectordelegados*/
 
 
 
 
-	
+
 /* PARA Equiposdelegados */
 
 /* PARA Cabeceraconfirmacion */
 
 function devolverIdEstado($tabla,$id, $idlbl) {
-	$sql = "select refestados 
-			from ".$tabla." 
+	$sql = "select refestados
+			from ".$tabla."
 			where ".$idlbl." = ".$id;
-	
+
 	$res = $this->existeDevuelveId($sql);
 	return $res;
 }
 
 function existeCabeceraConfirmacion($reftemporadas,$refcountries) {
-	$sql = "select idcabeceraconfirmacion 
-			from dbcabeceraconfirmacion 
+	$sql = "select idcabeceraconfirmacion
+			from dbcabeceraconfirmacion
 			where reftemporadas = ".$reftemporadas." and refcountries = ".$refcountries;
-	
+
 	$res = $this->existeDevuelveId($sql);
 	return $res;
 }
 
-function insertarCabeceraconfirmacion($reftemporadas,$refcountries,$refestados,$usuacrea,$usuamodi) { 
-	$sql = "insert into dbcabeceraconfirmacion(idcabeceraconfirmacion,reftemporadas,refcountries,refestados,fechacrea,fechamodi,usuacrea,usuamodi) 
-	values ('',".$reftemporadas.",".$refcountries.",".$refestados.",'".date('Y-m-d')."','".date('Y-m-d')."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-} 
-	
-	
-function modificarCabeceraconfirmacion($id,$reftemporadas,$refcountries,$refestados,$usuacrea,$usuamodi) { 
-	$sql = "update dbcabeceraconfirmacion 
-	set 
-	reftemporadas = ".$reftemporadas.",refcountries = ".$refcountries.",refestados = ".$refestados.",fechamodi = '".date('Y-m-d')."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."' 
-	where idcabeceraconfirmacion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-} 
+function insertarCabeceraconfirmacion($reftemporadas,$refcountries,$refestados,$usuacrea,$usuamodi) {
+	$sql = "insert into dbcabeceraconfirmacion(idcabeceraconfirmacion,reftemporadas,refcountries,refestados,fechacrea,fechamodi,usuacrea,usuamodi)
+	values ('',".$reftemporadas.",".$refcountries.",".$refestados.",'".date('Y-m-d')."','".date('Y-m-d')."','".utf8_decode($usuacrea)."','".utf8_decode($usuamodi)."')";
+	$res = $this->query($sql,1);
+	return $res;
+}
 
-function modificarCabeceraconfirmacionEstado($id,$refestados) { 
-	$sql = "update dbcabeceraconfirmacion 
-	set 
-	refestados = ".$refestados." 
-	where idcabeceraconfirmacion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-} 
-	
-	
-function eliminarCabeceraconfirmacion($id) { 
-	$sql = "delete from dbcabeceraconfirmacion where idcabeceraconfirmacion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-} 
-	
-	
-function traerCabeceraconfirmacion() { 
-	$sql = "select 
+
+function modificarCabeceraconfirmacion($id,$reftemporadas,$refcountries,$refestados,$usuacrea,$usuamodi) {
+	$sql = "update dbcabeceraconfirmacion
+	set
+	reftemporadas = ".$reftemporadas.",refcountries = ".$refcountries.",refestados = ".$refestados.",fechamodi = '".date('Y-m-d')."',usuacrea = '".utf8_decode($usuacrea)."',usuamodi = '".utf8_decode($usuamodi)."'
+	where idcabeceraconfirmacion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+function modificarCabeceraconfirmacionEstado($id,$refestados) {
+	$sql = "update dbcabeceraconfirmacion
+	set
+	refestados = ".$refestados."
+	where idcabeceraconfirmacion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+
+function eliminarCabeceraconfirmacion($id) {
+	$sql = "delete from dbcabeceraconfirmacion where idcabeceraconfirmacion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+
+function traerCabeceraconfirmacion() {
+	$sql = "select
 	c.idcabeceraconfirmacion,
 	c.reftemporadas,
 	c.refcountries,
@@ -725,15 +725,15 @@ function traerCabeceraconfirmacion() {
 	c.fechamodi,
 	c.usuacrea,
 	c.usuamodi
-	from dbcabeceraconfirmacion c 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-} 
-	
-	
-function traerCabeceraconfirmacionPorId($id) { 
-	$sql = "SELECT 
+	from dbcabeceraconfirmacion c
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+}
+
+
+function traerCabeceraconfirmacionPorId($id) {
+	$sql = "SELECT
 				cc.idcabeceraconfirmacion,
 				cc.reftemporadas,
 				cc.refcountries,
@@ -748,11 +748,11 @@ function traerCabeceraconfirmacionPorId($id) {
 			INNER JOIN
 				tbestados est ON est.idestado = cc.refestados
 			WHERE
-				idcabeceraconfirmacion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-} 
-	
+				idcabeceraconfirmacion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+}
+
 	/* Fin */
 	/* /* Fin de la Tabla: dbcabeceraconfirmacion*/
 
@@ -776,6 +776,18 @@ function traerDivisiones() {
 	return $res;
 }
 
+function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
+	$sql = "select v.iddivision, v.division
+                from tbdivisiones v
+                inner join dbtorneos t on t.refdivisiones = v.iddivision
+                where t.reftemporadas = ".$idtemporada." and t.refcategorias = ".$idcategoria."
+					 group by v.iddivision, v.division
+					 order by v.iddivision desc
+					 limit 1";
+	$res = $this->query($sql,0);
+	return $res;
+}
+
 	function devolverNuevoIdEquipo() {
 		$sql = "select
 				sum(r.idequipo) from (
@@ -784,83 +796,83 @@ function traerDivisiones() {
 						select coalesce( max(idequipo),0) as idequipo from dbequiposdelegados
 		) r";
 
-		$res = $this->query($sql,0); 
+		$res = $this->query($sql,0);
 
 		return mysql_result($res,0,0) + 1;
 	}
 
-	function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados,$nuevo) { 
+	function insertarEquiposdelegados($reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados,$nuevo) {
 		$id = $this->devolverNuevoIdEquipo();
-		
-		$sql = "insert into dbequiposdelegados(idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados, nuevo) 
-		values ('',".$id.",".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.",".$nuevo.")"; 
-		$res = $this->query($sql,1); 
-		return $res; 
-	} 
-	
-	
-	function modificarEquiposdelegados($id,$reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) { 
-		$sql = "update dbequiposdelegados 
-		set 
-		reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refcountries = ".$refcountries.",nombre = '".utf8_decode($nombre)."',refcategorias = ".$refcategorias.",refdivisiones = ".$refdivisiones.",fechabaja = '".utf8_decode($fechabaja)."',activo = ".$activo.",refestados = ".$refestados." 
-		where idequipo =".$id; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
-	
-	
-	function eliminarEquiposdelegados($id) { 
+
+		$sql = "insert into dbequiposdelegados(idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados, nuevo)
+		values ('',".$id.",".$reftemporadas.",".$refusuarios.",".$refcountries.",'".utf8_decode($nombre)."',".$refcategorias.",".$refdivisiones.",'".utf8_decode($fechabaja)."',".$activo.",".$refestados.",".$nuevo.")";
+		$res = $this->query($sql,1);
+		return $res;
+	}
+
+
+	function modificarEquiposdelegados($id,$reftemporadas,$refusuarios,$refcountries,$nombre,$refcategorias,$refdivisiones,$fechabaja,$activo,$refestados) {
+		$sql = "update dbequiposdelegados
+		set
+		reftemporadas = ".$reftemporadas.",refusuarios = ".$refusuarios.",refcountries = ".$refcountries.",nombre = '".utf8_decode($nombre)."',refcategorias = ".$refcategorias.",refdivisiones = ".$refdivisiones.",fechabaja = '".utf8_decode($fechabaja)."',activo = ".$activo.",refestados = ".$refestados."
+		where idequipo =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function eliminarEquiposdelegados($id) {
 		$this->eliminarFusionEquiposPorEquipo($id);
-		
-		$sql = "delete from dbequiposdelegados where idequipodelegado =".$id; 
-		
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+
+		$sql = "delete from dbequiposdelegados where idequipodelegado =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function traerEstadosFusionesAceptadasPorCountrie($idcountrie) {
 
-		$sql = "select 
+		$sql = "select
 					coalesce(min(fe.refestados),1) as idestado
-				from dbfusionequipos fe 
+				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 				where ed.refcountries = ".$idcountrie;
-		
+
 		$res = $this->existeDevuelveId($sql);
-		return $res; 
+		return $res;
 
 	}
 
 
 	function traerEstadosFusionesAceptadasPorEquipo($idequiposdelegados ,$idcountrie) {
-		
-		$sql = "select 
+
+		$sql = "select
 					coalesce(min(fe.refestados),1) as idestado
-				from dbfusionequipos fe 
+				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 				where fe.refequiposdelegados = ".$idequiposdelegados." and ed.refcountries = ".$idcountrie;
-		
+
 		$res = $this->existeDevuelveId($sql);
-		return $res; 
+		return $res;
 
 	}
 
 	function traerEstadosFusionesPorEquipo($idequiposdelegados, $idcountrie) {
-		$sql = "select 
+		$sql = "select
 					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
-                    
-				from dbfusionequipos fe 
+
+				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 				where fe.refequiposdelegados = ".$idequiposdelegados." and ed.refcountries = ".$idcountrie;
 
 		$res = $this->existeDevuelveId($sql);
-		return $res; 
+		return $res;
 	}
 
 
 	function traerFusionesPorEquipo($idequiposdelegados ,$idcountrie) {
-		
-		$sql = "select 
+
+		$sql = "select
 					fe.idfusionequipo,
 					cp.nombre as countriepadre,
 					cat.categoria,
@@ -868,22 +880,22 @@ function traerDivisiones() {
 					ed.nombre,
 					est.estado,
 					est.idestado
-				from dbfusionequipos fe 
+				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 				inner join dbcountries cp on cp.idcountrie = ed.refcountries
 				inner join tbcategorias cat on cat.idtcategoria = ed.refcategorias
 				inner join tbdivisiones di on di.iddivision = ed.refdivisiones
 				inner join tbestados est on est.idestado = fe.refestados
 				where fe.idfusionequipo = ".$idequiposdelegados." and fe.refcountries = ".$idcountrie;
-		
+
 		$res = $this->query($sql,0);
-		return $res; 
+		return $res;
 
 	}
 
 	function traerFusionesPorCoutriePadre($idcountrie, $idtemporada) {
-		
-		$sql = "select 
+
+		$sql = "select
 					fe.idfusionequipo,
 					cp.nombre as countriepadre,
 					cat.categoria,
@@ -892,22 +904,22 @@ function traerDivisiones() {
 					est.estado,
 					est.idestado,
                     fe.refcountries
-				from dbfusionequipos fe 
+				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 				inner join dbcountries cp on cp.idcountrie = ed.refcountries
 				inner join tbcategorias cat on cat.idtcategoria = ed.refcategorias
 				inner join tbdivisiones di on di.iddivision = ed.refdivisiones
 				inner join tbestados est on est.idestado = fe.refestados
 				where cp.idcountrie = ".$idcountrie." and ed.reftemporadas = ".$idtemporada;
-		
+
 		$res = $this->query($sql,0);
-		return $res; 
+		return $res;
 
 	}
-	
-	
-	function traerEquiposdelegadosPorCountrie($id, $idtemporada, $nuevo) { 
-		$sql = "select 
+
+
+	function traerEquiposdelegadosPorCountrie($id, $idtemporada, $nuevo) {
+		$sql = "select
 		e.idequipodelegado,
 		e.idequipo,
 		cou.nombre as countrie,
@@ -919,10 +931,10 @@ function traerDivisiones() {
 		est.estado,
 		e.refestados,
 		coalesce(max(fe.refequiposdelegados),0) as esfusion
-		from dbequiposdelegados e 
-		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
-		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
-		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		from dbequiposdelegados e
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones
 		inner join tbestados est ON est.idestado = e.refestados
 		left join dbfusionequipos fe ON fe.refequiposdelegados = e.idequipodelegado
 		where e.activo = 1 and e.nuevo = ".$nuevo." and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
@@ -936,16 +948,16 @@ function traerDivisiones() {
 		e.activo,
 		est.estado,
 		e.refestados
-		order by e.nombre"; 
-		
-		$res = $this->query($sql,0); 
-		
-		return $res; 
-	} 
+		order by e.nombre";
+
+		$res = $this->query($sql,0);
+
+		return $res;
+	}
 
 
 	function traerEquiposdelegadosPorCountrieFinalizado($id, $idtemporada) {
-		$sql = "SELECT 
+		$sql = "SELECT
 					e.idequipo,
 					cou.nombre AS countrie,
 					e.nombre,
@@ -968,9 +980,9 @@ function traerDivisiones() {
 					est.idestado as refestados,
                     coalesce(max(fe.refcountries),0) as esfusion,
                     e.idequipodelegado,
-                    (select 
+                    (select
 					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
-					from dbfusionequipos fe 
+					from dbfusionequipos fe
 					inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion,
 					(CASE
@@ -1004,16 +1016,16 @@ function traerDivisiones() {
 					e.refdivisiones,
 					est.idestado,
 					est.idestado
-			order by 8,9"; 
-		
-		$res = $this->query($sql,0); 
-		
-		return $res; 
+			order by 8,9";
+
+		$res = $this->query($sql,0);
+
+		return $res;
 	}
-	
-	
+
+
 	function traerEquiposFusionPorEquipo($idequipo, $idtemporada) {
-		$sql = "SELECT 
+		$sql = "SELECT
 					cc.nombre
 				FROM
 					dbfusionequipos f
@@ -1024,15 +1036,15 @@ function traerDivisiones() {
 						AND ed.idequipo = ".$idequipo."
 						AND ed.reftemporadas = ".$idtemporada;
 
-		$res = $this->query($sql,0); 
+		$res = $this->query($sql,0);
 
-		return $res; 
+		return $res;
 	}
 
 
-	
+
 	function traerEquiposdelegadosPorCountrieFinalizadoPorEquipo($id, $idtemporada, $idequipo) {
-		$sql = "SELECT 
+		$sql = "SELECT
 					ee.idequipo,
 					cou.nombre AS countrie,
 					ee.nombre,
@@ -1059,14 +1071,14 @@ function traerDivisiones() {
 					tbcategorias cat ON cat.idtcategoria = ee.refcategorias
 						INNER JOIN
 					tbdivisiones di ON di.iddivision = ee.refdivisiones
-				
+
 				WHERE
 					ee.activo = 1 AND cou.idcountrie = ".$id." and e.idequipo is null
 					and ee.idequipo = ".$idequipo."
-					
+
 				union all
-				
-				SELECT 
+
+				SELECT
 					e.idequipo,
 					cou.nombre AS countrie,
 					e.nombre,
@@ -1101,17 +1113,17 @@ function traerDivisiones() {
 				WHERE
 					e.activo = 1 AND cou.idcountrie = ".$id."
 					and e.idequipo = ".$idequipo."
-			AND e.reftemporadas = ".$idtemporada." 
-			order by 8,9"; 
-		
-		$res = $this->query($sql,0); 
-		
-		return $res; 
+			AND e.reftemporadas = ".$idtemporada."
+			order by 8,9";
+
+		$res = $this->query($sql,0);
+
+		return $res;
 	}
 
 
-	function traerEquiposdelegadosEliminadosPorCountrie($id, $idtemporada) { 
-		$sql = "select 
+	function traerEquiposdelegadosEliminadosPorCountrie($id, $idtemporada) {
+		$sql = "select
 		e.idequipodelegado,
 		e.idequipo,
 		cou.nombre as countrie,
@@ -1122,23 +1134,23 @@ function traerDivisiones() {
 		(case when e.activo=1 then 'Si' else 'No' end) as activo,
 		e.refestados,
 		est.estado
-		from dbequiposdelegados e 
-		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
-		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
-		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
+		from dbequiposdelegados e
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones
 		inner join tbestados est ON est.idestado = e.refestados
 		where e.activo = 0 and cou.idcountrie = ".$id." and e.reftemporadas = ".$idtemporada."
-		order by 1"; 
-		
-		$res = $this->query($sql,0); 
-		
-		return $res; 
-	} 
+		order by 1";
+
+		$res = $this->query($sql,0);
+
+		return $res;
+	}
 
 	function eliminarEquipoPasivo($id, $idtemporada, $idusuario) {
 
 		//verifico si ya existe el equipo eliminado
-		
+
 		$sql = "
 		INSERT INTO dbequiposdelegados
 					(idequipodelegado,
@@ -1168,9 +1180,9 @@ function traerDivisiones() {
 			0
 		from dbequipos where idequipo = ".$id;
 
-		$res = $this->query($sql,0); 
-		
-		return $res; 
+		$res = $this->query($sql,0);
+
+		return $res;
 
 	}
 
@@ -1178,7 +1190,7 @@ function traerDivisiones() {
 	function mantenerEquipoPasivo($id, $idtemporada, $idusuario, $idcountrie) {
 
 		//verifico si ya existe el equipo eliminado
-		
+
 		$sql = "
 		INSERT INTO dbequiposdelegados
 					(idequipodelegado,
@@ -1208,7 +1220,7 @@ function traerDivisiones() {
 			0
 		from dbequipos where idequipo = ".$id;
 
-		$res = $this->query($sql,1); 
+		$res = $this->query($sql,1);
 
 		if ($res > 0) {
 			$resFusion = $this->traerFusionPorEquiposCountrie($id, $idcountrie);
@@ -1216,31 +1228,31 @@ function traerDivisiones() {
 				$this->insertarFusionEquipos($res, $row['refcountries'], 1, '');
 			}
 		}
-		
-		return $res; 
+
+		return $res;
 
 	}
-	
-	
-	function traerEquiposdelegadosPorId($id) { 
-		$sql = "select idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados from dbequiposdelegados where idequipodelegado =".$id; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
-	
+
+
+	function traerEquiposdelegadosPorId($id) {
+		$sql = "select idequipodelegado,idequipo,reftemporadas,refusuarios,refcountries,nombre,refcategorias,refdivisiones,fechabaja,activo,refestados from dbequiposdelegados where idequipodelegado =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: dbequiposdelegados*/
 
 
-	
+
 function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo) {
 	$sql = "insert into dbconectordelegados(idconector,reftemporadas, refusuarios,refjugadores,reftipojugadores,refequipos,refcountries,refcategorias,esfusion,activo)
 	values ('',".$refjugadores.",".$reftemporadas.",".$refusuarios.",".$reftipojugadores.",".$refequipos.",".$refcountries.",".$refcategorias.",".$esfusion.",".$activo.")";
 	$res = $this->query($sql,1);
 	return $res;
 	}
-	
-	
+
+
 	function modificarConectorDelegado($id,$reftemporadas, $refusuarios, $refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo) {
 	$sql = "update dbconectordelegados
 	set
@@ -1249,37 +1261,37 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function eliminarConectorDelegado($id) {
 	$sql = "update dbconectordelegados set activo = 0 where idconector =".$id;
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
+
 	function eliminarTodosLosJugadoresDelegado($id) {
 		$sql = "update dbconectordelegados set activo = 0 where refequipos =".$id;
 		$res = $this->query($sql,0);
 		return $res;
 	}
-	
+
 	function eliminarConectorDefinitivamenteDelegado($id) {
 	$sql = "delete from dbconectordelegados where idconector =".$id;
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
-	
+
+
+
 	function eliminarConectorPorJugadorDelegado($id) {
 	$sql = "update dbconectordelegados set activo = 0 where refjugadores =".$id;
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function traerConectorDelegado($refJugador, $reftemporadas, $refusuarios) {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		concat(equ.idequipo, '- ',equ.nombre) as equipo,
@@ -1294,7 +1306,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		c.refcategorias,
 		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
 		jug.nrodocumento
-		
+
 	from
 	dbconectordelegados c
 			inner join
@@ -1315,16 +1327,16 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where jug.idjugador = ".$refJugador." and c.reftemporadas = ".$reftemporadas." 
+		where jug.idjugador = ".$refJugador." and c.reftemporadas = ".$reftemporadas."
 				and c.refusuarios = ".$refusuarios."
 	order by 1";
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function traerConectorActivosDelegado($refJugador, $reftemporadas, $refusuarios) {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		equ.nombre as equipo,
@@ -1339,7 +1351,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		c.refcategorias,
 		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
 		jug.nrodocumento
-		
+
 	from
 	dbconectordelegados c
 			inner join
@@ -1360,17 +1372,17 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where jug.idjugador = ".$refJugador." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+		where jug.idjugador = ".$refJugador." and c.activo = 1 and c.reftemporadas = ".$reftemporadas."
 				and c.refusuarios = ".$refusuarios."
 	order by 1";
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
-	
+
+
+
 	function traerConectorCategoriasActivosDelegado($refCategorias, $reftemporadas, $refusuarios) {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		equ.nombre as equipo,
@@ -1385,7 +1397,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		c.refcategorias,
 		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
 		jug.nrodocumento
-		
+
 	from
 	dbconectordelegados c
 			inner join
@@ -1406,17 +1418,17 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where cat.idtcategoria = ".$refCategorias." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+		where cat.idtcategoria = ".$refCategorias." and c.activo = 1 and c.reftemporadas = ".$reftemporadas."
 		and c.refusuarios = ".$refusuarios."
 	order by 1";
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
-	
+
+
+
 	function traerConectorTodosActivosDelegado($reftemporadas, $refusuarios) {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		equ.nombre as equipo,
@@ -1431,7 +1443,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		c.refcategorias,
 		concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
 		jug.nrodocumento
-		
+
 	from
 	dbconectordelegados c
 			inner join
@@ -1452,16 +1464,16 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+		where c.activo = 1 and c.reftemporadas = ".$reftemporadas."
 		and c.refusuarios = ".$refusuarios."
 	order by 1";
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, $refusuarios='') {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		equ.nombre as equipo,
@@ -1482,7 +1494,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		jug.fechabaja,
 		jug.fechaalta,
 		(case when c.habilitacionpendiente = 1 then 'Si' else 'No' end) as habilitacionpendiente
-	
+
 	from
 	dbconectordelegados c
 			inner join
@@ -1501,16 +1513,16 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas." 
+		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas."
 				or c.refusuarios = '".$refusuarios."'
 	order by concat(jug.apellido,', ',jug.nombres)";
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function traerConectorActivosPorEquiposCategoriasDelegado($refEquipos, $idCategoria, $reftemporadas, $refusuarios) {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		equ.nombre as equipo,
@@ -1529,7 +1541,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tip.idtipojugador,
 		year(now()) - year(jug.fechanacimiento) as edad,
 		(case when jug.fechabaja = '0000-00-00' then '1900-01-01' else coalesce(jug.fechabaja,'1900-01-01') end) as fechabaja
-		
+
 	from
 		dbconectordelegados c
 			inner join
@@ -1550,21 +1562,21 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.refcategorias = ".$idCategoria." 
-				and c.reftemporadas = ".$reftemporadas." 
+		where equ.idequipo = ".$refEquipos." and c.activo = 1 and c.refcategorias = ".$idCategoria."
+				and c.reftemporadas = ".$reftemporadas."
 				and c.refusuarios = ".$refusuarios."
 	order by concat(jug.apellido,', ',jug.nombres)";
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function traerConectorActivosPorEquiposEdadesDelegado($refEquipos, $reftemporadas, $refusuarios) {
-	$sql = "select 
+	$sql = "select
 		min(year(now()) - year(jug.fechanacimiento)) as edadMinima,
 		max(year(now()) - year(jug.fechanacimiento)) as edadMaxima,
 		count(*) as cantidadJugadores,
-		round((max(year(now()) - year(jug.fechanacimiento)) + min(year(now()) - year(jug.fechanacimiento)))/2,2) as edadPromedio 
+		round((max(year(now()) - year(jug.fechanacimiento)) + min(year(now()) - year(jug.fechanacimiento)))/2,2) as edadPromedio
 	from
 		dbconectordelegados c
 			inner join
@@ -1585,17 +1597,17 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
-		where equ.idequipo = ".$refEquipos." and c.activo = 1 
-				and c.reftemporadas = ".$reftemporadas." 
+		where equ.idequipo = ".$refEquipos." and c.activo = 1
+				and c.reftemporadas = ".$reftemporadas."
 				and c.refusuarios = ".$refusuarios;
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
-	
+
+
+
 	function traerConectorActivosPorConectorDelegado($id) {
-	$sql = "select 
+	$sql = "select
 		c.idconector,
 		cat.categoria,
 		equ.nombre as equipo,
@@ -1613,7 +1625,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		jug.fechanacimiento,
 		tip.idtipojugador,
 		year(now()) - year(jug.fechanacimiento) as edad
-		
+
 	from
 		dbconectordelegados c
 			inner join
@@ -1641,12 +1653,12 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 	}
 
 
-	function existeJugadoresclubPorClubJugador($idClub, $idJugador) { 
+	function existeJugadoresclubPorClubJugador($idClub, $idJugador) {
 
 		$resTemporada = $this->traerUltimaTemporada();
 		$temporada = mysql_result($resTemporada,0,1);
 
-		$sql = "select 
+		$sql = "select
 		jc.idjugadorclub,
 		j.apellido,
 		j.nombres,
@@ -1659,36 +1671,36 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		jc.refjugadores
 		from dbjugadoresclub jc
 		inner join dbjugadores j on j.idjugador = jc.refjugadores
-		inner join dbcountries c on c.idcountrie = jc.refcountries 
+		inner join dbcountries c on c.idcountrie = jc.refcountries
 		where jc.refJugadores = ".$idJugador." and j.refcountries = ".$idClub." and jc.temporada = ".$temporada."
-		order by 1"; 
+		order by 1";
 		$res = $this->existeDevuelveId($sql);
-		return $res; 
-	} 
+		return $res;
+	}
 
-	function insertarJugadoresclub($refjugadores,$fechabaja,$articulo,$numeroserielote,$temporada,$refcountries) { 
-		$sql = "insert into dbjugadoresclub(idjugadorclub,refjugadores,fechabaja,articulo,numeroserielote,temporada,refcountries) 
-		values ('',".$refjugadores.",".$fechabaja.",".$articulo.",'".($numeroserielote)."',".$temporada.",".$refcountries.")"; 
-		
-		$res = $this->query($sql,1); 
-		return $res; 
-	} 
+	function insertarJugadoresclub($refjugadores,$fechabaja,$articulo,$numeroserielote,$temporada,$refcountries) {
+		$sql = "insert into dbjugadoresclub(idjugadorclub,refjugadores,fechabaja,articulo,numeroserielote,temporada,refcountries)
+		values ('',".$refjugadores.",".$fechabaja.",".$articulo.",'".($numeroserielote)."',".$temporada.",".$refcountries.")";
 
-	function eliminarJugadoresclub($id) { 
-		$sql = "delete from dbjugadoresclub where idjugadorclub =".$id; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
-	
-	
-	function modificarJugadoresclub($id,$refjugadores,$fechabaja,$articulo,$numeroserielote,$temporada,$refcountries) { 
-		$sql = "update dbjugadoresclub 
-		set 
-		refjugadores = ".$refjugadores.",fechabaja = ".$fechabaja.",articulo = ".$articulo.",numeroserielote = '".($numeroserielote)."',temporada = ".$temporada.",refcountries = ".$refcountries." 
-		where idjugadorclub =".$id; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		$res = $this->query($sql,1);
+		return $res;
+	}
+
+	function eliminarJugadoresclub($id) {
+		$sql = "delete from dbjugadoresclub where idjugadorclub =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function modificarJugadoresclub($id,$refjugadores,$fechabaja,$articulo,$numeroserielote,$temporada,$refcountries) {
+		$sql = "update dbjugadoresclub
+		set
+		refjugadores = ".$refjugadores.",fechabaja = ".$fechabaja.",articulo = ".$articulo.",numeroserielote = '".($numeroserielote)."',temporada = ".$temporada.",refcountries = ".$refcountries."
+		where idjugadorclub =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function traerUltimaTemporada() {
 		$sql = "select
@@ -1707,46 +1719,46 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		return $res;
 	}
 
-	function traerTipodocumentos() { 
-		$sql = "select 
+	function traerTipodocumentos() {
+		$sql = "select
 		t.idtipodocumento,
 		t.tipodocumento
-		from tbtipodocumentos t 
-		order by 1"; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		from tbtipodocumentos t
+		order by 1";
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function existeJugador($nroDocumento) {
 		$sql = "select idjugador from dbjugadores where nrodocumento = ".$nroDocumento;
 		$res = $this->query($sql,0);
-		
+
 		if (mysql_num_rows($res)>0) {
-			return 1;   
-		}
-		return 0;
-	}
-	
-	
-	function existeJugadorPre($nroDocumento) {
-		$sql = "select idjugadorpre from dbjugadorespre where nrodocumento = ".$nroDocumento;
-		$res = $this->query($sql,0);
-		
-		if (mysql_num_rows($res)>0) {
-			return 1;   
+			return 1;
 		}
 		return 0;
 	}
 
-	
+
+	function existeJugadorPre($nroDocumento) {
+		$sql = "select idjugadorpre from dbjugadorespre where nrodocumento = ".$nroDocumento;
+		$res = $this->query($sql,0);
+
+		if (mysql_num_rows($res)>0) {
+			return 1;
+		}
+		return 0;
+	}
+
+
 function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios) {
 	$sql = "insert into dbjugadorespre(idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,numeroserielote,refcountries,observaciones,refusuarios, refestados)
 	values ('',".$reftipodocumentos.",".$nrodocumento.",'".strtoupper($apellido)."','".strtoupper($nombres)."','".($email)."','".($fechanacimiento)."','".($fechaalta)."','".($numeroserielote)."',".$refcountries.",'".($observaciones)."',".$refusuarios.",1)";
 	$res = $this->query($sql,1);
 	return $res;
 	}
-	
-	
+
+
 	function modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios) {
 	$sql = "update dbjugadorespre
 	set
@@ -1755,8 +1767,8 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	$res = $this->query($sql,0);
 	return $sql;
 	}
-	
-	
+
+
 	function modificarJugadorespreRegistro($id,$apellido,$nombres,$fechanacimiento,$observaciones) {
 	$sql = "update dbjugadorespre
 	set
@@ -1771,7 +1783,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
+
 	function modificarJugadorespreRegistroNuevo($id,$apellido,$nombres,$fechanacimiento,$observaciones,$email) {
 	$sql = "update dbjugadorespre
 	set
@@ -1780,17 +1792,17 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	$res = $this->query($sql,0);
 	return $res;
 	}
-	
-	
+
+
 	function eliminarJugadorespre($id) {
-		
+
 	$sql = "delete from dbjugadorespre where idjugadorpre =".$id;
 	$res = $this->query($sql,0);
 	return $res;
 	}
 
 
-	
+
 	function traerJugadoresprePorCountries($refCountries) {
 		$sql = "select
 		j.idjugadorpre,
@@ -1820,13 +1832,13 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		$res = $this->query($sql,0);
 		return $res;
 	}
-	
-	function traerJugadoresClubPorCountrieActivos($idCountrie,$busqueda='') { 
+
+	function traerJugadoresClubPorCountrieActivos($idCountrie,$busqueda='') {
 
 		$resTemporada = $this->traerUltimaTemporada();
 		$temporada = mysql_result($resTemporada,0,1);
 
-		$sql = "select 
+		$sql = "select
 		j.idjugador,
 		tip.tipodocumento,
 		j.nrodocumento,
@@ -1846,32 +1858,32 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		(case when jc.articulo = 1 then true else false end) as articulocheck,
 		coalesce( jc.numeroserielote,'') as numeroserielote,
 		concat(j.apellido, ' ', j.nombres) as apyn
-		from dbjugadores j 
-		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
-		inner join dbcountries cou ON cou.idcountrie = j.refcountries 
-		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		left join dbjugadoresclub jc 
+		from dbjugadores j
+		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos
+		inner join dbcountries cou ON cou.idcountrie = j.refcountries
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+		left join dbjugadoresclub jc
 		on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador and jc.temporada = ".$temporada."
 		where j.refcountries = ".$idCountrie." and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
 		";
 		if ($busqueda != '') {
 			$sql .= " and concat(j.nrodocumento,' ', j.apellido, ' ', j.nombres) like '%".$busqueda."%'";
 		}
-		$sql .= " 
-		order by concat(j.apellido, ' ', j.nombres) 
-		"; 
+		$sql .= "
+		order by concat(j.apellido, ' ', j.nombres)
+		";
 		//die(var_dump($sql));
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 
-	function traerJugadoresClubPorCountrieActivosPaginador($idCountrie, $pagina, $cantidad, $busqueda='') { 
+	function traerJugadoresClubPorCountrieActivosPaginador($idCountrie, $pagina, $cantidad, $busqueda='') {
 
 		$resTemporada = $this->traerUltimaTemporada();
 		$temporada = (integer)mysql_result($resTemporada,0,1);
 
-		$sql = "select 
+		$sql = "select
 		j.idjugador,
 		tip.tipodocumento,
 		j.nrodocumento,
@@ -1892,30 +1904,30 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		coalesce( jc.numeroserielote,coalesce( jp.numeroserielote,'')) as numeroserielote,
 		concat(j.apellido, ' ', j.nombres) as apyn,
 		coalesce( jc.numeroserielote,coalesce( jp.numeroserielote,'')) as marcalote
-		from dbjugadores j 
-		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos 
-		inner join dbcountries cou ON cou.idcountrie = j.refcountries 
-		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		left 
+		from dbjugadores j
+		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos
+		inner join dbcountries cou ON cou.idcountrie = j.refcountries
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+		left
 		join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador and jc.temporada = ".$temporada."
 		left
 		join dbjugadorespre jp on jp.nrodocumento = j.nrodocumento
-		where j.refcountries = ".$idCountrie." 
+		where j.refcountries = ".$idCountrie."
 			  and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
 			  ";
 		if ($busqueda != '') {
 			$sql .= " and concat(j.nrodocumento,' ', j.apellido, ' ', j.nombres) like '%".$busqueda."%'";
 		}
-		$sql .= " order by concat(j.apellido, ' ', j.nombres) 
-		limit ".(($pagina - 1) * $cantidad).",".$cantidad; 
-		
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
+		$sql .= " order by concat(j.apellido, ' ', j.nombres)
+		limit ".(($pagina - 1) * $cantidad).",".$cantidad;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
 
 	function traerCountriesPorId($id) {
 		$sql = "select idcountrie,direccion,
-			telefonoadministrativo,telefonocampo,email, 
+			telefonoadministrativo,telefonocampo,email,
 			concat('../../archivos/countries/', idcountrie,'/',imagen) as imagen , nombre
 			from dbcountries where idcountrie =".$id;
 		$res = $this->query($sql,0);
@@ -1923,7 +1935,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	}
 
 	function modificarCountry($id, $direccion, $telefonoadministrativo,$telefonocampo,$email) {
-		$sql = "update dbcountries 
+		$sql = "update dbcountries
 					set direccion = '".$direccion."',
 						telefonoadministrativo = '".$telefonoadministrativo."',
 						telefonocampo = '".$telefonocampo."',
@@ -1936,7 +1948,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	function traerNombreCountryPorId($id) {
 		$sql = "select nombre from dbcountries where idcountrie =".$id;
 		$res = $this->query($sql,0);
-		
+
 		if (mysql_num_rows($res)>0) {
 			return mysql_result($res,0,0);
 		}
@@ -1952,19 +1964,19 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	}
 
 	function traerFusionPorEquiposDelegados($idequipodelegado) {
-		$sql = "select 
+		$sql = "select
 					cc.idcountrie, cc.nombre as countrie , est.idestado, est.estado
-				from dbcountries cc 
+				from dbcountries cc
 				inner join dbfusionequipos fe on fe.refcountries = cc.idcountrie
 				inner join tbestados est ON est.idestado = fe.refestados
 				where fe.refequiposdelegados = ".$idequipodelegado;
-		
-		$res = $this->query($sql,0); 
-		return $res; 	
+
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function traerFusionPorEquiposCountrie($idequipo, $idcountrie) {
-		$sql = "SELECT 
+		$sql = "SELECT
 					ce.nombre AS countrypadre,
 					e.nombre AS equipo,
 					c.nombre AS countrie,
@@ -1988,12 +2000,12 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 						AND ce.idcountrie = ".$idcountrie."
 				GROUP BY ce.nombre , e.nombre , c.nombre , cc.refcountries , cc.refequipos";
 
-		$res = $this->query($sql,0); 
-		return $res; 
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function traerEquiposPorCountriesConFusion($idCountrie, $idtemporada) {
-		$sql = "SELECT 
+		$sql = "SELECT
 					e.idequipo,
 					cou.nombre AS countrie,
 					e.nombre,
@@ -2028,7 +2040,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 						left join
 					dbequiposdelegados ed ON ed.idequipo = e.idequipo and ed.reftemporadas = ".$idtemporada."
 						left join
-					(SELECT 
+					(SELECT
 						ce.nombre AS countrypadre,
 						e.nombre AS equipo,
 						c.nombre AS countrie,
@@ -2067,13 +2079,13 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 					e.refcontactos
 				ORDER BY cat.idtcategoria , di.iddivision , e.nombre";
 
-		$res = $this->query($sql,0); 
-		return $res; 
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 
-	function traerEquiposPorCountries($idCountrie) { 
-		$sql = "select 
+	function traerEquiposPorCountries($idCountrie) {
+		$sql = "select
 		e.idequipo,
 		cou.nombre as countrie,
 		e.nombre,
@@ -2087,49 +2099,49 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		e.refcategorias,
 		e.refdivisiones,
 		e.refcontactos
-		from dbequipos e 
-		inner join dbcountries cou ON cou.idcountrie = e.refcountries 
-		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria 
-		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias 
-		inner join tbdivisiones di ON di.iddivision = e.refdivisiones 
-		inner join dbcontactos con ON con.idcontacto = e.refcontactos 
-		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos 
+		from dbequipos e
+		inner join dbcountries cou ON cou.idcountrie = e.refcountries
+		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+		inner join tbcategorias cat ON cat.idtcategoria = e.refcategorias
+		inner join tbdivisiones di ON di.iddivision = e.refdivisiones
+		inner join dbcontactos con ON con.idcontacto = e.refcontactos
+		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
 		where cou.idcountrie = ".$idCountrie." and e.activo = 1
-		order by cat.idtcategoria, di.iddivision, e.nombre"; 
-		$res = $this->query($sql,0); 
-		return $res; 
-	} 
-	
-	
+		order by cat.idtcategoria, di.iddivision, e.nombre";
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
 	/* PARA Usuarios */
-	
-	function insertarUsuarios($usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) { 
-	$sql = "insert into dbusuarios(idusuario,usuario,password,refroles,email,nombrecompleto,refclientes,activo) 
-	values ('','".($usuario)."','".($password)."',".$refroles.",'".($email)."','".($nombrecompleto)."',".$refclientes.",".$activo.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarUsuarios($id,$usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) { 
-	$sql = "update dbusuarios 
-	set 
-	usuario = '".($usuario)."',password = '".($password)."',refroles = ".$refroles.",email = '".($email)."',nombrecompleto = '".($nombrecompleto)."',refclientes = ".$refclientes.",activo = ".$activo." 
-	where idusuario =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarUsuarios($id) { 
-	$sql = "delete from dbusuarios where idusuario =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerUsuarios() { 
-	$sql = "select 
+
+	function insertarUsuarios($usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) {
+	$sql = "insert into dbusuarios(idusuario,usuario,password,refroles,email,nombrecompleto,refclientes,activo)
+	values ('','".($usuario)."','".($password)."',".$refroles.",'".($email)."','".($nombrecompleto)."',".$refclientes.",".$activo.")";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarUsuarios($id,$usuario,$password,$refroles,$email,$nombrecompleto,$refclientes,$activo) {
+	$sql = "update dbusuarios
+	set
+	usuario = '".($usuario)."',password = '".($password)."',refroles = ".$refroles.",email = '".($email)."',nombrecompleto = '".($nombrecompleto)."',refclientes = ".$refclientes.",activo = ".$activo."
+	where idusuario =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarUsuarios($id) {
+	$sql = "delete from dbusuarios where idusuario =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerUsuarios() {
+	$sql = "select
 	u.idusuario,
 	u.usuario,
 	u.password,
@@ -2137,54 +2149,54 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	u.email,
 	u.nombrecompleto,
 	u.activo
-	from dbusuarios u 
-	inner join tbroles rol ON rol.idrol = u.refroles 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerUsuariosPorId($id) { 
-	$sql = "select idusuario,usuario,password,refroles,email,nombrecompleto,activo from dbusuarios where idusuario =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
+	from dbusuarios u
+	inner join tbroles rol ON rol.idrol = u.refroles
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerUsuariosPorId($id) {
+	$sql = "select idusuario,usuario,password,refroles,email,nombrecompleto,activo from dbusuarios where idusuario =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: dbusuarios*/
 
 
-	
+
 /* PARA Delegados */
 
-function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) { 
-	$sql = "insert into dbdelegados(iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4) 
-	values ('',".$refusuarios.",'".($apellidos)."','".($nombres)."','".($direccion)."','".($localidad)."','".($cp)."','".($telefono)."','".($celular)."','".($fax)."','".($email1)."','".($email2)."','".($email3)."','".($email4)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarDelegados($id,$refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) { 
-	$sql = "update dbdelegados 
-	set 
-	refusuarios = ".$refusuarios.",apellidos = '".($apellidos)."',nombres = '".($nombres)."',direccion = '".($direccion)."',localidad = '".($localidad)."',cp = '".($cp)."',telefono = '".($telefono)."',celular = '".($celular)."',fax = '".($fax)."',email1 = '".($email1)."',email2 = '".($email2)."',email3 = '".($email3)."',email4 = '".($email4)."' 
-	where iddelegado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarDelegados($id) { 
-	$sql = "delete from dbdelegados where iddelegado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerDelegados() { 
-	$sql = "select 
+function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) {
+	$sql = "insert into dbdelegados(iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4)
+	values ('',".$refusuarios.",'".($apellidos)."','".($nombres)."','".($direccion)."','".($localidad)."','".($cp)."','".($telefono)."','".($celular)."','".($fax)."','".($email1)."','".($email2)."','".($email3)."','".($email4)."')";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarDelegados($id,$refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) {
+	$sql = "update dbdelegados
+	set
+	refusuarios = ".$refusuarios.",apellidos = '".($apellidos)."',nombres = '".($nombres)."',direccion = '".($direccion)."',localidad = '".($localidad)."',cp = '".($cp)."',telefono = '".($telefono)."',celular = '".($celular)."',fax = '".($fax)."',email1 = '".($email1)."',email2 = '".($email2)."',email3 = '".($email3)."',email4 = '".($email4)."'
+	where iddelegado =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarDelegados($id) {
+	$sql = "delete from dbdelegados where iddelegado =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerDelegados() {
+	$sql = "select
 	d.iddelegado,
 	d.refusuarios,
 	d.apellidos,
@@ -2199,76 +2211,76 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	d.email2,
 	d.email3,
 	d.email4
-	from dbdelegados d 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
+	from dbdelegados d
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
 
 	function existeDelegadoPorUsuario($id) {
 		$sql = "select iddelegado,refusuarios,apellidos from dbdelegados where refusuarios =".$id;
-		
+
 		return $this->existeDevuelveId($sql);
 
 	}
-	
-	
-	function traerDelegadosPorId($id) { 
-	$sql = "select iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4 from dbdelegados where iddelegado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
 
 
-	function traerDelegadosPorUsuario($id) { 
-		$sql = "select iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4 from dbdelegados where refusuarios =".$id; 
-		$res = $this->query($sql,0); 
-		return $res; 
-		} 
-	
+	function traerDelegadosPorId($id) {
+	$sql = "select iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4 from dbdelegados where iddelegado =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerDelegadosPorUsuario($id) {
+		$sql = "select iddelegado,refusuarios,apellidos,nombres,direccion,localidad,cp,telefono,celular,fax,email1,email2,email3,email4 from dbdelegados where refusuarios =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+		}
+
 	/* Fin */
 	/* /* Fin de la Tabla: dbdelegados*/
 
 	function existeDevuelveId($sql) {
 
 		$res = $this->query($sql,0);
-		
+
 		if (mysql_num_rows($res)>0) {
-			return mysql_result($res,0,0);  
+			return mysql_result($res,0,0);
 		}
 		return 0;
 	}
-	
-	
+
+
 	/* PARA Configuracion */
-	
-	function insertarConfiguracion($razonsocial,$empresa,$sistema,$direccion,$telefono,$email) { 
-	$sql = "insert into tbconfiguracion(idconfiguracion,razonsocial,empresa,sistema,direccion,telefono,email) 
-	values ('','".($razonsocial)."','".($empresa)."','".($sistema)."','".($direccion)."','".($telefono)."','".($email)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarConfiguracion($id,$razonsocial,$empresa,$sistema,$direccion,$telefono,$email) { 
-	$sql = "update tbconfiguracion 
-	set 
-	razonsocial = '".($razonsocial)."',empresa = '".($empresa)."',sistema = '".($sistema)."',direccion = '".($direccion)."',telefono = '".($telefono)."',email = '".($email)."' 
-	where idconfiguracion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarConfiguracion($id) { 
-	$sql = "delete from tbconfiguracion where idconfiguracion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerConfiguracion() { 
-	$sql = "select 
+
+	function insertarConfiguracion($razonsocial,$empresa,$sistema,$direccion,$telefono,$email) {
+	$sql = "insert into tbconfiguracion(idconfiguracion,razonsocial,empresa,sistema,direccion,telefono,email)
+	values ('','".($razonsocial)."','".($empresa)."','".($sistema)."','".($direccion)."','".($telefono)."','".($email)."')";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarConfiguracion($id,$razonsocial,$empresa,$sistema,$direccion,$telefono,$email) {
+	$sql = "update tbconfiguracion
+	set
+	razonsocial = '".($razonsocial)."',empresa = '".($empresa)."',sistema = '".($sistema)."',direccion = '".($direccion)."',telefono = '".($telefono)."',email = '".($email)."'
+	where idconfiguracion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarConfiguracion($id) {
+	$sql = "delete from tbconfiguracion where idconfiguracion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerConfiguracion() {
+	$sql = "select
 	c.idconfiguracion,
 	c.razonsocial,
 	c.empresa,
@@ -2276,186 +2288,186 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	c.direccion,
 	c.telefono,
 	c.email
-	from tbconfiguracion c 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerConfiguracionPorId($id) { 
-	$sql = "select idconfiguracion,razonsocial,empresa,sistema,direccion,telefono,email from tbconfiguracion where idconfiguracion =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
+	from tbconfiguracion c
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerConfiguracionPorId($id) {
+	$sql = "select idconfiguracion,razonsocial,empresa,sistema,direccion,telefono,email from tbconfiguracion where idconfiguracion =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: tbconfiguracion*/
-	
-	
+
+
 	/* PARA Estados */
-	
-	function insertarEstados($estado) { 
-	$sql = "insert into tbestados(idestado,estado) 
-	values ('','".($estado)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarEstados($id,$estado) { 
-	$sql = "update tbestados 
-	set 
-	estado = '".($estado)."' 
-	where idestado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarEstados($id) { 
-	$sql = "delete from tbestados where idestado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerEstados() { 
-	$sql = "select 
+
+	function insertarEstados($estado) {
+	$sql = "insert into tbestados(idestado,estado)
+	values ('','".($estado)."')";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarEstados($id,$estado) {
+	$sql = "update tbestados
+	set
+	estado = '".($estado)."'
+	where idestado =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarEstados($id) {
+	$sql = "delete from tbestados where idestado =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerEstados() {
+	$sql = "select
 	e.idestado,
 	e.estado
-	from tbestados e 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerEstadosPorId($id) { 
-	$sql = "select idestado,estado from tbestados where idestado =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
+	from tbestados e
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerEstadosPorId($id) {
+	$sql = "select idestado,estado from tbestados where idestado =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: tbestados*/
-	
-	
+
+
 	/* PARA Horarios */
-	
-	function insertarHorarios($hora) { 
-	$sql = "insert into tbhorarios(idtbhorario,hora) 
-	values ('',".$hora.")"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarHorarios($id,$hora) { 
-	$sql = "update tbhorarios 
-	set 
-	hora = ".$hora." 
-	where idtbhorario =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarHorarios($id) { 
-	$sql = "delete from tbhorarios where idtbhorario =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerHorarios() { 
-	$sql = "select 
+
+	function insertarHorarios($hora) {
+	$sql = "insert into tbhorarios(idtbhorario,hora)
+	values ('',".$hora.")";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarHorarios($id,$hora) {
+	$sql = "update tbhorarios
+	set
+	hora = ".$hora."
+	where idtbhorario =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarHorarios($id) {
+	$sql = "delete from tbhorarios where idtbhorario =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerHorarios() {
+	$sql = "select
 	h.idtbhorario,
 	h.hora
-	from tbhorarios h 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerHorariosPorId($id) { 
-	$sql = "select idtbhorario,hora from tbhorarios where idtbhorario =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
+	from tbhorarios h
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerHorariosPorId($id) {
+	$sql = "select idtbhorario,hora from tbhorarios where idtbhorario =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: tbhorarios*/
-	
-	
+
+
 	/* PARA Meses */
-	
-	function insertarMeses($nombremes) { 
-	$sql = "insert into tbmeses(mes,nombremes) 
-	values ('','".($nombremes)."')"; 
-	$res = $this->query($sql,1); 
-	return $res; 
-	} 
-	
-	
-	function modificarMeses($id,$nombremes) { 
-	$sql = "update tbmeses 
-	set 
-	nombremes = '".($nombremes)."' 
-	where mes =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function eliminarMeses($id) { 
-	$sql = "delete from tbmeses where mes =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerMeses() { 
-	$sql = "select 
+
+	function insertarMeses($nombremes) {
+	$sql = "insert into tbmeses(mes,nombremes)
+	values ('','".($nombremes)."')";
+	$res = $this->query($sql,1);
+	return $res;
+	}
+
+
+	function modificarMeses($id,$nombremes) {
+	$sql = "update tbmeses
+	set
+	nombremes = '".($nombremes)."'
+	where mes =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function eliminarMeses($id) {
+	$sql = "delete from tbmeses where mes =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerMeses() {
+	$sql = "select
 	m.mes,
 	m.nombremes
-	from tbmeses m 
-	order by 1"; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
-	
-	function traerMesesPorId($id) { 
-	$sql = "select mes,nombremes from tbmeses where mes =".$id; 
-	$res = $this->query($sql,0); 
-	return $res; 
-	} 
-	
+	from tbmeses m
+	order by 1";
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
+
+	function traerMesesPorId($id) {
+	$sql = "select mes,nombremes from tbmeses where mes =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	/* Fin */
 	/* /* Fin de la Tabla: tbmeses*/
-	
-	
+
+
 
 
 function query($sql,$accion) {
-		
-		
-		
+
+
+
 		require_once 'appconfig.php';
 
 		$appconfig	= new appconfig();
-		$datos		= $appconfig->conexion();	
+		$datos		= $appconfig->conexion();
 		$hostname	= $datos['hostname'];
 		$database	= $datos['database'];
 		$username	= $datos['username'];
 		$password	= $datos['password'];
-		
+
 		$conex = mysql_connect($hostname,$username,$password) or die ("no se puede conectar".mysql_error());
-		
+
 		mysql_select_db($database);
-		
+
 		        $error = 0;
 		mysql_query("BEGIN");
 		$result=mysql_query($sql,$conex);
@@ -2473,7 +2485,7 @@ function query($sql,$accion) {
 			mysql_query("COMMIT");
 			return $result;
 		}
-		
+
 	}
 
 }
