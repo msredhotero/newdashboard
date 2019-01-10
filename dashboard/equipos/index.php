@@ -162,8 +162,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-	<script src="../../js/multiselect.min.js"></script>
-
 	<script src="https://unpkg.com/vue-swal"></script>
 
 	<!-- Bootstrap Material Datetime Picker Css -->
@@ -561,6 +559,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 <form class="form" @submit.prevent="insertarEquiposdelegados">
 <script type="text/x-template" id="modal-template-equipo">
+
   <transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
@@ -599,8 +598,15 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				<div class="row">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 						<label class="form-label">Seleccione el Countrie para fusionarse de ser necesario</label>
-						<select multiple id="fusioncountries" name="fusioncountries" require >
+						<select @click="pasar()" class="form-control" multiple id="rrfusioncountries" name="rrfusioncountries" require >
 							<?php echo $cadRefCountries; ?>
+						</select>
+					</div>
+
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label class="form-label">Countries Seleccionados</label>
+						<select @click="quitar()" class="form-control" multiple id="fusioncountries" name="fusioncountries" require >
+
 						</select>
 					</div>
 				</div>
@@ -622,6 +628,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
         </div>
       </div>
     </div>
+
   </transition>
 </script>
 </form>
@@ -645,7 +652,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
     -->
 	<h3 slot="header">Crear Equipo</h3>
 	<select class="form-control show-tick" id="refcategorias" name="refcategorias" require slot="categorias" @change="onChange()" v-model="key">
-		<option v-for="itemC in lstCategorias" :value="itemC.idcategoria" :key="itemC.idcategoria">{{ itemC.categoria }}</option>
+		<option v-for="itemC in lstCategorias" :value="itemC.idcategoria">{{ itemC.categoria }}</option>
 	</select>
 
 	<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require slot="division">
@@ -784,7 +791,19 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 		template: '#modal-template-equipo',
 		methods: {
+			pasar () {
+				$('#rrfusioncountries option:selected').remove().appendTo('#fusioncountries');
+
+			},
+			quitar () {
+				$('#fusioncountries option:selected').remove().appendTo('#rrfusioncountries');
+			},
 			crearEquipo () {
+
+				$("#fusioncountries option").each(function(){
+				// Marcamos cada valor como seleccionado
+					$("#fusioncountries option[value="+this.value+"]").prop("selected",true);
+				});
 				paramsCrearEquipo.set('nombre',$('#nombre').val());
 				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
 				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
