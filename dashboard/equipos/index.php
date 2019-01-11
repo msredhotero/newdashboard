@@ -329,10 +329,16 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
 												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
+													<div class="icon-button-demo">
+														<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info btn-xs waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
+															<i class="material-icons">search</i>
+															<span>Ver</span>
+														</button>
+														<button v-if="equipo.esfusion > 0" type='button' class='btn btn-success btn-xs waves-effect' @click="showModalFusion = true">
+															<i class="material-icons">add</i>
+															<span>Agregar Countries</span>
+														</button>
+													</div>
 												</td>
 
 												<td>
@@ -634,6 +640,62 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 </form>
 
 
+<form class="form" @submit.prevent="insertarFusiones">
+<script type="text/x-template" id="modal-template-equipo-fusion">
+
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header">
+              default header
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+
+
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label class="form-label">Seleccione el Countrie para fusionarse de ser necesario</label>
+						<select @click="pasar()" class="form-control" multiple id="rrfusioncountries" name="rrfusioncountries" require >
+							<?php echo $cadRefCountries; ?>
+						</select>
+					</div>
+
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label class="form-label">Countries Seleccionados</label>
+						<slot name="optionfusion"></slot>
+						
+					</div>
+				</div>
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+			<button class="btn bg-grey waves-effect" @click="$emit('close')">
+                CANCELAR
+			  </button>
+			  	<button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
+					<i class="material-icons">send</i>
+					<span>CREAR</span>
+				</button>
+
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </transition>
+</script>
+</form>
+
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -660,6 +722,19 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	</select>
 
   </modal2>
+
+
+  <!-- use the modal component, pass in the prop -->
+  <modal3 v-if="showModalFusion" @close="showModalFusion = false">
+    <!--
+      you can use custom content here to overwrite
+      default content
+    -->
+	<h3 slot="header">Cargar Fusion</h3>
+	<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require slot="optionfusion">
+		<option v-for="item in lstDivisiones" :value="item.iddivision" :key="item.iddivision">{{ item.division }}</option>
+	</select>
+	</modal3>
 
 
 </main>
@@ -830,6 +905,51 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	})
 
 
+	Vue.component('modal3', {
+		template: '#modal-template-equipo-fusion',
+		data: {
+			lstFusion: {}
+		}
+		methods: {
+			pasar () {
+				$('#rrfusioncountries option:selected').remove().appendTo('#fusioncountries');
+
+			},
+			quitar () {
+				$('#fusioncountries option:selected').remove().appendTo('#rrfusioncountries');
+			},
+			insertarFusion () {
+
+				$("#fusioncountries option").each(function(){
+				// Marcamos cada valor como seleccionado
+					$("#fusioncountries option[value="+this.value+"]").prop("selected",true);
+				});
+				paramsCrearEquipo.set('nombre',$('#nombre').val());
+				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
+				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
+				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
+				paramsCrearEquipo.set('nuevo',1);
+
+
+				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
+				.then(res => {
+
+					if (res.data.error == '') {
+						this.$swal("Ok!", res.data.mensaje, "success")
+						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)
+						this.$emit('close')
+
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+
+				});
+			}
+
+		}
+	})
+
+
 
 	const app = new Vue({
 		el: "#app",
@@ -847,7 +967,8 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			lstCategorias: {},
 			lstDivisiones: {},
 			showModal: false,
-			showModalEquipo: false
+			showModalEquipo: false,
+			showModalFusion: false
 
 		},
 		mounted () {
