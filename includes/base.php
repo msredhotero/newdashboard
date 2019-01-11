@@ -129,12 +129,14 @@ class BaseHTML {
                                 <li class="dropdown">
                                     <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">
                                         <i class="material-icons">notifications</i>
-                                        <span class="label-count">0</span>
+                                        <span class="label-count notificaciones-cantidad">0</span>
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="header">Notificaciones</li>
                                         <li class="body">
-                                                                        
+                                           <ul class="menu notificaciones">
+
+                                           </ul>
                                         </li>
                                         <li class="footer">
                                             <a href="javascript:void(0);">Ver Todas</a>
@@ -152,7 +154,7 @@ class BaseHTML {
                                         <li class="header">Tareas</li>
                                         <li class="body">
                                             <ul class="menu tasks">
-    
+
                                             </ul>
                                         </li>
                                         <li class="footer">
@@ -209,7 +211,7 @@ class BaseHTML {
                         <li role="presentation" class="active"><a href="#skins" data-toggle="tab">SKINS</a></li>
                         <li role="presentation"><a href="#settings" data-toggle="tab">SETTINGS</a></li>
                     </ul>
-                    
+
                 </aside>
                 <!-- #END# Right Sidebar -->
             </section>';
@@ -224,13 +226,13 @@ class BaseHTML {
                     <div class="modal-header bg-blue">
                         <h4 class="modal-title" id="largeModalLabel">'.$titulo.'</h4>
                     </div>
-                    
+
                     <form id="'.$form.'" method="POST">
                     <div class="modal-body">
                         <p>'.$contenido.'</p>
-                        
+
                         '.$formulario.'
-                        
+
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-link waves-effect" id="btn'.$id.'">'.$aceptar.'</button>
