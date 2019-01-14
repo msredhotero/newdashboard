@@ -162,6 +162,9 @@ switch ($accion) {
 		case 'traerFusionPorEquiposDelegados':
 		traerFusionPorEquiposDelegados($serviciosReferencias);
 		break;
+      case 'VtraerFusionPorEquiposDelegados':
+      VtraerFusionPorEquiposDelegados($serviciosReferencias);
+      break;
 
 		case 'traerFusionesPorEquipo':
 		traerFusionesPorEquipo($serviciosReferencias);
@@ -191,6 +194,9 @@ switch ($accion) {
       break;
       case 'traerCategorias':
       traerCategorias($serviciosReferencias);
+      break;
+      case 'insertarFusionEquipos':
+      insertarFusionEquipos($serviciosReferencias);
       break;
 
 /* Fin */
@@ -545,6 +551,27 @@ switch ($accion) {
 		echo json_encode($resV);
 	}
 
+   function VtraerFusionPorEquiposDelegados($serviciosReferencias) {
+		$idequipodelegado = $_POST['idequipodelegado'];
+
+		$res = $serviciosReferencias->traerFusionPorEquiposDelegados($idequipodelegado);
+
+		$ar = array();
+		$cad = '';
+
+		while ($row = mysql_fetch_assoc($res)) {
+			array_push($ar, $row);
+		}
+
+		$resV['error'] = false;
+		$resV['mensaje'] = 'Equipos Fusion!';
+
+		$resV['datos'] = $ar;
+
+		header('Content-type: application/json');
+		echo json_encode($resV);
+	}
+
 	function verFusion($serviciosReferencias) {
 		$idequipo 	= $_POST['idequipodelegado'];
 		$idcountrie 	= $_POST['idcountrie'];
@@ -634,6 +661,29 @@ switch ($accion) {
 		echo json_encode($resV);
 	}
 
+   function insertarFusionEquipos($serviciosReferencias) {
+      $refcountries = $_POST['refcountries'];
+      $refequiposdelegados = $_POST['refequiposdelegados'];
+
+      $resEliminar = $serviciosReferencias->eliminarFusionEquiposPorEquipo($refequiposdelegados);
+
+      if ($refcountries != '') {
+         $arFusion = explode(',', $refcountries);
+         foreach ($arFusion as $valor) {
+            $fusion = $serviciosReferencias->insertarFusionEquipos($refequiposdelegados, $valor, 1, '');
+         }
+
+         $resV['error'] = false;
+   		$resV['mensaje'] = 'Se Finalizo con Exito la Fusion!';
+      } else {
+         $resV['error'] = false;
+   		$resV['mensaje'] = 'Se Elimino la fusion con Exito!';
+      }
+
+      header('Content-type: application/json');
+		echo json_encode($resV);
+
+   }
 
 	function insertarEquiposdelegados($serviciosReferencias) {
 		$nombre = strtoupper( trim($_POST['nombre']));

@@ -334,7 +334,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 															<i class="material-icons">search</i>
 															<span>Ver</span>
 														</button>
-														<button v-if="equipo.esfusion > 0" type='button' class='btn btn-success btn-xs waves-effect' @click="showModalFusion = true">
+														<button v-if="equipo.esfusion > 0" type='button' class='btn btn-success btn-xs waves-effect' @click="getFusion(equipo.idequipodelegado)">
 															<i class="material-icons">add</i>
 															<span>Agregar Countries</span>
 														</button>
@@ -668,19 +668,21 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 						<label class="form-label">Countries Seleccionados</label>
-						<slot name="optionfusion"></slot>
-						
+						<select @click="quitar()" class="form-control" multiple id="fusioncountries" name="fusioncountries" require >
+
+						</select>
+
 					</div>
 				</div>
             </slot>
           </div>
-
+			 <input type="hidden" name="refequiposdelegados" id="refequiposdelegados" value="0" />
           <div class="modal-footer">
             <slot name="footer">
 			<button class="btn bg-grey waves-effect" @click="$emit('close')">
                 CANCELAR
 			  </button>
-			  	<button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
+			  	<button type="button" class="btn bg-green waves-effect" @click="insertarFusion()">
 					<i class="material-icons">send</i>
 					<span>CREAR</span>
 				</button>
@@ -725,15 +727,15 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 
   <!-- use the modal component, pass in the prop -->
-  <modal3 v-if="showModalFusion" @close="showModalFusion = false">
+  <modal3 v-if="showModalFusion" @close="showModalFusion = false" @recargarfusiones="getFusion">
     <!--
       you can use custom content here to overwrite
       default content
     -->
 	<h3 slot="header">Cargar Fusion</h3>
-	<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require slot="optionfusion">
-		<option v-for="item in lstDivisiones" :value="item.iddivision" :key="item.iddivision">{{ item.division }}</option>
-	</select>
+
+
+
 	</modal3>
 
 
@@ -744,7 +746,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 <script>
 
-	document.multiselect('#fusioncountries');
 
 	$(document).ready(function(){
 		function traerDivision(idcategoria) {
@@ -835,6 +836,16 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	const paramsCat = new URLSearchParams();
 	paramsCat.append('accion','traerCategorias');
 
+	const paramsGetFusion = new URLSearchParams();
+	paramsGetFusion.append('accion','VtraerFusionPorEquiposDelegados');
+	paramsGetFusion.append('idequipodelegado',0);
+
+	const paramsCrearFusion = new URLSearchParams();
+	paramsCrearFusion.append('accion','insertarFusionEquipos');
+
+	paramsCrearFusion.append('refcountries','');
+
+
 
 
 	Vue.component('modal', {
@@ -907,9 +918,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 	Vue.component('modal3', {
 		template: '#modal-template-equipo-fusion',
-		data: {
-			lstFusion: {}
-		}
 		methods: {
 			pasar () {
 				$('#rrfusioncountries option:selected').remove().appendTo('#fusioncountries');
@@ -924,19 +932,16 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				// Marcamos cada valor como seleccionado
 					$("#fusioncountries option[value="+this.value+"]").prop("selected",true);
 				});
-				paramsCrearEquipo.set('nombre',$('#nombre').val());
-				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
-				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
-				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
-				paramsCrearEquipo.set('nuevo',1);
+
+				//paramsCrearFusion.set('refequiposdelegados', $('#refequiposdelegados').val() );
+				paramsCrearFusion.set('refcountries',$('#fusioncountries').val());
 
 
-				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
+				axios.post('../../ajax/ajax.php', paramsCrearFusion)
 				.then(res => {
 
 					if (res.data.error == '') {
 						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)
 						this.$emit('close')
 
 					} else {
@@ -948,7 +953,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 		}
 	})
-
 
 
 	const app = new Vue({
@@ -965,8 +969,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			activeEquiposNuevos: {},
 			activeEquiposMantenidos: {},
 			lstCategorias: {},
+			items: [],
 			lstDivisiones: {},
 			showModal: false,
+			lstFusion: {},
 			showModalEquipo: false,
 			showModalFusion: false
 
@@ -998,6 +1004,28 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					this.successMensaje = ''
 				}, 3000);
 
+			},
+			getFusion : function(id) {
+				this.showModalFusion = true
+				paramsGetFusion.set('idequipodelegado',id)
+				paramsCrearFusion.set('refequiposdelegados',id)
+
+				$('#refequiposdelegados').val(id)
+
+				$('#fusioncountries').html('');
+
+				axios.post('../../ajax/ajax.php', paramsGetFusion)
+				.then(res => {
+
+					//this.lstFusion = res.data.datos
+					this.items = res.data.datos
+	            var total = 0;
+	            for (var i = 0; i < this.items.length; i++) {
+						$('#fusioncountries').append('<option value="' + this.items[i].idcountrie + '" selected>' + this.items[i].countrie + '</option>')
+	            }
+
+
+				});
 			},
 			getUltimaDivision () {
 				axios.post('../../ajax/ajax.php', paramsCategoria)
