@@ -2593,6 +2593,8 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$pdf->Output($nombreTurno,'F');
 
+		require_once('AttachMailer.php'); 
+
 		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "Administrador";
@@ -2600,7 +2602,14 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$email_to = "msredhotero@msn.com";
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
-		$this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+
+		$ruta_completa = $path.$filename;
+
+		$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "hello contenido del mensaje");
+		$mailer->attachFile($ruta_completa);
+		$mailer->send() ? "Enviado": "Problema al enviar";
+
+		//$this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
 
 	}
