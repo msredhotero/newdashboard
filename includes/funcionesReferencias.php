@@ -2593,7 +2593,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$pdf->Output($nombreTurno,'F');
 
-		$ruta = $_SERVER['DOCUMENT_ROOT']."/aifzncountriesdesarrollo/ajax/";
+		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "Administrador";
 		$mi_email = "msredhotero@msn.com";
