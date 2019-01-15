@@ -2593,14 +2593,14 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$pdf->Output($nombreTurno,'F');
 
-		$ruta = $_SERVER['DOCUMENT_ROOT']."/includes/";
+		$ruta = $_SERVER['DOCUMENT_ROOT']."/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "Administrador";
 		$mi_email = "administrador@tumail.com";
 		$email_to = "msredhotero@msn.com";
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
-		mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+		$this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
 
 	}
