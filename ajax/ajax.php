@@ -628,7 +628,7 @@ switch ($accion) {
 		$id = $_POST['idcabecera'];
 		$idestado = $_POST['refestados'];
 
-		$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
+		//$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
 
 		$resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($id);
 

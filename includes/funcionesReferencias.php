@@ -2596,7 +2596,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$ruta = $_SERVER['DOCUMENT_ROOT']."/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "Administrador";
-		$mi_email = "administrador@tumail.com";
+		$mi_email = "msredhotero@msn.com";
 		$email_to = "msredhotero@msn.com";
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
@@ -2608,6 +2608,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
 
 		$ruta_completa = $path.$filename;
+		echo $ruta_completa;
 		$content = chunk_split(base64_encode(file_get_contents($ruta_completa)));
 		$uid= md5(uniqid(time()));
 		$bound="--".$uid."\r\n";
