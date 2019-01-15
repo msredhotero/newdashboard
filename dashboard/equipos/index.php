@@ -334,9 +334,9 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 															<i class="material-icons">search</i>
 															<span>Ver</span>
 														</button>
-														<button v-if="equipo.esfusion > 0" type='button' class='btn btn-success btn-xs waves-effect' @click="getFusion(equipo.idequipodelegado)">
+														<button type='button' class='btn btn-success btn-xs waves-effect' @click="getFusion(equipo.idequipodelegado)">
 															<i class="material-icons">add</i>
-															<span>Agregar Countries</span>
+															<span>Fusion</span>
 														</button>
 													</div>
 												</td>
@@ -441,6 +441,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 														<i class="material-icons">search</i>
 														<span>Ver</span>
 													</button>
+													<button type='button' class='btn btn-success btn-xs waves-effect' @click="getFusion(equipo.idequipodelegado)">
+														<i class="material-icons">add</i>
+														<span>Fusion</span>
+													</button>
 												</td>
 
 												<td>
@@ -471,18 +475,24 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 							<div>
 							<div class="alert bg-indigo">
-								<strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.
+								<p><strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.</p>
+								<p><strong>Importante!</strong> En curso el proceso, presione "PRESENTAR" para enviar toda la información a la Asociación.</p>
 							</div>
 
 							</form>
-							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
+							<form ref="formP" class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
 							<div class="button-demo">
 								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
-                                    <i class="material-icons">save</i>
-                                    <span>GUARDAR</span>
-                                </button>
+									<i class="material-icons" id="guardarFormulario">save</i>
+									<span>GUARDAR</span>
+								</button>
+								<button v-if="activeEquipos.length == 0" type="submit" @click="presentar($event)" class="btn bg-orange waves-effect">
+									<i class="material-icons">assignment_turned_in</i>
+									<span>PRESENTAR</span>
+								</button>
 								<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
 								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
+								<input type="hidden" value="2" name="refestados" id="refestados" />
 							</div>
 							</form>
 							</div>
@@ -1087,6 +1097,11 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					}
 
 				});
+			},
+			presentar (evt) {
+				$('#refestados').val(8)
+				evt.preventDefault();
+         	document.getElementById("guardarFormulario").click();
 			},
 			getAllEquipos () {
 					axios.post('../../ajax/ajax.php',paramsGetEquipos)

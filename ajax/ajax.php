@@ -626,7 +626,7 @@ switch ($accion) {
 		$contacto = $_SESSION['email_aif'];
 
 		$id = $_POST['idcabecera'];
-		$idestado = 2;
+		$idestado = $_POST['refestados'];
 
 		$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
 
@@ -649,9 +649,18 @@ switch ($accion) {
 		$id2 			= 0;
 		$id3 			= 0;
 
-		while ($row = mysql_fetch_array($resFusiones)) {
-			$tareas = $serviciosNotificaciones->insertarTareas($row['refcountries'], $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$row['idfusionequipo'],$id2,$id3);
-		}
+      if ($idestado == 2) {
+         // envio email a la asociacion con pdf adjunto
+
+         // creo las tareas para las fusiones
+         while ($row = mysql_fetch_array($resFusiones)) {
+   			$tareas = $serviciosNotificaciones->insertarTareas($row['refcountries'], $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$row['idfusionequipo'],$id2,$id3);
+   		}
+      } else {
+         // envio email a la asociacion con pdf adjunto
+         $serviciosReferencias->enviarMailAdjuntoEquipos(18);
+      }
+
 
 
 		$resV['error'] = false;

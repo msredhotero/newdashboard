@@ -74,12 +74,12 @@ $refCampo 	=  array("refusuarios");
 $frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
+$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
-    $ultimaTemporada = 0;   
+    $ultimaTemporada = 0;
 }
 
 //die(var_dump($ultimaTemporada));
@@ -118,6 +118,9 @@ switch ($idEstado) {
 	case (4):
 		$lblEstado = 'label-danger';
 		break;
+	case (8):
+		$lblEstado = 'label-warning';
+		break;
 }
 
 ?>
@@ -140,7 +143,7 @@ switch ($idEstado) {
 
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
-	
+
 	<!-- Animation Css -->
     <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
 
@@ -161,9 +164,9 @@ switch ($idEstado) {
     <style>
         .alert > i{ vertical-align: middle !important; }
 
-		
+
 	</style>
-	
+
 
 </head>
 
@@ -230,7 +233,7 @@ switch ($idEstado) {
 						<div class="body table-responsive">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										
+
 										<h3>Equipos Generados - ESTADO: <span class="label <?php echo $lblEstado; ?>"><?php echo $estado; ?></span></h3>
 										<p>Recuerde que el plantel del equipo se deberá cargar </p>
 										<div class="alert bg-indigo animated shake">
@@ -238,7 +241,7 @@ switch ($idEstado) {
 										</div>
 
 									</div>
-									
+
 								</div>
 
 								<div class="row">
@@ -282,28 +285,28 @@ switch ($idEstado) {
 													</div>
 												</td>
 											</tr>
-						
+
 											</tbody>
 										</table>
 									</form>
-										
+
 									</div>
 								</div>
 								<hr>
-								
+
 								<div class="button-demo">
 									<button v-if="confirmado == 2" type="button" class="btn bg-brown waves-effect imprimir">
 										<i class="material-icons">print</i>
 										<span>IMPRIMIR LISTA DE EQUIPOS</span>
 									</button>
-									
+
 								</div>
-								
-							
+
+
 							<div>
-							
+
 							</form>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</div>
@@ -353,7 +356,7 @@ switch ($idEstado) {
 					<div class="form-group">
 						<div class="form-line">
 							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-							
+
 						</div>
 					</div>
 				</div>
@@ -382,7 +385,7 @@ switch ($idEstado) {
 
 
 
-  
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -394,7 +397,7 @@ switch ($idEstado) {
 
 
 
-											
+
 </main>
 
 
@@ -402,14 +405,14 @@ switch ($idEstado) {
 
 <script>
 
-	
+
 
 	$(document).ready(function(){
 
 		$('.imprimir').click(function() {
-			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');	
+			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');
 		});
-		
+
 
 	});
 </script>
@@ -421,7 +424,7 @@ switch ($idEstado) {
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
-	
+
 	const paramsGetEquipos = new URLSearchParams();
     paramsGetEquipos.append('accion','traerEquiposPorCountriesFinalizado');
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
@@ -437,13 +440,13 @@ switch ($idEstado) {
 		template: '#modal-template',
 		methods: {
 			enviarConsulta () {
-				
+
 				paramsNotificacion.set('mensaje',$('#mensaje').val());
-				
+
 				axios.post('../../ajax/ajax.php', paramsNotificacion)
 				.then(res => {
 					//this.setMensajes(res)
-					
+
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -451,7 +454,7 @@ switch ($idEstado) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 		}
@@ -459,7 +462,7 @@ switch ($idEstado) {
 
 
 
-	
+
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -472,15 +475,15 @@ switch ($idEstado) {
 			activeEquipos: {},
 			showModal: false,
 			showModalEquipo: false,
-			confirmado: <?php echo $idEstado; ?>	
-			
+			confirmado: <?php echo $idEstado; ?>
+
 		},
 		mounted () {
 			this.getDelegado()
 			this.getAllEquipos()
 		},
 		computed: {
-			
+
 		},
 		methods: {
 			setMensajes (res) {
@@ -501,7 +504,7 @@ switch ($idEstado) {
 			getDelegado () {
 					axios.post('../../ajax/ajax.php',paramsGetDelegado)
 					.then(res => {
-                        
+
 						this.activeDelegados = res.data.datos[0]
 					})
 			},
@@ -514,15 +517,15 @@ switch ($idEstado) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 
-				
+
 			},
 			getAllEquipos () {
 					axios.post('../../ajax/ajax.php',paramsGetEquipos)
 					.then(res => {
-                        
+
 						this.activeEquipos = res.data.datos
 					})
 			},
@@ -537,7 +540,7 @@ switch ($idEstado) {
 				.then(res => {
 
 					this.$swal("Ok!", res.data.datos[0], "success")
-					
+
 				})
 			}
 		}
@@ -546,5 +549,3 @@ switch ($idEstado) {
 </body>
 <?php } ?>
 </html>
-
-

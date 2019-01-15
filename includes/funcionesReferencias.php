@@ -1225,7 +1225,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 		if ($res > 0) {
 			$resFusion = $this->traerFusionPorEquiposCountrie($id, $idcountrie);
 			while ($row = mysql_fetch_array($resFusion)) {
-				$this->insertarFusionEquipos($res, $row['refcountries'], 1, '');
+				$this->insertarFusionEquipos($res, $row['idcountrie'], 1, '');
 			}
 		}
 
@@ -1981,7 +1981,8 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 					e.nombre AS equipo,
 					c.nombre AS countrie,
 					cc.refcountries,
-					cc.refequipos
+					cc.refequipos,
+					c.idcountrie
 				FROM
 					dbequipos e
 						INNER JOIN
@@ -2164,7 +2165,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	}
 
 	/* Fin */
-	/* /* Fin de la Tabla: dbusuarios*/
+	/* Fin de la Tabla: dbusuarios*/
 
 
 
@@ -2181,7 +2182,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	function modificarDelegados($id,$refusuarios,$apellidos,$nombres,$direccion,$localidad,$cp,$telefono,$celular,$fax,$email1,$email2,$email3,$email4) {
 	$sql = "update dbdelegados
 	set
-	refusuarios = ".$refusuarios.",apellidos = '".($apellidos)."',nombres = '".($nombres)."',direccion = '".($direccion)."',localidad = '".($localidad)."',cp = '".($cp)."',telefono = '".($telefono)."',celular = '".($celular)."',fax = '".($fax)."',email1 = '".($email1)."',email2 = '".($email2)."',email3 = '".($email3)."',email4 = '".($email4)."'
+	refusuarios = ".$refusuarios.",apellidos = '".$apellidos."',nombres = '".$nombres."',direccion = '".$direccion."',localidad = '".$localidad."',cp = '".$cp."',telefono = '".$telefono."',celular = '".$celular."',fax = '".$fax."',email1 = '".$email1."',email2 = '".$email2."',email3 = '".$email3."',email4 = '".$email4."'
 	where iddelegado =".$id;
 	$res = $this->query($sql,0);
 	return $res;
@@ -2447,6 +2448,191 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 	/* Fin */
 	/* /* Fin de la Tabla: tbmeses*/
+
+	function enviarMailAdjuntoEquipos($id) {
+		require('../reportes/fpdf.php');
+
+		$idCountries		=	$id;
+
+		$resTemporadas = $this->traerUltimaTemporada();
+
+		if (mysql_num_rows($resTemporadas)>0) {
+		    $ultimaTemporada = mysql_result($resTemporadas,0,0);
+		} else {
+		    $ultimaTemporada = 0;
+		}
+
+		/////////////////////////////  fin parametross  ///////////////////////////
+
+
+		$resDatos = $this->traerEquiposdelegadosPorCountrieFinalizado($idCountries, $ultimaTemporada);
+
+		$resCountrie = $this->traerCountriesPorId($idCountries);
+
+		$nombre 	= mysql_result($resCountrie,0,'nombre');
+
+
+
+		$pdf = new FPDF();
+
+
+		function Footer($pdf)
+		{
+
+		$pdf->SetY(-10);
+
+		$pdf->SetFont('Arial','I',10);
+
+		$pdf->Cell(0,10,'Firma: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
+		}
+
+
+		$cantidadJugadores = 0;
+		#Establecemos los márgenes izquierda, arriba y derecha:
+		//$pdf->SetMargins(2, 2 , 2);
+
+		#Establecemos el margen inferior:
+		$pdf->SetAutoPageBreak(false,1);
+
+
+
+			$pdf->AddPage();
+			/***********************************    PRIMER CUADRANTE ******************************************/
+
+			$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+
+			/***********************************    FIN ******************************************/
+
+
+
+			//////////////////// Aca arrancan a cargarse los datos de los equipos  /////////////////////////
+
+
+			$pdf->SetFillColor(183,183,183);
+			$pdf->SetFont('Arial','B',12);
+			$pdf->Ln();
+			$pdf->Ln();
+			$pdf->SetY(25);
+			$pdf->SetX(5);
+			$pdf->Cell(200,5,'Padron de Equipos Temporada 2019 - Club: '.utf8_decode($nombre),1,0,'C',true);
+			$pdf->Ln();
+			$pdf->SetX(5);
+			$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
+			$pdf->SetFont('Arial','',10);
+			$pdf->Ln();
+			$pdf->Ln();
+			$pdf->SetX(5);
+
+			$pdf->SetFont('Arial','',12);
+			$pdf->Cell(5,5,'',1,0,'C',true);
+			$pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
+			$pdf->Cell(60,5,'CATEGORIA',1,0,'C',true);
+			$pdf->Cell(60,5,'DIVISION',1,0,'C',true);
+
+			$cantPartidos = 0;
+			$i=0;
+
+			$contadorY1 = 44;
+			$contadorY2 = 44;
+		while ($rowE = mysql_fetch_array($resDatos)) {
+			$i+=1;
+			$cantPartidos += 1;
+
+			if ($i > 50) {
+				Footer($pdf);
+				$pdf->AddPage();
+				$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+				$pdf->SetFont('Arial','B',10);
+				$pdf->Ln();
+				$pdf->Ln();
+				$pdf->SetY(25);
+				$pdf->SetX(5);
+				$pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+				$pdf->SetFont('Arial','',10);
+				$pdf->Ln();
+				$pdf->SetX(5);
+
+				$i=0;
+
+				$pdf->SetFont('Arial','',12);
+				$pdf->Cell(5,5,'',1,0,'C',true);
+				$pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
+				$pdf->Cell(60,5,'CATEGORIA',1,0,'C',true);
+				$pdf->Cell(60,5,'DIVISION',1,0,'C',true);
+
+			}
+
+
+			$pdf->Ln();
+			$pdf->SetX(5);
+			$pdf->SetFont('Arial','',10);
+			$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+			$pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+			$pdf->Cell(60,5,utf8_decode($rowE['categoria']),1,0,'C',false);
+			$pdf->Cell(60,5,utf8_decode($rowE['division']),1,0,'C',false);
+
+
+			$contadorY1 += 4;
+
+			//$pdf->SetY($contadorY1);
+
+
+		}
+
+
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->Ln();
+
+
+		Footer($pdf);
+
+
+
+		$nombreTurno = "EQUIPOSCLUB.pdf";
+
+		$pdf->Output($nombreTurno,'F');
+
+		$ruta = $_SERVER['DOCUMENT_ROOT']."/includes/";
+		$mi_archivo = $nombreTurno;
+		$mi_nombre = "Administrador";
+		$mi_email = "administrador@tumail.com";
+		$email_to = "msredhotero@msn.com";
+		$mi_titulo = "Este es un correo con archivo adjunto";
+		$mi_mensaje = "Esta es el cuerpo de mensaje.";
+		mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+
+
+	}
+
+	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
+
+		$ruta_completa = $path.$filename;
+		$content = chunk_split(base64_encode(file_get_contents($ruta_completa)));
+		$uid= md5(uniqid(time()));
+		$bound="--".$uid."\r\n";
+		$last_bound="--".$uid."--\r\n";
+		$header = "From: ".$from_name." <".$from_mail.">\r\n";
+		$header .= "MIME-Version: 1.0\n";
+		$header .= "Content-Type: multipart/mixed; boundary=\"".$uid."\"\r\n";
+		$header .= "This is a multi-part message in MIME format.\r\n";
+		$header .= $bound;
+		$header .= "Content-type:text/plain; charset=utf-8\r\n";
+		$header .= "Content-Transfer-Encoding: 7bit\r\n";
+		$header .= $message."\r\n";
+		$header .= $bound;
+		$header .= "Content-Type: application/pdf; name=\"".$ruta_completa."\"\r\n";
+		$header .= "Content-Transfer-Encoding: base64\r\n";
+		$header .= "Content-Disposition: attachment; filename=\"".$filename."\"\r\n";
+		$header .= $content."\r\n";
+		$header .= $last_bound;
+
+		if (mail($mailto, $subject, "", $header)) {
+			echo "Correo enviado";
+		} else {
+			echo "ERROR en el envio";
+		}
+	}
 
 
 
