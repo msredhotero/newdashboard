@@ -2593,7 +2593,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$pdf->Output($nombreTurno,'F');
 
-		require_once('AttachMailer.php'); 
+		require_once('AttachMailer.php');
 
 		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
@@ -2603,7 +2603,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
 
-		$ruta_completa = $path.$filename;
+		$ruta_completa = $ruta.$mi_archivo;
 
 		$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "hello contenido del mensaje");
 		$mailer->attachFile($ruta_completa);
