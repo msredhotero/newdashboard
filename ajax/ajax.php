@@ -658,7 +658,7 @@ switch ($accion) {
    		}
       } else {
          // envio email a la asociacion con pdf adjunto
-         $serviciosReferencias->enviarMailAdjuntoEquipos(18);
+         $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
       }
 
 

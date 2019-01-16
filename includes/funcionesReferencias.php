@@ -2449,7 +2449,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	/* Fin */
 	/* /* Fin de la Tabla: tbmeses*/
 
-	function enviarMailAdjuntoEquipos($id) {
+	function enviarMailAdjuntoEquipos($id, $email) {
 		require('../reportes/fpdf.php');
 
 		$idCountries		=	$id;
@@ -2597,15 +2597,15 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
-		$mi_nombre = "Administrador";
-		$mi_email = "msredhotero@msn.com";
-		$email_to = "msredhotero@msn.com";
+		$mi_nombre = "AIF";
+		$mi_email = $email;
+		$email_to = "javierbrown@aif.org.ar";
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
 
 		$ruta_completa = $ruta.$mi_archivo;
 
-		$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "hello contenido del mensaje");
+		$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "Lista de los equipos confirmados");
 		$mailer->attachFile($ruta_completa);
 		$mailer->send() ? "Enviado": "Problema al enviar";
 
