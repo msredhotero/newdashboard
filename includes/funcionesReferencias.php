@@ -1024,6 +1024,74 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 	}
 
 
+	function traerEquiposdelegadosPorCountrieFinalizadoBaja($id, $idtemporada) {
+		$sql = "SELECT
+					e.idequipo,
+					cou.nombre AS countrie,
+					e.nombre,
+					cat.categoria,
+					di.division,
+					e.fechabaja,
+					(CASE
+						WHEN e.activo = 1 THEN 'Si'
+						ELSE 'No'
+					END) AS activo,
+					est.estado,
+					cat.orden,
+					e.refdivisiones,
+					(CASE
+						WHEN est.idestado = 1 THEN 'label-info'
+						WHEN est.idestado = 2 THEN 'label-warning'
+						WHEN est.idestado = 3 THEN 'label-success'
+						WHEN est.idestado = 4 THEN 'label-danger'
+					END) AS label,
+					est.idestado as refestados,
+                    coalesce(max(fe.refcountries),0) as esfusion,
+                    e.idequipodelegado,
+                    (select
+					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
+					from dbfusionequipos fe
+					inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion,
+					(CASE
+						WHEN e.nuevo = 1 THEN 'Si'
+						ELSE 'No'
+					END) AS nuevo
+				FROM
+					dbequiposdelegados e
+						INNER JOIN
+					dbcountries cou ON cou.idcountrie = e.refcountries
+						INNER JOIN
+					tbcategorias cat ON cat.idtcategoria = e.refcategorias
+						INNER JOIN
+					tbdivisiones di ON di.iddivision = e.refdivisiones
+						INNER JOIN
+					tbestados est ON est.idestado = e.refestados
+						left JOIN
+					dbfusionequipos fe ON fe.refequiposdelegados = e.idequipodelegado
+				WHERE
+					e.activo = 0 AND cou.idcountrie = ".$id."
+			AND e.reftemporadas = ".$idtemporada."
+            group by e.idequipo,
+					cou.nombre,
+					e.nombre,
+					cat.categoria,
+					di.division,
+					e.fechabaja,
+					e.activo,
+					est.estado,
+					cat.orden,
+					e.refdivisiones,
+					est.idestado,
+					est.idestado
+			order by 8,9";
+
+		$res = $this->query($sql,0);
+
+		return $res;
+	}
+
+
 	function traerEquiposFusionPorEquipo($idequipo, $idtemporada) {
 		$sql = "SELECT
 					cc.nombre
