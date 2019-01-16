@@ -482,7 +482,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 							</form>
 							<form ref="formP" class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
 							<div class="button-demo">
-								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
+								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-orange waves-effect">
 									<i class="material-icons" id="guardarFormulario">assignment_turned_in</i>
 									<span>PRESENTAR</span>
 								</button>
