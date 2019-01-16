@@ -704,7 +704,7 @@ switch ($accion) {
 		$refcountries = $_POST['refcountries'];
 		$nuevo = $_POST['nuevo'];
 
-		$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,1,$nuevo);
+		$res = $serviciosReferencias->insertarEquiposdelegados($idtemporada,$idusuario,$idcountrie,$nombre,$refcategorias,$refdivisiones,'',1,8,$nuevo);
 		//die(var_dump($res));
 		//$res = true;
 		if ((integer)$res > 0) {
