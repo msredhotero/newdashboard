@@ -475,21 +475,21 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 							<div>
 							<div class="alert bg-indigo">
-								<p><strong>Importante!</strong> El sistema guarda los cambios automaticamente. Si usted cierra y vuelve a ingresar quedara en el mismo lugar donde dejo</p>
-								<p><strong>Importante!</strong> Finalizado el proceso, presione "PRESENTAR" para enviar toda la información a la Asociación.</p>
+								<p><strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.</p>
+								<p><strong>Importante!</strong> En curso el proceso, presione "PRESENTAR" para enviar toda la información a la Asociación.</p>
 							</div>
 
 							</form>
 							<form ref="formP" class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
 							<div class="button-demo">
-
-								<button v-if="activeEquipos.length == 0" type="submit" @click="presentar($event)" class="btn bg-orange waves-effect">
-									<i class="material-icons">assignment_turned_in</i>
+								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
+									<i class="material-icons" id="guardarFormulario">assignment_turned_in</i>
 									<span>PRESENTAR</span>
 								</button>
+
 								<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
 								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
-								<input type="hidden" value="2" name="refestados" id="refestados" />
+								<input type="hidden" value="8" name="refestados" id="refestados" />
 							</div>
 							</form>
 							</div>
