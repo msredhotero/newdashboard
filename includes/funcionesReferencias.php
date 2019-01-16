@@ -2667,7 +2667,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "AIF";
 		$mi_email = $email;
-		$email_to = "javierbrown@aif.org.ar";
+		$email_to = "msredhotero@msn.com";
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
 
