@@ -2746,13 +2746,13 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$devuelve = $this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
-		echo '';
+		
 	}
 
 	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
 
 		$ruta_completa = $path.$filename;
-		echo $ruta_completa;
+
 		$content = chunk_split(base64_encode(file_get_contents($ruta_completa)));
 		$uid= md5(uniqid(time()));
 		$bound="--".$uid."\r\n";
