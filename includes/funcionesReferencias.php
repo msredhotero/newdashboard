@@ -2744,9 +2744,9 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mailer->attachFile($ruta_completa);
 		$mailer->send() ? "Enviado": "Problema al enviar";
 
-		$this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+		$devuelve = $this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
-
+		echo '';
 	}
 
 	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
@@ -2773,9 +2773,9 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$header .= $last_bound;
 
 		if (mail($mailto, $subject, "", $header)) {
-			echo "Correo enviado";
+			return "Correo enviado";
 		} else {
-			echo "ERROR en el envio";
+			return "ERROR en el envio";
 		}
 	}
 
