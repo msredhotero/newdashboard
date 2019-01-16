@@ -2677,7 +2677,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mailer->attachFile($ruta_completa);
 		$mailer->send() ? "Enviado": "Problema al enviar";
 
-		//$this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+		$this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
 
 	}

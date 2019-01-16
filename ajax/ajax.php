@@ -628,7 +628,7 @@ switch ($accion) {
 		$id = $_POST['idcabecera'];
 		$idestado = $_POST['refestados'];
 
-		//$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
+		$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
 
 		$resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($id);
 
@@ -658,7 +658,7 @@ switch ($accion) {
    		}
       } else {
          // envio email a la asociacion con pdf adjunto
-         $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
+         //$serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
       }
 
 
