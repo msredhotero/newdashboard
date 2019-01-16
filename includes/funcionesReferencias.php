@@ -2733,8 +2733,8 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "AIF";
-		$mi_email = "msredhotero@msn.com";
-		$email_to = "msredhotero@msn.com";
+		$mi_email = $email;
+		$email_to = "javierbrown@aif.org.ar";
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
 
