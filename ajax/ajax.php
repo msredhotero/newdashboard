@@ -661,6 +661,11 @@ switch ($accion) {
          $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
       } else {
 
+         // creo las tareas para las fusiones
+         while ($row = mysql_fetch_array($resFusiones)) {
+   			$tareas = $serviciosNotificaciones->insertarTareas($row['refcountries'], $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$row['idfusionequipo'],$id2,$id3);
+   		}
+
          // envio email a la asociacion con pdf adjunto
          $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
       }
