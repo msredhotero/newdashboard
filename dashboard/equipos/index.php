@@ -480,18 +480,16 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 							</div>
 
 							</form>
-							<form ref="formP" class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
-							<div class="button-demo">
-								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-orange waves-effect">
-									<i class="material-icons" id="guardarFormulario">assignment_turned_in</i>
-									<span>PRESENTAR</span>
-								</button>
 
-								<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
-								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
-								<input type="hidden" value="8" name="refestados" id="refestados" />
-							</div>
-							</form>
+								<div class="button-demo">
+									<button v-if="activeEquipos.length == 0" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
+										<i class="material-icons">assignment_turned_in</i>
+										<span>PRESENTAR</span>
+									</button>
+
+
+								</div>
+
 							</div>
 						</div>
 					</div>
@@ -520,6 +518,31 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 </form>
 </transition>
 
+<!-- Large Size -->
+<form ref="formP" class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
+<div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+	 <div class="modal-dialog modal-lg" role="document">
+		  <div class="modal-content">
+				<div class="modal-header">
+					 <h4 class="modal-title" id="largeModalLabel">PRESENTAR EQUIPOS</h4>
+				</div>
+				<div class="modal-body">
+					<h4>¿Esta seguro que desea Presentar los equipos que ya fueron eliminados, mantenidos y los nuevos?</h4>
+				</div>
+				<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
+				<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
+				<input type="hidden" value="8" name="refestados" id="refestados" />
+				<div class="modal-footer">
+					<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-orange waves-effect">
+						<i class="material-icons" id="guardarFormulario">assignment_turned_in</i>
+						<span>PRESENTAR</span>
+					</button>
+					<button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CLOSE</button>
+				</div>
+		  </div>
+	 </div>
+</div>
+</form>
 
 <form class="form" @submit.prevent="realizarConsulta">
 <script type="text/x-template" id="modal-template">

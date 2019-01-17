@@ -988,7 +988,8 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 					(CASE
 						WHEN e.nuevo = 1 THEN 'Si'
 						ELSE 'No'
-					END) AS nuevo
+					END) AS nuevo,
+					e.idequipodelegado
 				FROM
 					dbequiposdelegados e
 						INNER JOIN
@@ -1015,7 +1016,8 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 					cat.orden,
 					e.refdivisiones,
 					est.idestado,
-					est.idestado
+					est.idestado,
+					e.idequipodelegado
 			order by 8,9";
 
 		$res = $this->query($sql,0);
@@ -1103,6 +1105,22 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 					dbequiposdelegados ed ON ed.refcountries = f.refcountries
 						AND ed.idequipo = ".$idequipo."
 						AND ed.reftemporadas = ".$idtemporada;
+
+		$res = $this->query($sql,0);
+
+		return $res;
+	}
+
+	function traerEquiposFusionPorEquipoDelegado($idequipodelegado) {
+		$sql = "SELECT
+					cc.nombre, est.estado
+				FROM
+					dbfusionequipos f
+						INNER JOIN
+					dbcountries cc ON cc.idcountrie = f.refcountries
+						INNER JOIN
+					tbestados est on est.idestado = f.refestados
+					where f.refequiposdelegados = ".$idequipodelegado;
 
 		$res = $this->query($sql,0);
 
@@ -2746,7 +2764,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$devuelve = $this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
-		
+
 	}
 
 	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
