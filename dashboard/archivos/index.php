@@ -90,6 +90,10 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;
 }
 
+$confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
+
+$idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$confirmo,"idcabeceraconfirmacion");
+
 $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif']);
 
 ?>
@@ -213,10 +217,23 @@ $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif'
 										</thead>
 										<tbody>
 											<?php
+											if (($idEstado == 3) || ($idEstado == 7) || ($idEstado == 8)) {
+											?>
+											<tr>
+											 	<td>PDF</td>
+												<td>Equipos Presentados</td>
+												<td>
+													<button type="button" class="btn bg-teal btn-circle waves-effect waves-circle waves-float descargarEquipos" id="<?php echo $_SESSION['idclub_aif']; ?>">
+														<i class="material-icons">archive</i>
+													</button>
+												</td>
+											</tr>
+										<?php } ?>
+											<?php
 											while ($row = mysql_fetch_array($resDatos)) {
 												if ($row['idestado'] == 3) {
 											 ?>
-											 <tr>
+											<tr>
 											 	<td>PDF</td>
 												<td>Solicitud de Fusion - (<?php echo 'Club: '.$row['countriepadre'].' - Equipo: '.$row['nombre'].' - Categoria: '.$row['categoria'].' - Division: '.$row['division']; ?>)</td>
 												<td>
@@ -224,12 +241,13 @@ $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif'
 														<i class="material-icons">archive</i>
 													</button>
 												</td>
-											 </tr>
+											</tr>
 
 											 <?php
 											 }
 										 	}
 											  ?>
+
 										</tbody>
 									</table>
 								</div>
@@ -288,6 +306,13 @@ $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif'
 			usersid =  $(this).attr("id");
 			window.open("../../reportes/rptSolicitudDeFusion.php?id=" + usersid ,'_blank');
 		});
+
+		$("#example").on("click",'.descargarEquipos', function(){
+			usersid =  $(this).attr("id");
+			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + usersid ,'_blank');
+		});
+
+
 
 	});
 </script>
