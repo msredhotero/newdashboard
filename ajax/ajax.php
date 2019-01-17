@@ -416,6 +416,8 @@ switch ($accion) {
 	}
 
 	function cambiarEstadoFusion($serviciosReferencias) {
+      session_start();
+
 		$id = $_POST['idfusionequipo'];
 		$refestados = $_POST['refestados'];
 
@@ -426,6 +428,40 @@ switch ($accion) {
 			$resV['mensaje'] = 'Registro Modificado con exito!.';
 
 			$cambio = $serviciosReferencias->cambiarEstadoTareas(0,3,$id,'dbfusionequipos');
+
+         // si acepta envio email a los responsables
+         if ($refestados == 3) {
+            // avisar al responsable de la aif
+            $resDatos = $serviciosReferencias->traerFusionPorCountrieFusion($_SESSION['idclub_aif'], $id);
+            $equipo     = mysql_result($resDatos,0,'nombre');
+            $club       = mysql_result($resDatos,0,'countriefusion');
+            $clubpadre  = mysql_result($resDatos,0,'countriepadre');
+            $categoria  = mysql_result($resDatos,0,'categoria');
+            $division   = mysql_result($resDatos,0,'division');
+
+            $cuerpo = 'Se acepto la fusion del club '.$club.' con el equipo '.$equipo.' de la categoria '.$categoria.' y division '.$division.' del club '.$clubpadre;
+            $asunto = 'Solicitud de Fusion Aceptada';
+            $referente = $serviciosReferencias->traerReferente($_SESSION['idclub_aif']);
+
+            $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
+
+            // avisar al otro countrie que esta aceptado o no
+            $encargado = $serviciosReferencias->traerEncargadoPorCountries($_SESSION['idclub_aif']);
+
+				if ($encargado['email1'] != '') {
+					$this->enviarEmail($encargado['email1'],$asunto,$cuerpo, $referencia='');
+				}
+				if ($encargado['email2'] != '') {
+					$this->enviarEmail($encargado['email2'],$asunto,$cuerpo, $referencia='');
+				}
+				if ($encargado['email3'] != '') {
+					$this->enviarEmail($encargado['email3'],$asunto,$cuerpo, $referencia='');
+				}
+				if ($encargado['email4'] != '') {
+					$this->enviarEmail($encargado['email4'],$asunto,$cuerpo, $referencia='');
+				}
+         }
+
 
 		} else {
 			$resV['error'] = true;
@@ -536,7 +572,7 @@ switch ($accion) {
 
 		while ($row = mysql_fetch_array($res)) {
 			//array_push($cad, $row['countrie'].'  - Estado: '.$row['estado'].'  ');
-			$cad .= utf8_encode( $row['countrie'].'  - Estado: '.$row['estado'].'
+			$cad .= utf8_encode( $row['countrie'].'  - Estado: '.$row['estado'].' - Fusion: '.$row['viejo'].'
 			');
 		}
 

@@ -100,6 +100,60 @@ class ServiciosReferencias {
 	}
 
 
+	function traerReferente($idcountrie) {
+		$sql = "select
+					coalesce(u.email,'') as email
+				from        dbcountries c
+				left
+				join        dbusuarios u
+				on          u.idusuario = c.refusuarios
+		where       c.idcountrie = ".$idcountrie;
+		$res = $this->query($sql,0);
+
+		if (mysql_num_rows($res)>0) {
+			return mysql_result($res,0,0);
+		}
+		return 'aif@intercountryfutbol.com.ar';
+	}
+
+
+
+	function traerEncargadoPorCountries($idcountrie) {
+		$sql = "select email, idusuario from dbusuarios where refcountries = ".$idcountrie;
+		$resUsuario = $this->query($sql,0);
+
+		$email = mysql_result($resUsuario,0,0);
+		$idusuario = mysql_result($resUsuario,0,1);
+
+		$sqlDelegados = "select email1,email2,email3,email4 from dbdelegados where refusuarios = ".$idusuario;
+		$resDelegado = $this->query($sqlDelegados,0);
+
+		$email1 = '';
+		$email2 = '';
+		$email3 = '';
+		$email4 = '';
+
+		if (mysql_num_rows($resDelegado) > 0) {
+			// empiezo a enviar emails a los que esten agregados
+			if (mysql_result($resDelegado,0,'email1') != '') {
+				$email1 = mysql_result($resDelegado,0,'email1');
+			}
+			if (mysql_result($resDelegado,0,'email2') != '') {
+				$email2 = mysql_result($resDelegado,0,'email2');
+			}
+			if (mysql_result($resDelegado,0,'email3') != '') {
+				$email3 = mysql_result($resDelegado,0,'email3');
+			}
+			if (mysql_result($resDelegado,0,'email4') != '') {
+				$email4 = mysql_result($resDelegado,0,'email4');
+			}
+		}
+
+		$arEncargado = array('idusuario'=> $idusuario, 'email' => $email,'email1' => $email1,'email2' => $email2,'email3' => $email3,'email4' => $email4);
+
+		return $arEncargado;
+
+	}
 
 
 	function traerDefinicionesPorTemporadaCategoria($idTemporada, $idCategoria) {
@@ -544,19 +598,21 @@ class ServiciosReferencias {
 	}
 
 
-	function insertarFusionEquipos($refequipos, $refcountries, $refestados, $observacion) {
+	function insertarFusionEquipos($refequipos, $refcountries, $refestados, $observacion, $viejo = 0) {
 		$sql = "INSERT INTO dbfusionequipos
 				(idfusionequipo,
 				refequiposdelegados,
 				refcountries,
 				refestados,
-				observacion)
+				observacion,
+				viejo)
 				VALUES
 				('',
 				".$refequipos.",
 				".$refcountries.",
 				".$refestados.",
-				'".$observacion."')";
+				'".$observacion."',
+				".$viejo.")";
 
 		$res = $this->query($sql,1);
 		return $res;
@@ -871,7 +927,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 
 
 	function traerFusionesPorEquipo($idequiposdelegados ,$idcountrie) {
-
+		//$idcountrie = 63;
 		$sql = "select
 					fe.idfusionequipo,
 					cp.nombre as countriepadre,
@@ -1311,7 +1367,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 		if ($res > 0) {
 			$resFusion = $this->traerFusionPorEquiposCountrie($id, $idcountrie);
 			while ($row = mysql_fetch_array($resFusion)) {
-				$this->insertarFusionEquipos($res, $row['idcountrie'], 1, '');
+				$this->insertarFusionEquipos($res, $row['idcountrie'], 1, '',1);
 			}
 		}
 
@@ -2051,11 +2107,61 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 
 	function traerFusionPorEquiposDelegados($idequipodelegado) {
 		$sql = "select
-					cc.idcountrie, cc.nombre as countrie , est.idestado, est.estado
+					cc.idcountrie, cc.nombre as countrie , est.idestado, est.estado, (case when viejo = 1 then 'Antiguo' else 'Nuevo' end) as viejo
 				from dbcountries cc
 				inner join dbfusionequipos fe on fe.refcountries = cc.idcountrie
 				inner join tbestados est ON est.idestado = fe.refestados
 				where fe.refequiposdelegados = ".$idequipodelegado;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerFusionPorCountrie($id) {
+		$sql = "select
+					cc.idcountrie,
+					cc.nombre as countriefusion ,
+					ccp.nombre as countriepadre,
+					ed.nombre,
+					cat.categoria,
+					d.division,
+					est.idestado,
+					est.estado,
+					(case when viejo = 1 then 'Antiguo' else 'Nuevo' end) as viejo,
+					fe.idfusionequipo
+				from dbcountries cc
+				inner join dbfusionequipos fe on fe.refcountries = cc.idcountrie
+				inner join tbestados est ON est.idestado = fe.refestados
+				inner join dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
+				inner join tbcategorias cat ON cat.idtcategoria = ed.refcategorias
+				inner join tbdivisiones d ON d.iddivision = ed.refdivisiones
+				inner join dbcountries ccp ON ccp.idcountrie = ed.refcountries
+				where cc.idcountrie = ".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function traerFusionPorCountrieFusion($id, $idfusionequipo) {
+		$sql = "select
+					cc.idcountrie,
+					cc.nombre as countriefusion ,
+					ccp.nombre as countriepadre,
+					ed.nombre,
+					cat.categoria,
+					d.division,
+					est.idestado,
+					est.estado,
+					(case when viejo = 1 then 'Antiguo' else 'Nuevo' end) as viejo
+				from dbcountries cc
+				inner join dbfusionequipos fe on fe.refcountries = cc.idcountrie
+				inner join tbestados est ON est.idestado = fe.refestados
+				inner join dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
+				inner join tbcategorias cat ON cat.idtcategoria = ed.refcategorias
+				inner join tbdivisiones d ON d.iddivision = ed.refdivisiones
+				inner join dbcountries ccp ON ccp.idcountrie = ed.refcountries
+				where cc.idcountrie = ".$id." and fe.idfusionequipo = ".$idfusionequipo;
 
 		$res = $this->query($sql,0);
 		return $res;
@@ -2559,7 +2665,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$nombre 	= mysql_result($resCountrie,0,'nombre');
 
-
+		$numFusion = 0;
 
 		$pdf = new FPDF();
 
@@ -2622,9 +2728,21 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 			$contadorY1 = 44;
 			$contadorY2 = 44;
+
+			$arFusiones = array();
 		while ($rowE = mysql_fetch_array($resDatos)) {
 			$i+=1;
 			$cantPartidos += 1;
+
+			$resFusion = $this->traerEquiposFusionPorEquipoDelegado($rowE['idequipodelegado']);
+
+		   if (mysql_num_rows($resFusion)>0) {
+		      $numFusion += 1;
+		      while ($rowF = mysql_fetch_array($resFusion)) {
+		         array_push($arFusiones, array('num' => $numFusion, 'club'=> $rowF[0]));
+		      }
+
+		   }
 
 			if ($i > 50) {
 				Footer($pdf);
@@ -2655,7 +2773,11 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 			$pdf->SetX(5);
 			$pdf->SetFont('Arial','',10);
 			$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
-			$pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+			if (mysql_num_rows($resFusion)>0) {
+		      $pdf->Cell(60,5,utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+		   } else {
+		      $pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+		   }
 			$pdf->Cell(60,5,utf8_decode($rowE['categoria']),1,0,'C',false);
 			$pdf->Cell(60,5,utf8_decode($rowE['division']),1,0,'C',false);
 
@@ -2683,7 +2805,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$pdf->Cell(60,5,'DIVISION',1,0,'C',true);
 
 		$cantPartidos = 0;
-		$i=0;
+
 
 		$contadorY1 = 44;
 		$contadorY2 = 44;
@@ -2734,6 +2856,73 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 
 		$pdf->Ln();
+
+
+		$pdf->SetX(5);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetFont('Arial','B',12);
+		$pdf->Cell(200,5,'FUSIONES',0,0,'C',false);
+		$pdf->Ln();
+		$pdf->Ln();
+
+		$pdf->SetX(5);
+		$pdf->SetFont('Arial','',12);
+		$pdf->Cell(5,5,'',1,0,'C',true);
+		$pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
+		$pdf->Cell(60,5,'COUNTRIES',1,0,'C',true);
+
+
+		$cantPartidos = 0;
+
+		$contadorY1 = 44;
+		$contadorY2 = 44;
+
+		//die(var_dump($arFusiones));
+		foreach ($arFusiones as $valor) {
+		   // code...
+		   $i+=1;
+		   $cantPartidos += 1;
+
+		   if ($i > 50) {
+		      Footer($pdf);
+		      $pdf->AddPage();
+		      $pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+		      $pdf->SetFont('Arial','B',10);
+		      $pdf->Ln();
+		      $pdf->Ln();
+		      $pdf->SetY(25);
+		      $pdf->SetX(5);
+		      $pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+		      $pdf->SetFont('Arial','',10);
+		      $pdf->Ln();
+		      $pdf->SetX(5);
+
+		      $i=0;
+
+		      $pdf->SetFont('Arial','',12);
+		      $pdf->Cell(5,5,'',1,0,'C',true);
+		      $pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
+		      $pdf->Cell(60,5,'COUNTRIES',1,0,'C',true);
+
+		   }
+
+
+		   $pdf->Ln();
+		   $pdf->SetX(5);
+		   $pdf->SetFont('Arial','',10);
+		   $pdf->Cell(5,5,'',1,0,'C',false);
+		   $pdf->Cell(60,5,$valor['num'],1,0,'C',false);
+		   $pdf->Cell(60,5,utf8_decode($valor['club']),1,0,'C',false);
+
+
+		   $contadorY1 += 4;
+
+		   //$pdf->SetY($contadorY1);
+
+
+		}
+
 		$pdf->Ln();
 		$pdf->Ln();
 
@@ -2752,7 +2941,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "AIF";
 		$mi_email = $email;
-		$email_to = "javierbrown@aif.org.ar";
+		$email_to = $this->traerReferente($idCountries);
 		$mi_titulo = "Este es un correo con archivo adjunto";
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
 
