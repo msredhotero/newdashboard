@@ -985,20 +985,27 @@ function validar_fecha_espanol($fecha){
 	$valores = explode('-', str_replace('_','',$fecha));
 	//die(var_dump((integer)$valores[1].(integer)$valores[2].(integer)$valores[0]));
 	if(count($valores) == 3 &&
-		checkdate((integer)$valores[1], (integer)$valores[2], (integer)$valores[0] &&
+		checkdate((integer)$valores[1], (integer)$valores[0], (integer)$valores[2] &&
 		strlen($valores[1]) == 2 &&
-		strlen($valores[2]) == 2 &&
-		strlen($valores[0]) == 4)){
+		strlen($valores[0]) == 2 &&
+		strlen($valores[2]) == 4)){
 		return true;
     }
 	return false;
+}
+
+function devuelve_fecha_espanol($fecha){
+	$valores = explode('-', str_replace('_','',$fecha));
+	//die(var_dump((integer)$valores[1].(integer)$valores[2].(integer)$valores[0]));
+   return $valores[2].'-'.$valores[1].'-'.$valores[0];
+
 }
 
 
 function modificarJugadorNuevo($serviciosReferencias, $serviciosFunciones, $serviciosUsuarios) {
 	$id = $_POST['id'];
 
-	$resResultado = $serviciosReferencias->traerJugadoresPrePorId($id);
+	$resResultado = $serviciosReferencias->traerJugadoresprePorIdNuevo($id);
 
 	$modificar = "modificarJugadorespre";
 
@@ -1122,7 +1129,7 @@ function modificarJugadorespre($serviciosReferencias) {
 	} else {
 
 		if ($errores == '') {
-			$res = $serviciosReferencias->modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
+			$res = $serviciosReferencias->modificarJugadorespre($id,$reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,devuelve_fecha_espanol($fechanacimiento),devuelve_fecha_espanol($fechaalta),$numeroserielote,$refcountries,$observaciones,$refusuarios);
 
 			if ($res == true) {
 				echo 1;

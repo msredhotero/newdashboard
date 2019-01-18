@@ -15,7 +15,7 @@ class ServiciosNotificaciones {
                 case 'dbfusionequipos':
                         $sql = "update dbtareas set refestados = ".$refestado." where id1 = ".$idpadre;
                     break;
-                
+
                 default:
                     # code...
                     break;
@@ -23,13 +23,13 @@ class ServiciosNotificaciones {
         } else {
             $sql = "update dbtareas set refestados = ".$refestado." where idtarea = ".$idtarea;
         }
-        
-        $res = $this->query($sql,0); 
-        return $res; 
+
+        $res = $this->query($sql,0);
+        return $res;
     }
 
     function insertarTareas($refcountries, $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$id1,$id2,$id3) {
-        
+
         $sql = "INSERT INTO dbtareas
                 (idtarea,
                 refcountries,
@@ -56,7 +56,7 @@ class ServiciosNotificaciones {
                 ".$id1.",
                 ".$id2.",
                 ".$id3.")";
-        
+
         $res = $this->query($sql,1);
         return $res;
     }
@@ -105,7 +105,7 @@ class ServiciosNotificaciones {
                     est.idestadotarea
                 FROM dbtareas t
                 inner join dbcountries cc ON cc.idcountrie = t.refcountries
-                inner join tbestadostareas est ON est.idestadotarea = t.refestados 
+                inner join tbestadostareas est ON est.idestadotarea = t.refestados
                 where cc.idcountrie = ".$idcountrie;
         $res = $this->query($sql,0);
         return $res;
@@ -131,49 +131,49 @@ class ServiciosNotificaciones {
                     est.idestadotarea
                 FROM dbtareas t
                 inner join dbcountries cc ON cc.idcountrie = t.refcountries
-                inner join tbestadostareas est ON est.idestadotarea = t.refestados 
-                where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,5)";
+                inner join tbestadostareas est ON est.idestadotarea = t.refestados
+                where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,3,4,5)";
         $res = $this->query($sql,0);
         return $res;
     }
 
-    function insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) { 
-        $sql = "insert into dbnotificaciones(mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,leido) 
-        values ('".($mensaje)."',".$idpagina.",'".($autor)."','".($destinatario)."',".$id1.",".$id2.",".$id3.",'".($icono)."','".($estilo)."','".($fecha)."','".($url)."',0)"; 
-        $res = $this->query($sql,1); 
-        return $res; 
-    } 
+    function insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) {
+        $sql = "insert into dbnotificaciones(mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,leido)
+        values ('".($mensaje)."',".$idpagina.",'".($autor)."','".($destinatario)."',".$id1.",".$id2.",".$id3.",'".($icono)."','".($estilo)."','".($fecha)."','".($url)."',0)";
+        $res = $this->query($sql,1);
+        return $res;
+    }
 
 
-    function modificarNotificaciones($id,$mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) { 
-        $sql = "update dbnotificaciones 
-        set 
-        mensaje = '".utf8_decode($mensaje)."',idpagina = ".$idpagina.",autor = '".utf8_decode($autor)."',destinatario = '".utf8_decode($destinatario)."',id1 = ".$id1.",id2 = ".$id2.",id3 = ".$id3.",icono = '".utf8_decode($icono)."',estilo = '".utf8_decode($estilo)."',fecha = '".utf8_decode($fecha)."',url = '".utf8_decode($url)."' 
-        where idnotificacion =".$id; 
-        $res = $this->query($sql,0); 
-        return $res; 
-    } 
+    function modificarNotificaciones($id,$mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) {
+        $sql = "update dbnotificaciones
+        set
+        mensaje = '".utf8_decode($mensaje)."',idpagina = ".$idpagina.",autor = '".utf8_decode($autor)."',destinatario = '".utf8_decode($destinatario)."',id1 = ".$id1.",id2 = ".$id2.",id3 = ".$id3.",icono = '".utf8_decode($icono)."',estilo = '".utf8_decode($estilo)."',fecha = '".utf8_decode($fecha)."',url = '".utf8_decode($url)."'
+        where idnotificacion =".$id;
+        $res = $this->query($sql,0);
+        return $res;
+    }
 
     function marcarNotificacion($id) {
-        $sql = "update dbnotificaciones 
-        set 
+        $sql = "update dbnotificaciones
+        set
         leido = 1
-        where idnotificacion =".$id; 
-        $res = $this->query($sql,0); 
-        return $res; 
+        where idnotificacion =".$id;
+        $res = $this->query($sql,0);
+        return $res;
     }
 
 
-    function eliminarNotificaciones($id) { 
-        $sql = "delete from dbnotificaciones where idnotificacion =".$id; 
-        $res = $this->query($sql,0); 
-        return $res; 
-    } 
+    function eliminarNotificaciones($id) {
+        $sql = "delete from dbnotificaciones where idnotificacion =".$id;
+        $res = $this->query($sql,0);
+        return $res;
+    }
 
 
 
-    function traerNotificaciones() { 
-        $sql = "select 
+    function traerNotificaciones() {
+        $sql = "select
         n.idnotificacion,
         n.mensaje,
         n.idpagina,
@@ -187,27 +187,27 @@ class ServiciosNotificaciones {
         n.fecha,
         n.url,
         (case when n.leido = 1 then 'Si' else 'No' end) as leido
-        from dbnotificaciones n 
-        order by n.leido, n.fecha desc"; 
-        $res = $this->query($sql,0); 
-        return $res; 
-    } 
+        from dbnotificaciones n
+        order by n.leido, n.fecha desc";
+        $res = $this->query($sql,0);
+        return $res;
+    }
 
-    function traerNotificacionesNoLeida() { 
-        $sql = "select 
+    function traerNotificacionesNoLeida() {
+        $sql = "select
         count(*)
         from dbnotificaciones
-        where leido = 0"; 
-        $res = $this->query($sql,0); 
+        where leido = 0";
+        $res = $this->query($sql,0);
         if (mysql_num_rows($res)>0) {
             return mysql_result($res, 0,0);
         }
-        return 0; 
-    } 
+        return 0;
+    }
 
 
-    function traerNotificacionesPorUsuarios($email) { 
-        $sql = "select 
+    function traerNotificacionesPorUsuarios($email) {
+        $sql = "select
         n.idnotificacion,
         n.mensaje,
         n.idpagina,
@@ -221,15 +221,15 @@ class ServiciosNotificaciones {
         n.fecha,
         n.url,
         (case when n.leido = 1 then 'Si' else 'No' end) as leido
-        from dbnotificaciones n 
+        from dbnotificaciones n
         where n.destinatario = '".$email."'
-        order by n.leido, n.fecha desc"; 
-        $res = $this->query($sql,0); 
-        return $res; 
-    } 
+        order by n.leido, n.fecha desc";
+        $res = $this->query($sql,0);
+        return $res;
+    }
 
     function traerNotificacionesGrid() {
-        $sql = "select 
+        $sql = "select
         n.idnotificacion,
         n.mensaje,
         n.autor,
@@ -243,14 +243,14 @@ class ServiciosNotificaciones {
         n.icono,
         n.estilo,
         n.url
-        from dbnotificaciones n 
-        order by n.leido, n.fecha desc"; 
-        $res = $this->query($sql,0); 
-        return $res; 
+        from dbnotificaciones n
+        order by n.leido, n.fecha desc";
+        $res = $this->query($sql,0);
+        return $res;
     }
 
-    function traerNotificacionesPorUsuariosGrid($email) { 
-        $sql = "select 
+    function traerNotificacionesPorUsuariosGrid($email) {
+        $sql = "select
         n.idnotificacion,
         n.mensaje,
         n.autor,
@@ -264,31 +264,31 @@ class ServiciosNotificaciones {
         n.icono,
         n.estilo,
         n.url
-        from dbnotificaciones n 
+        from dbnotificaciones n
         where n.destinatario = '".$email."'
-        order by n.leido, n.fecha desc"; 
-        $res = $this->query($sql,0); 
-        return $res; 
-    } 
+        order by n.leido, n.fecha desc";
+        $res = $this->query($sql,0);
+        return $res;
+    }
 
-    function traerNotificacionesNoLeidaPorUsuarios($email) { 
-        $sql = "select 
+    function traerNotificacionesNoLeidaPorUsuarios($email) {
+        $sql = "select
         count(*)
         from dbnotificaciones
-        where leido = 0 and destinatario = '".$email."'"; 
-        $res = $this->query($sql,0); 
+        where leido = 0 and destinatario = '".$email."'";
+        $res = $this->query($sql,0);
         if (mysql_num_rows($res)>0) {
             return mysql_result($res, 0,0);
         }
-        return 0; 
-    } 
+        return 0;
+    }
 
 
-    function traerNotificacionesPorId($id) { 
-        $sql = "select idnotificacion,mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,(case when leido = 1 then 'Si' else 'No' end) as leido from dbnotificaciones where idnotificacion =".$id; 
-        $res = $this->query($sql,0); 
-        return $res; 
-    } 
+    function traerNotificacionesPorId($id) {
+        $sql = "select idnotificacion,mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,(case when leido = 1 then 'Si' else 'No' end) as leido from dbnotificaciones where idnotificacion =".$id;
+        $res = $this->query($sql,0);
+        return $res;
+    }
 
     function traerNotificacionesPorParametrosCompleto($idpagina,$id1, $id2, $id3) {
         $sql = "select
@@ -386,22 +386,22 @@ class ServiciosNotificaciones {
     /* PARA Cierrepadrones */
 
     function query($sql,$accion) {
-		
-		
-		
+
+
+
 		require_once 'appconfig.php';
 
 		$appconfig	= new appconfig();
-		$datos		= $appconfig->conexion();	
+		$datos		= $appconfig->conexion();
 		$hostname	= $datos['hostname'];
 		$database	= $datos['database'];
 		$username	= $datos['username'];
 		$password	= $datos['password'];
-		
+
 		$conex = mysql_connect($hostname,$username,$password) or die ("no se puede conectar".mysql_error());
-		
+
 		mysql_select_db($database);
-		
+
 		        $error = 0;
 		mysql_query("BEGIN");
 		$result=mysql_query($sql,$conex);
@@ -419,7 +419,7 @@ class ServiciosNotificaciones {
 			mysql_query("COMMIT");
 			return $result;
 		}
-		
+
 	}
 
 }

@@ -69,7 +69,7 @@ if ($_SESSION['idroll_aif'] == 4) {
 	$resJugadoresPorCountries = $serviciosReferencias->traerJugadoresClubPorCountrieActivos($_SESSION['club_aif']);
 	$refClub = $_SESSION['club_aif'];
 } else {
-	$resJugadoresPorCountries = $serviciosReferencias->traerJugadoresClubPorCountrieActivos($_GET['id']);	
+	$resJugadoresPorCountries = $serviciosReferencias->traerJugadoresClubPorCountrieActivos($_GET['id']);
 	$refClub = $_GET['id'];
 }
 
@@ -83,12 +83,12 @@ if (mysql_num_rows($resPermiteRegistrar)>0) {
 }
 
 
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
+$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
-    $ultimaTemporada = 0;   
+    $ultimaTemporada = 0;
 }
 
 
@@ -162,7 +162,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 } else {
 
-	
+
 }
 
 
@@ -202,9 +202,9 @@ if ($_SESSION['refroll_aif'] != 1) {
     <style>
         .alert > i{ vertical-align: middle !important; }
 
-		
+
 	</style>
-	
+
 
 </head>
 
@@ -255,7 +255,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 
         	<div class="row">
 
-			
+
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="card ">
 						<div class="header bg-blue">
@@ -301,7 +301,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 								</thead>
 								<tbody>
 
-				
+
 								<tr v-for="jugador in jugadoresPorClub" :key="jugador.idjugador">
 									<td>{{ jugador.apellido }}</td>
 									<td>{{ jugador.nombres }}</td>
@@ -313,26 +313,26 @@ if ($_SESSION['refroll_aif'] != 1) {
 										<div v-else>
 											<input class='form-control' type='text' name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/>
 										</div>
-										
+
 									</td>
 									<td>
 									<div class='switch'>
 										<label><input type='checkbox' v-model="jugador.fechabajacheck"/><span class='lever switch-col-green'></span></label>
 									</div>
-									
+
 									</div>
 									</td>
 									<td>
 									<div class='switch'>
 										<label><input type='checkbox' v-model="jugador.articulocheck"/><span class='lever switch-col-green'></span></label>
 									</div>
-									
+
 									</td>
-									
+
 									<td>
 									<?php
 									if ($permiteRegistrar == 1) {
-									if ($habilitado == 1) {	
+									if ($habilitado == 1) {
 									?>
 										<button type='button' class='btn btn-primary guardarJugadorClubSimple' @click="guardarJugadorClub(jugador)">Guardar</button>
 									<?php
@@ -341,7 +341,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 									?>
 									</td>
 								</tr>
-			
+
 								</tbody>
 							</table>
 							</form>
@@ -351,17 +351,17 @@ if ($_SESSION['refroll_aif'] != 1) {
 								<li  v-for="n in paginasJC" :class="{active:pag == n}" @click="activarPagina(n)"><a href="#!">{{ n }}</a></li>
 								<li class="waves-effect"><a href="#" v-show="pag < paginasJC" @click.prevent="activarPagina(pag += 1)"><i class="material-icons">chevron_right</i></a></li>
 							</ul>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</div>
-				
+
 
 			</div>
-			
+
 
             <div class="row">
-			
+
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="header bg-green">
@@ -436,8 +436,8 @@ if ($_SESSION['refroll_aif'] != 1) {
                         </div>
                     </div>
 				</div>
-            	
-            	
+
+
 
             </div>
 
@@ -446,7 +446,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 					<div class="header">
 						<h2>
 							Operaciones
-							
+
 						</h2>
 						<ul class="header-dropdown m-r--5">
 							<li class="dropdown">
@@ -476,7 +476,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 								?>
 									<option value="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></option>
 									<option value="<?php echo date('Y') + 1; ?>"><?php echo date('Y') + 1; ?></option>
-									
+
 
 								<?php
 									}
@@ -489,24 +489,24 @@ if ($_SESSION['refroll_aif'] != 1) {
 							<button type="button" class="btn btn-success cerrar" id="btnAbrir" style="margin-left:0px;">Abrir</button>
 						<?php } else { ?>
 							<button type="button" class="btn btn-warning cerrar" id="btnCerrar" style="margin-left:0px;">Cerrar</button>
-						<?php } ?>							
-							
+						<?php } ?>
+
 							<button type="button" class="btn btn-danger" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
 						</div>
 					</div>
 				</div>
 			</div>
-            
+
             <div class="row">
                 <div class="col-md-12">
                 <ul class="list-inline">
-                	
-                    
+
+
                 </ul>
                 </div>
             </div>
             <input type="hidden" id="refcountries" name="refcountries" value="<?php echo $refClub; ?>"/>
-            
+
 
 		</div>
 	</div>
@@ -514,7 +514,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 	<?php if ($habilitado == 1) { ?>
 
 
-		
+
 	<!-- Modal del guardar-->
 	<div class="modal fade" id="myModal3" tabindex="1" style="z-index:50000;" role="dialog" aria-labelledby="myModalLabel">
 		<div class="modal-dialog modal-lg" role="document">
@@ -532,7 +532,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			<div class="modal-footer">
 			<button type="button" class="btn btn-primary" id="cargarJugador">Agregar</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-			
+
 			</div>
 			</form>
 		</div>
@@ -557,7 +557,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			<input type="hidden" name="idEliminar" id="idEliminar" value=''/>
 			<button type="button" class="btn btn-danger" data-dismiss="modal" id="btnEliminarJugador">Si</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-			
+
 			</div>
 			</form>
 		</div>
@@ -576,14 +576,17 @@ if ($_SESSION['refroll_aif'] != 1) {
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			<h4 class="modal-title" id="myModalLabel">Modificar Jugador</h4>
 			</div>
-			<div class="modal-body modificarJugadorNuevo">
-			
+			<div class="modal-body">
+				<div class="row modificarJugadorNuevo">
+
+				</div>
+
 			</div>
 			<div class="modal-footer">
 			<input type="hidden" name="idModificarJugadorNuevo" id="idModificarJugadorNuevo" value=''/>
 			<button type="button" class="btn btn-warning" id="btnModificarJugadorNuevo">Modificar</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-			
+
 			</div>
 			</form>
 		</div>
@@ -640,7 +643,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 					<div class="form-group">
 						<div class="form-line">
 							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-							
+
 						</div>
 					</div>
 				</div>
@@ -666,7 +669,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 </script>
 </form>
 
-  
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -735,52 +738,52 @@ if ($_SESSION['refroll_aif'] != 1) {
 				$("#idEliminar").val(usersid);
 				$("#dialog2").dialog("open");
 
-				
+
 				//url = "../clienteseleccionado/index.php?idcliente=" + usersid;
 				//$(location).attr('href',url);
 				} else {
-				alert("Error, vuelva a realizar la acción.");	
+				alert("Error, vuelva a realizar la acción.");
 				}
 		});//fin del boton eliminar
-		
+
 		$("#example1").on("click",'.varmodificar', function(){
 			usersid =  $(this).attr("id");
 			$('#myModal5').modal();
 
 			$.ajax({
-				data:  {id: $(this).attr("id"), 
+				data:  {id: $(this).attr("id"),
 					    accion: 'modificarJugadorNuevo'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
 				beforeSend: function () {
-					$('.modificarJugadorNuevo').html('');	
+					$('.modificarJugadorNuevo').html('');
 				},
 				success:  function (response) {
 					$('.modificarJugadorNuevo').html(response);
 
 					$('.modificarJugadorNuevo').find('.date').inputmask('dd-mm-yyyy', { placeholder: '__-__-____' });
-						
+
 				}
 			});
-			
-		});//fin del boton modificar
-		
-		
 
-		
+		});//fin del boton modificar
+
+
+
+
 		$('#btnEliminarJugador').click(function() {
 			$.ajax({
-				data:  {id: $('#idEliminar').val(), 
+				data:  {id: $('#idEliminar').val(),
 					    accion: 'eliminarJugadorespre'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
 				beforeSend: function () {
-						
+
 				},
 				success:  function (response) {
 						url = "index.php";
 						$(location).attr('href',url);
-						
+
 				}
 			});
 		});
@@ -788,13 +791,13 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 				//al enviar el formulario
 			$('#cargarJugador').click(function(){
-				
+
 				//información del formulario
 				var formData = new FormData($(".formulario")[1]);
 				var message = "";
-				//hacemos la petición ajax  
+				//hacemos la petición ajax
 				$.ajax({
-					url: '../../ajax/ajax.php',  
+					url: '../../ajax/ajax.php',
 					type: 'POST',
 					// Form data
 					//datos del formulario
@@ -805,22 +808,22 @@ if ($_SESSION['refroll_aif'] != 1) {
 					processData: false,
 					//mientras enviamos el archivo
 					beforeSend: function(){
-						$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');       
+						$("#load").html('<img src="../../imagenes/load13.gif" width="50" height="50" />');
 					},
 					//una vez finalizado correctamente
 					success: function(data){
-						
+
 						if (!isNaN(data)) {
 							swal("Correcto!", "Se cargo exitosamente el Jugador. ", "success");
-							
+
 							$('#myModal4').modal('hide');
 
 							url = "index.php";
 							$(location).attr('href',url);
 							$("#load").html('');
 
-							
-							
+
+
 						} else {
 							swal("Error!", data, "warning");
 
@@ -835,20 +838,20 @@ if ($_SESSION['refroll_aif'] != 1) {
 				});
 
 
-				
-				
+
+
 			});
 
 
 				//al enviar el formulario
-				
+
 				$('#btnModificarJugadorNuevo').click(function(){
 					//información del formulario
 					var formData = new FormData($(".formulario2")[0]);
 					var message = "";
-					//hacemos la petición ajax  
+					//hacemos la petición ajax
 					$.ajax({
-						url: '../../ajax/ajax.php',  
+						url: '../../ajax/ajax.php',
 						type: 'POST',
 						// Form data
 						//datos del formulario
@@ -859,21 +862,21 @@ if ($_SESSION['refroll_aif'] != 1) {
 						processData: false,
 						//mientras enviamos el archivo
 						beforeSend: function(){
-							$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');       
+							$("#load").html('<img src="../imagenes/load13.gif" width="50" height="50" />');
 						},
 						//una vez finalizado correctamente
 						success: function(data){
-							
+
 							if (!isNaN(data)) {
 								swal("Correcto!", "Se modifico exitosamente el Jugador. ", "success");
-							
+
 								$('#myModal5').modal('hide');
 
 								url = "index.php";
 								$(location).attr('href',url);
 								$("#load").html('');
-								
-								
+
+
 							} else {
 								swal("Error!", data, "warning");
 
@@ -887,8 +890,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 						}
 					});
 				});
-			
-			
+
+
 		<?php } ?>
 	});
 </script>
@@ -900,7 +903,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
-	
+
 	const paramsNotificacion = new URLSearchParams();
     paramsNotificacion.append('accion','VenviarMensaje');
 	paramsNotificacion.append('mensaje','');
@@ -931,13 +934,13 @@ if ($_SESSION['refroll_aif'] != 1) {
 		template: '#modal-template',
 		methods: {
 			enviarConsulta () {
-				
+
 				paramsNotificacion.set('mensaje',$('#mensaje').val());
-				
+
 				axios.post('../../ajax/ajax.php', paramsNotificacion)
 				.then(res => {
 					//this.setMensajes(res)
-					
+
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -945,7 +948,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 		}
@@ -968,8 +971,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 			baja: '',
 			art: '',
 			showModal: false,
-			jugadorClubId: ''	
-			
+			jugadorClubId: ''
+
 		},
 		mounted () {
 			this.getJugadoresPorClub(this.busqueda),
@@ -978,7 +981,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			this.getDelegado()
 		},
 		computed: {
-			
+
 		},
 		methods: {
 			activarPagina(e) {
@@ -1042,7 +1045,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			getDelegado () {
 					axios.post('../../ajax/ajax.php',paramsGetDelegado)
 					.then(res => {
-                        
+
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 						this.activeDelegados = res.data.datos[0]
 					})
@@ -1057,10 +1060,10 @@ if ($_SESSION['refroll_aif'] != 1) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 
-				
+
 			},
 			guardarJugadorClub : function(jug){
 
@@ -1071,7 +1074,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 				axios.post('../../ajax/ajax.php',paramsGetjugadoresClub)
 				.then(res => {
-					
+
 					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -1085,8 +1088,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 				this.getPaginasJC(this.busqueda)
 				this.getJugadoresPorClub(this.busqueda)
 				this.activarPagina(1)
-			
-				
+
+
 			}
 		}
 	})
@@ -1094,5 +1097,3 @@ if ($_SESSION['refroll_aif'] != 1) {
 </body>
 <?php } ?>
 </html>
-
-

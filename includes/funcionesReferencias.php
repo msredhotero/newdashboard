@@ -1926,6 +1926,12 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	return $res;
 	}
 
+	function traerJugadoresprePorIdNuevo($id) {
+	$sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 	function modificarJugadorespreRegistroNuevo($id,$apellido,$nombres,$fechanacimiento,$observaciones,$email) {
 	$sql = "update dbjugadorespre
 	set
