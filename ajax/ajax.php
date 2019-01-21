@@ -1218,7 +1218,7 @@ function VtraerPaginasJugadoresPorClub($serviciosReferencias) {
 
 	$res = $serviciosReferencias->traerJugadoresClubPorCountrieActivos($idclub, $busqueda);
 
-	$ar = array(round(mysql_num_rows($res) / 10));
+	$ar = array(ceil(mysql_num_rows($res) / 10));
 
 	$resV['datos'] = $ar;
 
