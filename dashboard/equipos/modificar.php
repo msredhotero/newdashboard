@@ -121,6 +121,9 @@ switch ($idEstado) {
 	case (8):
 		$lblEstado = 'label-warning';
 		break;
+	default:
+		$lblEstado = 'label-warning';
+		break;
 }
 
 ?>
