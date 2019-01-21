@@ -80,7 +80,6 @@ class ServiciosReferencias {
 	}
 
 
-
 	function traerJugadoresPorCountriesBaja($idCountries) {
 	    $sql = "select
 	            j.nrodocumento,
@@ -93,7 +92,7 @@ class ServiciosReferencias {
 	            inner
 	            join        dbcountries cc
 	            on          cc.idcountrie = j.refcountries
-	            where       cc.idcountrie = ".$idCountries." and (j.fechabaja <> '1900-01-01' and j.fechabaja <> '0000-00-00')
+	            where       cc.idcountrie in (".$idCountries.") and (j.fechabaja <> '1900-01-01' and j.fechabaja <> '0000-00-00')
 	            order by concat(j.apellido,', ',j.nombres)";
 	    $res = $this->query($sql,0);
 	    return $res;
@@ -1169,7 +1168,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 
 	function traerEquiposFusionPorEquipoDelegado($idequipodelegado) {
 		$sql = "SELECT
-					cc.nombre, est.estado
+					cc.nombre, est.estado, (case when f.viejo = 1 then 'Mantiene' else 'Nuevo' end) as viejo
 				FROM
 					dbfusionequipos f
 						INNER JOIN
@@ -1358,7 +1357,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 			refdivisiones,
 			fachebaja,
 			1,
-			1,
+			8,
 			0
 		from dbequipos where idequipo = ".$id;
 
@@ -1856,7 +1855,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 	}
 
 	function traerCierrepadronesPorCountry($idcountry) {
-		$sql = "select idcierrepadron,refcountries,refusuarios,fechacierre from tbcierrepadrones where refcountries =".$idcountry;
+		$sql = "select idcierrepadron,refcountries,refusuarios,fechacierre, current_date() - fechacierre as resto, current_date() - cast('2019-01-01' as date) as dias  from tbcierrepadrones where refcountries =".$idcountry;
 		$res = $this->query($sql,0);
 		return $res;
 	}
@@ -2877,7 +2876,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$pdf->Cell(5,5,'',1,0,'C',true);
 		$pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
 		$pdf->Cell(60,5,'COUNTRIES',1,0,'C',true);
-
+		$pdf->Cell(60,5,'FUSION',1,0,'C',true);
 
 		$cantPartidos = 0;
 
@@ -2910,6 +2909,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		      $pdf->Cell(5,5,'',1,0,'C',true);
 		      $pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
 		      $pdf->Cell(60,5,'COUNTRIES',1,0,'C',true);
+				$pdf->Cell(60,5,'FUSION',1,0,'C',true);
 
 		   }
 
@@ -2920,7 +2920,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		   $pdf->Cell(5,5,'',1,0,'C',false);
 		   $pdf->Cell(60,5,$valor['num'],1,0,'C',false);
 		   $pdf->Cell(60,5,utf8_decode($valor['club']),1,0,'C',false);
-
+			$pdf->Cell(60,5,$valor['viejo'],1,0,'C',false);
 
 		   $contadorY1 += 4;
 

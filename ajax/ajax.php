@@ -617,13 +617,14 @@ switch ($accion) {
 		$cad = '';
 
 		while ($row = mysql_fetch_array($res)) {
-			$cad = array($row['countrie'].'  ');
+			$cad .= $row['countrie'].'
+         ';
 		}
 
 		$resV['error'] = false;
 		$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!';
 
-		$resV['datos'] = $cad;
+		$resV['datos'] = array($cad);
 
 		header('Content-type: application/json');
 		echo json_encode($resV);

@@ -52,12 +52,12 @@ $idequipo = $_GET['id'];
 ///////////////////             fin                 ///////////////////////////////////
 
 
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
+$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
-    $ultimaTemporada = 0;   
+    $ultimaTemporada = 0;
 }
 
 //die(var_dump($ultimaTemporada));
@@ -133,7 +133,7 @@ $resFusiones = $serviciosReferencias->traerFusionPorEquiposCountrie($idequipo, $
 $cadCountries = $_SESSION['idclub_aif'];
 if (mysql_num_rows($resFusiones) > 0) {
 	while ($row = mysql_fetch_array($resFusiones)) {
-		$cadCountries .= ','.$row['refcountries'];
+		$cadCountries .= ','.$row['idcountrie'];
 	}
 }
 
@@ -164,11 +164,11 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
-	
+
 	<!-- Animation Css -->
     <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
 
-	
+
 
 	<!-- VUE JS -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -187,13 +187,13 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
     <style>
         .alert > i{ vertical-align: middle !important; }
 
-		
+
 	</style>
 
 	<!-- CSS file -->
 	<link rel="stylesheet" href="../../css/easy-autocomplete.min.css">
 	<link rel="stylesheet" href="../../css/easy-autocomplete.themes.min.css">
-	
+
 
 </head>
 
@@ -260,7 +260,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 						<div class="body table-responsive">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										
+
 										<h3>Equipos Generados - ESTADO: <span class="label <?php echo $lblEstado; ?>"><?php echo $estado; ?></span></h3>
 										<p>Recuerde que el plantel del equipo se deberá cargar </p>
 										<div class="alert bg-indigo animated shake">
@@ -268,7 +268,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										</div>
 
 									</div>
-									
+
 								</div>
 
 								<div class="row">
@@ -287,7 +287,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 												</div>
 											</div>
-											
+
 											<div class="card-action">
 												<a href="javascript:void(0)"><?php echo $categoria; ?></a>
 												<a href="javascript:void(0)"><?php echo $division; ?></a>
@@ -309,12 +309,12 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 											</div>
 											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
 					                        	<div style="position: relative; height: 80px;">
-					                                
+
 					                                <input id="round" class="countrie" style="widows:100%;"/>
 					                            </div>
 					                            <div id="selction-ajax"></div>
-					                            
-					                        
+
+
 											</div>
 										</div>
 										</div>
@@ -331,7 +331,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										</div>
 										</div>
 										<div class="row">
-										<div class="col-lg-12 col-md-12">
+										<div class="col-lg-12 col-md-12 hidden">
 											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
 												<label for="buscarlbl">Solicitar Habilitación:</label>
 											</div>
@@ -350,20 +350,20 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 											</div>
 										</div>
 										</div>
-										
+
 									</div>
 								</div>
 
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 									<form class="form" id="formJugadores">
-									
+
 									</form>
-										
+
 									</div>
 								</div>
 								<hr>
-								
+
 								<div class="button-demo">
 									<button v-if="confirmado == 2" type="button" class="btn bg-brown waves-effect imprimir">
 										<i class="material-icons">print</i>
@@ -374,14 +374,14 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										<i class="material-icons">done</i>
 										<span>FINALIZAR</span>
 									</button>
-									
+
 								</div>
-								
-							
+
+
 							<div>
-							
+
 							</form>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</div>
@@ -401,7 +401,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 									<i class="material-icons">more_vert</i>
 								</a>
 								<ul class="dropdown-menu pull-right">
-									
+
 								</ul>
 							</li>
 						</ul>
@@ -413,11 +413,11 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 									<i class="material-icons">touch_app</i>
 								</div>
 								<h3>Arrastre y suelte una imagen aqui o haga click y busque una imagen en su ordenador.</h3>
-								
+
 							</div>
 							<div class="fallback">
 								<input name="file" type="file" id="archivos" />
-								
+
 							</div>
 						</form>
 					</div>
@@ -437,7 +437,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 <script src="../../js/pages/ui/animations.js"></script>
 
-<script src="../../js/jquery.easy-autocomplete.min.js"></script> 
+<script src="../../js/jquery.easy-autocomplete.min.js"></script>
 
 <script src="../../js/pages/ui/tooltips-popovers.js"></script>
 
@@ -473,7 +473,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 					<div class="form-group">
 						<div class="form-line">
 							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-							
+
 						</div>
 					</div>
 				</div>
@@ -502,7 +502,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 
 
-  
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -514,7 +514,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 
 
-											
+
 </main>
 
 
@@ -522,22 +522,22 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 <script>
 
-	
+
 
 	$(document).ready(function(){
 		function traerImagen() {
 			$.ajax({
-				data:  {id: <?php echo $idequipo; ?>, 
+				data:  {id: <?php echo $idequipo; ?>,
 						accion: 'traerImgenEquipo'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
 				beforeSend: function () {
-						
+
 				},
 				success:  function (response) {
 
 					$(".thumbnail img").attr("src",response);
-						
+
 				}
 			});
 		}
@@ -564,21 +564,21 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		};
 
 		$('.imprimir').click(function() {
-			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');	
+			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');
 		});
 
 		function eliminarJugadorDePlantel(id) {
 			$.ajax({
-				data:  {id: id, 
+				data:  {id: id,
 						accion: 'eliminarConectorDefinitivamenteDelegado'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
 				beforeSend: function () {
-						
+
 				},
 				success:  function (response) {
 					traerJugadoresPlantel();
-						
+
 				}
 			});
 		}
@@ -599,45 +599,44 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		    });
 		}
 
-
 		$(document).on('click', '.varEliminarJugador', function(e){
 
 			  if (!isNaN($(this).attr("id"))) {
-				
+
 				showConfirmMessage($(this).attr("id"));
 
 			  } else {
-				alert("Error, vuelva a realizar la acción.");	
+				alert("Error, vuelva a realizar la acción.");
 			  }
 		});//fin del boton eliminar
 
 		function traerJugadoresPlantel() {
-			
+
 			$.ajax({
-				data:  {id: <?php echo $idequipo; ?>, 
-						reftemporadas: <?php echo $ultimaTemporada; ?>, 
+				data:  {id: <?php echo $idequipo; ?>,
+						reftemporadas: <?php echo $ultimaTemporada; ?>,
 						accion: 'traerConectorActivosPorEquiposDelegado'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
 				beforeSend: function () {
-				
+					$('#habilita').prop('checked',false);
 				},
 				success:  function (response) {
-					
+
 					$('.lstPlantel').html(response);
-					
+
 				}
-			});	
+			});
 		}
 
 		traerJugadoresPlantel();
 
 		function agregarJugador(refjugadores, reftipojugadores, refequipos, refcountries, refcategorias, reftemporada) {
-		
+
 			$.ajax({
-				data:  {refjugadores: refjugadores, 
-						reftipojugadores: reftipojugadores, 
-						refequipos: refequipos, 
+				data:  {refjugadores: refjugadores,
+						reftipojugadores: reftipojugadores,
+						refequipos: refequipos,
 						reftemporada: reftemporada,
 						refcountries: refcountries,
 						refcategorias: refcategorias,
@@ -646,22 +645,46 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 				url:   '../../ajax/ajax.php',
 				type:  'post',
 				beforeSend: function () {
-				
+					$('#habilita').prop('checked',false);
 				},
 				success:  function (response) {
 					if (response == '') {
 						traerJugadoresPlantel();
+						$('#habilita').prop('checked',false);
+						swal({
+								title: "Respuesta",
+								text: "Jugador Cargado con exito!!",
+								type: "success",
+								timer: 1500,
+								showConfirmButton: false
+						});
 					} else {
-						swal("Error!", response, "error");
+						showConfirmMessageAgregar(response, refjugadores);
+
 					}
-					
+
 				}
-			});	
+			});
 		}
-		
+
+		function showConfirmMessageAgregar(error, id) {
+		    swal({
+		        title: error,
+		        text: "¿Desea Agregar al jugador al Plantel con una habilitación? - El jugador será cargado con un pedido de habilitación a la asociación!",
+		        type: "warning",
+		        showCancelButton: true,
+		        confirmButtonColor: "#DD6B55",
+		        confirmButtonText: "Si!",
+		        closeOnConfirm: true
+		    }, function () {
+		    		$('#habilita').prop('checked',true);
+		      	agregarJugador(id, $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>);
+		    });
+		}
+
 		$(document).on('click', '.agregarJugador', function(e){
 			agregarJugador($(this).attr("id"), $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>);
-			
+
 		});//fin del boton modificar
 
 
@@ -670,11 +693,11 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		  url: function(phrase) {
 			return "../../json/jugadoresPorEquipos.php?countrie='<?php echo $cadCountries; ?>'";
 		  },
-		
+
 		  getValue: function(element) {
 			return element.name;
 		  },
-		
+
 		  ajaxSettings: {
 			dataType: "json",
 			method: "GET",
@@ -682,22 +705,22 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			  dataType: "json"
 			}
 		  },
-		
+
 		  preparePostData: function(data) {
 			data.phrase = $("#round").val();
 			return data;
 		  },
-		  
+
 		  list: {
 				onClickEvent: function() {
 					var value = $("#round").getSelectedItemData().id;
-		
+
 					$('#selction-ajax').html('<button type="button" id="' + value + '" class="btn bg-green waves-effect agregarJugador"> \
 													<i class="material-icons">add</i> \
 													<span>CARGAR</span> \
 												</button>');
 				},
-				
+
 				match: {
 					enabled: true
 				}
@@ -705,9 +728,9 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		  theme: "round",
 		  requestDelay: 100
 		};
-		
+
 		$("#round").easyAutocomplete(options);
-		
+
 
 	});
 </script>
@@ -724,7 +747,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
     paramsBasico.append('accion','traerJugadoresPorCountries');
 	paramsBasico.append('lstcountries',<?php echo $cadCountries; ?>);
 
-	
+
 	const paramsGeneral = new URLSearchParams();
 	paramsGeneral.append('accion', 'traerDefinicionesPorTemporadaCategoriaTipoJugador');
 	paramsGeneral.append('resTemporada', <?php echo $ultimaTemporada; ?>);
@@ -736,13 +759,13 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		template: '#modal-template',
 		methods: {
 			enviarConsulta () {
-				
+
 				paramsNotificacion.set('mensaje',$('#mensaje').val());
-				
+
 				axios.post('../../ajax/ajax.php', paramsNotificacion)
 				.then(res => {
 					//this.setMensajes(res)
-					
+
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -750,7 +773,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 		}
@@ -758,7 +781,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 
 
-	
+
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -772,15 +795,15 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			activeDefinicion: [],
 			showModal: false,
 			confirmado: <?php echo $idEstado; ?>,
-			verificarFusion: <?php echo $verificarFusion; ?>	
-			
+			verificarFusion: <?php echo $verificarFusion; ?>
+
 		},
 		mounted () {
 			this.getDelegado()
 			this.getDefinicion()
 		},
 		computed: {
-			
+
 		},
 		methods: {
 			setMensajes (res) {
@@ -801,7 +824,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			getDelegado () {
 				axios.post('../../ajax/ajax.php',paramsGetDelegado)
 				.then(res => {
-					
+
 					this.activeDelegados = res.data.datos[0]
 				})
 			},
@@ -814,13 +837,13 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			},
 			getDefinicion () {
 				axios.post('../../ajax/ajax.php',paramsGeneral)
 				.then(res => {
-					
+
 					this.activeDefinicion = res.data.datos[0]
 				})
 			}
@@ -830,5 +853,3 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 </body>
 <?php } ?>
 </html>
-
-

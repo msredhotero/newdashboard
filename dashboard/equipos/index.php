@@ -40,9 +40,21 @@ $breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href=
 
 $club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
 
-$permiteRegistrar = 1;
+
 
 $habilitado = 1;
+
+$cierre = $serviciosReferencias->traerCierrepadronesPorCountry($_SESSION['idclub_aif']);
+
+if (mysql_num_rows($cierre) > 0) {
+	if (mysql_result($cierre,0,'resto') >= 0 && mysql_result($cierre,0,'dias') >= mysql_result($cierre,0,'resto')) {
+		$permiteRegistrar = 1;
+	} else {
+		$permiteRegistrar = 0;
+	}
+} else {
+	$permiteRegistrar = 0;
+}
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
@@ -240,6 +252,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 							</ul>
 						</div>
 						<div class="body table-responsive">
+							<?php if ($permiteRegistrar == 1) { ?>
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 										<h4>Equipos Activos Actuales</h4>
@@ -491,6 +504,9 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 								</div>
 
 							</div>
+						<?php } else { ?>
+							<div class="alert bg-indigo">Todavía no Cerro su Padron, no esta habilitado para cargar la Lista de Buena Fe.</div>
+						<?php } ?>
 						</div>
 					</div>
 				</div>

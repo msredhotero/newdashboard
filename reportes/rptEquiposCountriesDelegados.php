@@ -116,7 +116,7 @@ while ($rowE = mysql_fetch_array($resDatos)) {
    if (mysql_num_rows($resFusion)>0) {
       $numFusion += 1;
       while ($rowF = mysql_fetch_array($resFusion)) {
-         array_push($arFusiones, array('num' => $numFusion, 'club'=> $rowF[0]));
+         array_push($arFusiones, array('num' => $numFusion, 'club'=> $rowF[0], 'viejo'=> $row['viejo']));
       }
 
    }
@@ -247,6 +247,7 @@ $pdf->SetFont('Arial','',12);
 $pdf->Cell(5,5,'',1,0,'C',true);
 $pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
 $pdf->Cell(60,5,'COUNTRIES',1,0,'C',true);
+$pdf->Cell(60,5,'FUSION',1,0,'C',true);
 
 
 $cantPartidos = 0;
@@ -280,6 +281,7 @@ foreach ($arFusiones as $valor) {
       $pdf->Cell(5,5,'',1,0,'C',true);
       $pdf->Cell(60,5,'EQUIPO',1,0,'C',true);
       $pdf->Cell(60,5,'COUNTRIES',1,0,'C',true);
+      $pdf->Cell(60,5,'FUSION',1,0,'C',true);
 
    }
 
@@ -290,6 +292,7 @@ foreach ($arFusiones as $valor) {
    $pdf->Cell(5,5,'',1,0,'C',false);
    $pdf->Cell(60,5,$valor['num'],1,0,'C',false);
    $pdf->Cell(60,5,utf8_decode($valor['club']),1,0,'C',false);
+   $pdf->Cell(60,5,$valor['viejo'],1,0,'C',false);
 
 
    $contadorY1 += 4;
