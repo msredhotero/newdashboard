@@ -2993,6 +2993,33 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	}
 
 
+	function enviarEmail($destinatario,$asunto,$cuerpo, $referencia='') {
+
+	    if ($referencia == '') {
+	        $referencia = 'aif@intercountryfutbol.com.ar';
+	    }
+	    # Defina el número de e-mails que desea enviar por periodo. Si es 0, el proceso por lotes
+	    # se deshabilita y los mensajes son enviados tan rápido como sea posible.
+	    define("MAILQUEUE_BATCH_SIZE",0);
+
+	    //para el envío en formato HTML
+	    //$headers = "MIME-Version: 1.0\r\n";
+
+	    // Cabecera que especifica que es un HMTL
+	    $headers  = 'MIME-Version: 1.0' . "\r\n";
+	    $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+	    //dirección del remitente
+	    $headers .= utf8_decode("From: ASOCIACIÓN INTERCOUNTRY DE FÚTBOL ZONA NORTE <aif@intercountryfutbol.com.ar>\r\n");
+
+	    //ruta del mensaje desde origen a destino
+	    $headers .= "Return-path: ".$destinatario."\r\n";
+
+	    //direcciones que recibirán copia oculta
+	    $headers .= "Bcc: ".$referencia."\r\n";
+
+	    mail($destinatario,$asunto,$cuerpo,$headers);
+	}
 
 
 function query($sql,$accion) {

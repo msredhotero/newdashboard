@@ -443,22 +443,22 @@ switch ($accion) {
             $asunto = 'Solicitud de Fusion Aceptada';
             $referente = $serviciosReferencias->traerReferente($_SESSION['idclub_aif']);
 
-            $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
+            $enviarEmail1 = $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
 
             // avisar al otro countrie que esta aceptado o no
             $encargado = $serviciosReferencias->traerEncargadoPorCountries($_SESSION['idclub_aif']);
 
 				if ($encargado['email1'] != '') {
-					$this->enviarEmail($encargado['email1'],$asunto,$cuerpo, $referencia='');
+					$serviciosReferencias->enviarEmail($encargado['email1'],$asunto,$cuerpo, $referencia='');
 				}
 				if ($encargado['email2'] != '') {
-					$this->enviarEmail($encargado['email2'],$asunto,$cuerpo, $referencia='');
+					$serviciosReferencias->enviarEmail($encargado['email2'],$asunto,$cuerpo, $referencia='');
 				}
 				if ($encargado['email3'] != '') {
-					$this->enviarEmail($encargado['email3'],$asunto,$cuerpo, $referencia='');
+					$serviciosReferencias->enviarEmail($encargado['email3'],$asunto,$cuerpo, $referencia='');
 				}
 				if ($encargado['email4'] != '') {
-					$this->enviarEmail($encargado['email4'],$asunto,$cuerpo, $referencia='');
+					$serviciosReferencias->enviarEmail($encargado['email4'],$asunto,$cuerpo, $referencia='');
 				}
          }
 
