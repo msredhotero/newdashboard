@@ -150,11 +150,20 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 	$pdf->SetX(5);
 	$pdf->SetFont('Arial','',10);
 	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
-   if (mysql_num_rows($resFusion)>0) {
-      $pdf->Cell(60,5,utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+   if ($rowE['nuevo'] == 'Si') {
+      if (mysql_num_rows($resFusion)>0) {
+         $pdf->Cell(60,5,'* '.utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+      } else {
+         $pdf->Cell(60,5,'* '.utf8_decode($rowE['nombre']),1,0,'C',false);
+      }
    } else {
-      $pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+      if (mysql_num_rows($resFusion)>0) {
+         $pdf->Cell(60,5,utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+      } else {
+         $pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+      }
    }
+
 
 	$pdf->Cell(60,5,utf8_decode($rowE['categoria']),1,0,'C',false);
 	$pdf->Cell(60,5,utf8_decode($rowE['division']),1,0,'C',false);
