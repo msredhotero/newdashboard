@@ -2099,14 +2099,16 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		(case when jc.articulo = 1 then 'Si' else 'No' end) as articulo,
 		(case when jc.fechabaja = 1 then true else false end) as fechabajacheck,
 		(case when jc.articulo = 1 then true else false end) as articulocheck,
-		coalesce( jc.numeroserielote,'') as numeroserielote,
+		coalesce( jc.numeroserielote,coalesce( jp.numeroserielote,'')) as numeroserielote,
 		concat(j.apellido, ' ', j.nombres) as apyn
 		from dbjugadores j
 		inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos
 		inner join dbcountries cou ON cou.idcountrie = j.refcountries
 		inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
-		left join dbjugadoresclub jc
-		on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador and jc.temporada = ".$temporada."
+		left
+		join dbjugadoresclub jc on jc.refcountries = cou.idcountrie and jc.refjugadores = j.idjugador and jc.temporada = ".$temporada."
+		left
+		join dbjugadorespre jp on jp.nrodocumento = j.nrodocumento
 		where j.refcountries = ".$idCountrie." and (j.fechabaja is null or j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja >= now())
 		";
 		if ($busqueda != '') {
