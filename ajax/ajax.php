@@ -263,6 +263,8 @@ switch ($accion) {
 
 		$res = $serviciosReferencias->traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, '');
 
+      $resNuevo = $serviciosReferencias->traerConectorActivosPorEquiposDelegadoNuevo($refEquipos, $reftemporadas, '');
+
 		$cad = '';
 
 		$habilitacionpendiente = '';
@@ -280,11 +282,45 @@ switch ($accion) {
 			$cad .= '</div>';
 
 			$cad .= '<div class="col-lg-5 col-md-5 col-xs-8 col-sm-8">';
+			$cad .= '<h4>'.strtoupper($row['nombrecompleto']).' <small>(Nuevo)</small><h4>';
+
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-2 col-md-2 col-xs-4 col-sm-4">';
+			$cad .= '<p>'.$row['nrodocumento'].' <b>Edad: '.$row['edad'].'</b></p>';
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-2 col-md-2 col-xs-6 col-sm-6">';
+			$cad .= '<p>'.$row['tipojugador'].'</p>';
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-2 col-md-2 col-xs-6 col-sm-6">';
+			$cad .= '<button type="button" id="'.$row['idconector'].'" class="btn bg-red btn-circle waves-effect waves-circle waves-float varEliminarJugador">
+                        <i class="material-icons">remove_circle</i>
+                    </button>';
+			$cad .= '</div>';
+
+			$cad .= '<hr></div>';
+
+		}
+
+
+      while ($row = mysql_fetch_array($resNuevo)) {
+
+
+			$cad .= '<div class="row">';
+
+			$cad .= '<div class="col-lg-1 col-md-1 col-xs-2 col-sm-2">';
 			if ($row['habilitacionpendiente'] == 'Si') {
-				$cad .= '<h4>'.strtoupper($row['nombrecompleto']).'<h4>';
+				$cad .= '<p style="margin-top:6px; color:#FF5722;"><i class="material-icons">assignment_late</i></p>';
 			} else {
-				$cad .= '<h4>'.strtoupper($row['nombrecompleto']).'<h4>';
+				$cad .= '<p></p>';
 			}
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-5 col-md-5 col-xs-8 col-sm-8">';
+         $cad .= '<h4>'.strtoupper($row['nombrecompleto']).' <small>(Nuevo)</small><h4>';
+
 
 			$cad .= '</div>';
 
@@ -317,8 +353,14 @@ switch ($accion) {
 		$refcountries = $_POST['refcountries'];
 		$refcategorias = $_POST['refcategorias'];
 		$habilita = $_POST['habilita'];
+      $nuevo = $_POST['nuevo'];
 
-		$resJugador = $serviciosReferencias->traerJugadoresPorId($refjugadores);
+      if ($nuevo == 0) {
+         $resJugador = $serviciosReferencias->traerJugadoresPorId($refjugadores);
+      } else {
+         $resJugador = $serviciosReferencias->traerJugadoresprePorId($refjugadores);
+      }
+
 
 		$refcountriesaux = mysql_result($resJugador,0,'refcountries');
 
@@ -329,8 +371,6 @@ switch ($accion) {
 		$contacto = $_SESSION['email_aif'];
 
 		$refusuarios = $_SESSION['usua_aif'];
-
-		$refusuarios = '';
 
 		if ($refcountriesaux <> $refcountries) {
 			$refcountries = $refcountriesaux;
@@ -344,15 +384,28 @@ switch ($accion) {
 		$cad = '';
 
 		//// verifico si el jugador ya fue cargado 1=existe, 0=no existe /////
-		$existeJugador = $serviciosReferencias->existeConectorJugadorEquipo($reftemporada, $refjugadores, $refequipos);
+      if ($nuevo == 0) {
+         $existeJugador = $serviciosReferencias->existeConectorJugadorEquipo($reftemporada, $refjugadores, $refequipos);
+      } else {
+         $existeJugador = $serviciosReferencias->existeConectorJugadorEquipoNuevo($reftemporada, $refjugadores, $refequipos);
+      }
+
 
 		///  verifico si cumple con la edad 	1=ok, 0=mal	/////
-		$vEdad = $serviciosReferencias->verificaEdadCategoriaJugador($refjugadores, $refcategorias, $reftipojugadores);
-
+      if ($nuevo == 0) {
+		   $vEdad = $serviciosReferencias->verificaEdadCategoriaJugador($refjugadores, $refcategorias, $reftipojugadores);
+      } else {
+         $vEdad = $serviciosReferencias->verificaEdadCategoriaJugadorNuevo($refjugadores, $refcategorias, $reftipojugadores);
+      }
 
 		if ($existeJugador == 0) {
 			if (($vEdad == 1) || ($habilita == 1)) {
-				$res = $serviciosReferencias->insertarConectordelegados($reftemporada,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados, $habilita);
+            if ($nuevo == 0) {
+               $res = $serviciosReferencias->insertarConectordelegados($reftemporada,$refusuarios,$refjugadores,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados, $habilita, 0);
+            } else {
+               $res = $serviciosReferencias->insertarConectordelegados($reftemporada,$refusuarios,0,$reftipojugadores,$refequipos,$refcountries,$refcategorias,$esfusion,$activo,$refestados, $habilita, $refjugadores);
+            }
+
 				if ((integer)$res > 0) {
 
 					$cad = '';

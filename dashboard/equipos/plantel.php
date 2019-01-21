@@ -631,7 +631,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 		traerJugadoresPlantel();
 
-		function agregarJugador(refjugadores, reftipojugadores, refequipos, refcountries, refcategorias, reftemporada) {
+		function agregarJugador(refjugadores, reftipojugadores, refequipos, refcountries, refcategorias, reftemporada, nuevo) {
 
 			$.ajax({
 				data:  {refjugadores: refjugadores,
@@ -640,6 +640,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 						reftemporada: reftemporada,
 						refcountries: refcountries,
 						refcategorias: refcategorias,
+						nuevo: nuevo,
 						habilita: $('#habilita').prop('checked') ? 1 : 0,
 						accion: 'insertarConectorAjax'},
 				url:   '../../ajax/ajax.php',
@@ -678,12 +679,13 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		        closeOnConfirm: true
 		    }, function () {
 		    		$('#habilita').prop('checked',true);
-		      	agregarJugador(id, $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>);
+		      	agregarJugador(id, $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>, $('#nuevo').val());
 		    });
 		}
 
 		$(document).on('click', '.agregarJugador', function(e){
-			agregarJugador($(this).attr("id"), $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>);
+
+			agregarJugador($(this).attr("id"), $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>, $('#nuevo').val());
 
 		});//fin del boton modificar
 
@@ -714,11 +716,12 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		  list: {
 				onClickEvent: function() {
 					var value = $("#round").getSelectedItemData().id;
+					var nuevo = $("#round").getSelectedItemData().nuevo;
 
 					$('#selction-ajax').html('<button type="button" id="' + value + '" class="btn bg-green waves-effect agregarJugador"> \
 													<i class="material-icons">add</i> \
 													<span>CARGAR</span> \
-												</button>');
+												</button><input type="hidden" name="nuevo" id="nuevo" value="' + nuevo + '" />');
 				},
 
 				match: {
