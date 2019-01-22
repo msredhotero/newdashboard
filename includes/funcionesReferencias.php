@@ -139,8 +139,8 @@ class ServiciosReferencias {
 						".$row['refestados'].",
 						".$habilitacionpendiente.",
 						".$row['refjugadorespre'].")";
-				die(var_dump($sqlInsert));
-				//$resI = $this->query($sqlInsert,1);
+				//die(var_dump($sqlInsert));
+				$resI = $this->query($sqlInsert,1);
 		}
 		return $res;
 	}
