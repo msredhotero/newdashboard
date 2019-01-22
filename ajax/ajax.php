@@ -252,9 +252,19 @@ switch ($accion) {
 
 		$id = $_POST['id'];
 
-		//verifico que no esta cargado en ningun fixture sino le doy una baja logica  //eliminarConector
-		$res = $serviciosReferencias->eliminarConectorDefinitivamenteDelegado($id);
-		echo $res;
+      $idcabecera = $_POST['idcabecera'];
+
+      $resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($idcabecera);
+
+      if (mysql_result($resCabecera,0,'refestados') == 7) {
+         echo 'La lista de buena fe ya fue entregada, no puede realizar cambios';
+      } else {
+         //verifico que no esta cargado en ningun fixture sino le doy una baja logica  //eliminarConector
+         $res = $serviciosReferencias->eliminarConectorDefinitivamenteDelegado($id);
+   		echo '';
+      }
+
+
 	}
 
 	function traerConectorActivosPorEquiposDelegado($serviciosReferencias) {
@@ -749,15 +759,29 @@ switch ($accion) {
 
          // envio email a la asociacion con pdf adjunto
          $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
-      } else {
+      }
 
-         // creo las tareas para las fusiones
-         while ($row = mysql_fetch_array($resFusiones)) {
-   			$tareas = $serviciosNotificaciones->insertarTareas($row['refcountries'], $tarea,$usuariocrea,$fechacrea,$usuariomodi, $fechamodi,$refestados,$url,$row['idfusionequipo'],$id2,$id3);
-   		}
+      if ($idestado == 7) {
 
-         // envio email a la asociacion con pdf adjunto
-         $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
+         $resTemporadas = $serviciosReferencias->traerUltimaTemporada();
+
+         if (mysql_num_rows($resTemporadas)>0) {
+             $ultimaTemporada = mysql_result($resTemporadas,0,0);
+         } else {
+             $ultimaTemporada = 0;
+         }
+
+         $reftemporadas = $ultimaTemporada;
+
+         $idequipo = $_POST['refequipo'];
+         $resEquipo = $serviciosReferencias->traerEquiposdelegadosPorEquipoTemporada($idequipo,$reftemporadas);
+
+         // envio email a la asociacion
+         $cuerpo = 'Se entrego la Lista de Buena Fe del Equipo '.mysql_result($resEquipo,0,'nombre').' en la Categoria '.mysql_result($resEquipo,0,'categoria').' en la División '.mysql_result($resEquipo,0,'division');
+         $asunto = 'Lista de Buena Fe - Equipo: '.mysql_result($resEquipo,0,'nombre');
+         $referente = $serviciosReferencias->traerReferente($idcountrie);
+
+         //$enviarEmail1 = $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
       }
 
 

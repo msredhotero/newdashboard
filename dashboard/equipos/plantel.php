@@ -294,7 +294,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 											</div>
 										</div>
 									</div>
-									<div class="col-lg-6 col-md-6">
+									<div class="col-lg-6 col-md-6" v-show="confirmado != 7">
 										<div class="row">
 										<div class="col-lg-12 col-md-12">
 											<div class="alert bg-red animated shake">
@@ -364,15 +364,19 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 								</div>
 								<hr>
 
+								<div class="alert bg-indigo">
+									<p><strong>Importante!</strong> En curso el proceso, presione "PRESENTAR" para enviar toda la información a la Asociación.</p>
+								</div>
+
 								<div class="button-demo">
-									<button v-if="confirmado == 2" type="button" class="btn bg-brown waves-effect imprimir">
+									<button v-if="confirmado == 7" type="button" class="btn bg-brown waves-effect imprimir">
 										<i class="material-icons">print</i>
 										<span>IMPRIMIR LISTA DE BUENA FE</span>
 									</button>
 
-									<button type="button" class="btn bg-teal waves-effect imprimir">
-										<i class="material-icons">done</i>
-										<span>FINALIZAR</span>
+									<button v-if="confirmado != 7" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
+										<i class="material-icons">assignment_turned_in</i>
+										<span>PRESENTAR</span>
 									</button>
 
 								</div>
@@ -380,7 +384,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 							<div>
 
-							</form>
+
 							</div>
 						</div>
 					</div>
@@ -450,6 +454,35 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 <?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
 </form>
 </transition>
+
+
+
+<!-- Large Size -->
+<form ref="formP" class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
+<div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+	 <div class="modal-dialog modal-lg" role="document">
+		  <div class="modal-content">
+				<div class="modal-header">
+					 <h4 class="modal-title" id="largeModalLabel">PRESENTAR LISTA DE BUENA FE</h4>
+				</div>
+				<div class="modal-body">
+					<h4>¿Esta seguro que desea Presentar la lista de buena fe?</h4>
+				</div>
+				<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
+				<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
+				<input type="hidden" value="7" name="refestados" id="refestados" />
+				<input type="hidden" value="<?php echo $idequipo; ?>" name="refequipo" id="refequipo" />
+				<div class="modal-footer">
+					<button type="submit" class="btn bg-orange waves-effect">
+						<i class="material-icons" id="guardarFormulario">assignment_turned_in</i>
+						<span>PRESENTAR</span>
+					</button>
+					<button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CLOSE</button>
+				</div>
+		  </div>
+	 </div>
+</div>
+</form>
 
 
 <form class="form" @submit.prevent="realizarConsulta">
@@ -564,12 +597,13 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		};
 
 		$('.imprimir').click(function() {
-			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');
+			window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + <?php echo $idequipo; ?> ,'_blank');
 		});
 
 		function eliminarJugadorDePlantel(id) {
 			$.ajax({
 				data:  {id: id,
+						idcabecera: <?php echo $confirmo; ?>,
 						accion: 'eliminarConectorDefinitivamenteDelegado'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
@@ -577,7 +611,12 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 				},
 				success:  function (response) {
-					traerJugadoresPlantel();
+					if (response == '') {
+						traerJugadoresPlantel();
+					} else {
+						alert(response);
+					}
+
 
 				}
 			});
@@ -600,14 +639,18 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		}
 
 		$(document).on('click', '.varEliminarJugador', function(e){
+			if (<?php echo $idEstado; ?> == 7) {
+				alert("La lista ya fue presentada, no puede eliminar ningun jugador del plantel.");
+			} else {
+				if (!isNaN($(this).attr("id"))) {
 
-			  if (!isNaN($(this).attr("id"))) {
+					showConfirmMessage($(this).attr("id"));
 
-				showConfirmMessage($(this).attr("id"));
+				} else {
+					alert("Error, vuelva a realizar la acción.");
+				}
+			}
 
-			  } else {
-				alert("Error, vuelva a realizar la acción.");
-			  }
 		});//fin del boton eliminar
 
 		function traerJugadoresPlantel() {
@@ -849,6 +892,19 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 					this.activeDefinicion = res.data.datos[0]
 				})
+			},
+			confirmarEquipos (e) {
+				axios.post('../../ajax/ajax.php', new FormData(e.target))
+				.then(res => {
+
+					if (!res.data.error) {
+						this.$swal("Ok!", res.data.mensaje, "success")
+						this.confirmado = 7
+					} else {
+						this.$swal("Error!", res.data.mensaje, "error")
+					}
+
+				});
 			}
 		}
 	})
