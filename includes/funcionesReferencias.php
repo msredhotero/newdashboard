@@ -134,13 +134,13 @@ class ServiciosReferencias {
 						".$row['refequipos'].",
 						".$row['refcountries'].",
 						".$row['refcategorias'].",
-						".$row['esfusion'].",
-						".$row['activo'].",
+						0,
+						1,
 						".$row['refestados'].",
 						".$habilitacionpendiente.",
 						".$row['refjugadorespre'].")";
 				die(var_dump($sqlInsert));
-				$resI = $this->query($sqlInsert,1);
+				//$resI = $this->query($sqlInsert,1);
 		}
 		return $res;
 	}
