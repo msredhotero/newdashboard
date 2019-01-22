@@ -138,6 +138,14 @@ if (mysql_num_rows($resFusiones) > 0) {
 }
 
 
+//////////////          TRAIGO EL PLANTEL DE LA TEMPORADA PASADA     		/////////////////////
+/* primero verifico que no exista ninguno cargado para generarlos */
+$resExisteConectores = $serviciosReferencias->traerConectorActivosPorEquiposDelegado($idequipo,$ultimaTemporada,'');
+
+if (mysql_num_rows($resExisteConectores) <= 0) {
+	$resPlantelTemporadaAnterior = $serviciosReferencias->generarPlantelTemporadaAnterior($ultimaTemporada,$_SESSION['idclub_aif'] ,$idequipo);
+}
+
 /////////////////////////		FIN 						/////////////////////////
 /*
 $lstJugadoresPorCountries = $serviciosReferencias->traerJugadoresPorCountries($cadCountries);

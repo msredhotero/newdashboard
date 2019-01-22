@@ -79,6 +79,72 @@ class ServiciosReferencias {
         return '';
 	}
 
+	function generarPlantelTemporadaAnterior($idtemporada, $idcountrie, $idequipo) {
+		$sql = "SELECT
+					    '',
+					    ".$idtemporada." as reftemporadas,
+					    '' as refusuarios,
+					c.refjugadores,
+					c.reftipojugadores,
+					c.refequipos,
+					c.refcountries,
+					c.refcategorias,
+					c.esfusion,
+					c.activo,
+					1 as refestados,
+					0 as habilitacionpendiente,
+					0 as refjugadorespre
+					FROM
+					    dbconector c
+		where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie." and c.activo = 1";
+		//die(var_dump($sql));
+		$res = $this->query($sql,0);
+
+		$habilitacionpendiente = 0;
+
+		while ($row = mysql_fetch_array($res)) {
+
+			$vEdad = $this->verificaEdadCategoriaJugador($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
+
+			if ($vEdad == 1) {
+				$habilitacionpendiente = 0;
+			} else {
+				$habilitacionpendiente = 1;
+			}
+
+			$sqlInsert = "INSERT INTO dbconectordelegados
+						(idconector,
+						reftemporadas,
+						refusuarios,
+						refjugadores,
+						reftipojugadores,
+						refequipos,
+						refcountries,
+						refcategorias,
+						esfusion,
+						activo,
+						refestados,
+						habilitacionpendiente,
+						refjugadorespre)
+						values ('',
+						".$row['reftemporadas'].",
+						'',
+						".$row['refjugadores'].",
+						".$row['reftipojugadores'].",
+						".$row['refequipos'].",
+						".$row['refcountries'].",
+						".$row['refcategorias'].",
+						".$row['esfusion'].",
+						".$row['activo'].",
+						".$row['refestados'].",
+						".$habilitacionpendiente.",
+						".$row['refjugadorespre'].")";
+				//die(var_dump($sqlInsert));
+				$resI = $this->query($sqlInsert,1);
+		}
+		return $res;
+	}
+
 
 	function traerJugadoresPorCountriesBaja($idCountries) {
 	    $sql = "select
