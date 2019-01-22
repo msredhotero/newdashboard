@@ -1429,6 +1429,22 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 		return $res;
 	}
 
+	function traerEquiposdelegadosPorEquipoTemporada($idequipo, $reftemporada) {
+		$sql = "select ed.idequipodelegado,ed.idequipo,ed.reftemporadas,ed.refusuarios,
+		ed.refcountries,ed.nombre,ed.refcategorias,ed.refdivisiones,
+		ed.fechabaja,ed.activo,ed.refestados,
+		c.categoria,
+		d.division
+		from dbequiposdelegados ed
+		inner join tbcategorias c ON c.idtcategoria = ed.refcategorias
+		inner join tbdivisiones d ON d.iddivision = ed.refdivisiones
+		where ed.idequipo =".$idequipo." and ed.reftemporadas = ".$reftemporada;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+
 	/* Fin */
 	/* /* Fin de la Tabla: dbequiposdelegados*/
 

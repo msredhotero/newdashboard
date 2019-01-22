@@ -282,7 +282,7 @@ switch ($accion) {
 			$cad .= '</div>';
 
 			$cad .= '<div class="col-lg-5 col-md-5 col-xs-8 col-sm-8">';
-			$cad .= '<h4>'.strtoupper($row['nombrecompleto']).' <small>(Nuevo)</small><h4>';
+			$cad .= '<h4>'.strtoupper($row['nombrecompleto']).'<h4>';
 
 			$cad .= '</div>';
 
