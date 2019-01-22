@@ -1785,11 +1785,11 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
 		where (equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas.")
-				or c.refusuarios = '".$refusuarios."'
+
 	order by concat(jug.apellido,', ',jug.nombres)";
 	$res = $this->query($sql,0);
-	die(var_dump($sql));
-	//return $res;
+	//die(var_dump($sql));
+	return $res;
 	}
 
 
@@ -1834,7 +1834,7 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 			inner join
 		tbcategorias cat ON cat.idtcategoria = c.refcategorias
 		where (equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas.")
-				or c.refusuarios = '".$refusuarios."'
+
 	order by concat(jug.apellido,', ',jug.nombres)";
 	$res = $this->query($sql,0);
 	return $res;
