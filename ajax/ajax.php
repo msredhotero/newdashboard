@@ -781,7 +781,7 @@ switch ($accion) {
          $asunto = 'Lista de Buena Fe - Equipo: '.mysql_result($resEquipo,0,'nombre');
          $referente = $serviciosReferencias->traerReferente($idcountrie);
 
-         //$enviarEmail1 = $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
+         $enviarEmail1 = $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
       }
 
 
