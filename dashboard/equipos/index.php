@@ -488,7 +488,6 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 							<div>
 							<div class="alert bg-indigo">
-								<p><strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.</p>
 								<p><strong>Importante!</strong> En curso el proceso, presione "PRESENTAR" para enviar toda la información a la Asociación.</p>
 							</div>
 
