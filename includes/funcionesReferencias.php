@@ -106,13 +106,12 @@ class ServiciosReferencias {
 
 			$vEdad = $this->verificaEdadCategoriaJugador($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
 
+			//$vEdadMenor = $this->verificaEdadCategoriaJugadorMenor($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
+
 			if ($vEdad == 1) {
 				$habilitacionpendiente = 0;
-			} else {
-				$habilitacionpendiente = 1;
-			}
 
-			$sqlInsert = "INSERT INTO dbconectordelegados
+				$sqlInsert = "INSERT INTO dbconectordelegados
 						(idconector,
 						reftemporadas,
 						refusuarios,
@@ -141,6 +140,76 @@ class ServiciosReferencias {
 						".$row['refjugadorespre'].")";
 				//die(var_dump($sqlInsert));
 				$resI = $this->query($sqlInsert,1);
+			}
+		}
+		return $res;
+	}
+
+
+	function generarPlantelTemporadaAnteriorExcepciones($idtemporada, $idcountrie, $idequipo) {
+		$sql = "SELECT
+					    '',
+					    ".$idtemporada." as reftemporadas,
+					    '' as refusuarios,
+					c.refjugadores,
+					c.reftipojugadores,
+					c.refequipos,
+					c.refcountries,
+					c.refcategorias,
+					c.esfusion,
+					c.activo,
+					1 as refestados,
+					0 as habilitacionpendiente,
+					0 as refjugadorespre
+					FROM
+					    dbconector c
+		where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie." and c.activo = 1";
+		//die(var_dump($sql));
+		$res = $this->query($sql,0);
+
+		$habilitacionpendiente = 0;
+
+		$ar = array();
+
+		while ($row = mysql_fetch_array($res)) {
+
+			$vEdad = $this->verificaEdadCategoriaJugador($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
+
+			$vEdadMenor = $this->verificaEdadCategoriaJugadorMenor($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
+
+			if (($vEdad == 0) && ($vEdadMenor == 1)) {
+				$habilitacionpendiente = 1;
+
+				$sqlInsert = "INSERT INTO dbconectordelegados
+						(idconector,
+						reftemporadas,
+						refusuarios,
+						refjugadores,
+						reftipojugadores,
+						refequipos,
+						refcountries,
+						refcategorias,
+						esfusion,
+						activo,
+						refestados,
+						habilitacionpendiente,
+						refjugadorespre)
+						values ('',
+						".$row['reftemporadas'].",
+						'',
+						".$row['refjugadores'].",
+						".$row['reftipojugadores'].",
+						".$row['refequipos'].",
+						".$row['refcountries'].",
+						".$row['refcategorias'].",
+						0,
+						1,
+						".$row['refestados'].",
+						".$habilitacionpendiente.",
+						".$row['refjugadorespre'].")";
+				//die(var_dump($sqlInsert));
+				$resI = $this->query($sqlInsert,1);
+			}
 		}
 		return $res;
 	}
@@ -638,6 +707,31 @@ class ServiciosReferencias {
 	                LIMIT 1) c
 	                on c.iddefinicioncategoriatemporada = dc.refdefinicionescategoriastemporadas
 	                where dc.reftipojugadores = ".$tipoJugador." and ".$edad." between dc.edadminima and dc.edadmaxima";
+	    $res = $this->query($sql,0);
+
+	    return mysql_result($res,0,0);
+	}
+
+	/******   COMPRUEBO SI PUEDO JUGAR EN ESA CATEGORIA Y TIPO DE JUGADOR, POR LA EDAD     *************/
+	function verificaEdadCategoriaJugadorMenor($refjugador, $refcategoria, $tipoJugador) {
+	    //## falta chocar contra una temporada
+	    $edad = $this->verificarEdad($refjugador);
+
+	    $sql = "SELECT
+	                count(*) as verificado
+	            FROM
+	                dbdefinicionescategoriastemporadastipojugador dc
+	                    INNER JOIN
+	                (SELECT
+	                    iddefinicioncategoriatemporada
+	                FROM
+	                    dbdefinicionescategoriastemporadas ct
+	                WHERE
+	                    ct.refcategorias = ".$refcategoria."
+	                ORDER BY iddefinicioncategoriatemporada DESC
+	                LIMIT 1) c
+	                on c.iddefinicioncategoriatemporada = dc.refdefinicionescategoriastemporadas
+	                where dc.reftipojugadores = ".$tipoJugador." and ".$edad." < dc.edadminima";
 	    $res = $this->query($sql,0);
 
 	    return mysql_result($res,0,0);
