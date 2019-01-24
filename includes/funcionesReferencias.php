@@ -160,10 +160,18 @@ class ServiciosReferencias {
 					c.activo,
 					1 as refestados,
 					0 as habilitacionpendiente,
-					0 as refjugadorespre
+					0 as refjugadorespre,
+					jug.nrodocumento,
+					c.idconector,
+					concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+					year(now()) - year(jug.fechanacimiento) as edad
 					FROM
 					    dbconector c
-		where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie." and c.activo = 1";
+					inner join dbjugadores jug ON jug.idjugador = c.refjugadores
+					left join dbconectordelegados cc
+					ON c.refjugadores = cc.refjugadores and c.refequipos = cc.refequipos
+		where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie."
+				and c.activo = 1 and cc.idconector is null";
 		//die(var_dump($sql));
 		$res = $this->query($sql,0);
 
@@ -178,40 +186,10 @@ class ServiciosReferencias {
 			$vEdadMenor = $this->verificaEdadCategoriaJugadorMenor($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
 
 			if (($vEdad == 0) && ($vEdadMenor == 1)) {
-				$habilitacionpendiente = 1;
-
-				$sqlInsert = "INSERT INTO dbconectordelegados
-						(idconector,
-						reftemporadas,
-						refusuarios,
-						refjugadores,
-						reftipojugadores,
-						refequipos,
-						refcountries,
-						refcategorias,
-						esfusion,
-						activo,
-						refestados,
-						habilitacionpendiente,
-						refjugadorespre)
-						values ('',
-						".$row['reftemporadas'].",
-						'',
-						".$row['refjugadores'].",
-						".$row['reftipojugadores'].",
-						".$row['refequipos'].",
-						".$row['refcountries'].",
-						".$row['refcategorias'].",
-						0,
-						1,
-						".$row['refestados'].",
-						".$habilitacionpendiente.",
-						".$row['refjugadorespre'].")";
-				//die(var_dump($sqlInsert));
-				$resI = $this->query($sqlInsert,1);
+				array_push($ar, array('refjugadores' => $row['refjugadores'], 'reftipojugadores' => $row['reftipojugadores'], 'nrodocumento' => $row['nrodocumento'], 'nombrecompleto' => $row['nombrecompleto'], 'edad' => $row['edad'], 'idconector' => $row['idconector']));
 			}
 		}
-		return $res;
+		return $ar;
 	}
 
 

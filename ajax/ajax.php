@@ -199,10 +199,49 @@ switch ($accion) {
       insertarFusionEquipos($serviciosReferencias);
       break;
 
+      case 'generarPlantelTemporadaAnteriorExcepciones':
+      generarPlantelTemporadaAnteriorExcepciones($serviciosReferencias);
+      break;
+
 /* Fin */
 
 }
 /* Fin */
+
+   function generarPlantelTemporadaAnteriorExcepciones($serviciosReferencias) {
+      $idtemporada = $_POST['idtemporada'];
+      $idcountrie = $_POST['idcountrie'];
+      $idequipo = $_POST['idequipo'];
+
+      $res = $serviciosReferencias->generarPlantelTemporadaAnteriorExcepciones($idtemporada, $idcountrie, $idequipo);
+
+      $cad = '';
+      foreach ($res as $row) {
+
+         $cad .= '<div class="row">';
+
+			$cad .= '<div class="col-lg-6 col-md-6 col-xs-8 col-sm-8">';
+			$cad .= '<h4>'.strtoupper($row['nombrecompleto']).'<h4>';
+
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-3 col-md-3 col-xs-4 col-sm-4">';
+			$cad .= '<p>'.$row['nrodocumento'].' <b>Edad: '.$row['edad'].'</b></p>';
+			$cad .= '</div>';
+
+			$cad .= '<div class="col-lg-3 col-md-3 col-xs-6 col-sm-6">';
+			$cad .= '<button type="button" id="'.$row['refjugadores'].'" class="btn bg-green btn-circle waves-effect waves-circle waves-float varCargarExcepcion">
+                        <i class="material-icons">done</i>
+                    </button>';
+			$cad .= '</div>';
+
+         $cad .= '<input type="hidden" name="reftipojugadores'.$row['refjugadores'].'" id="reftipojugadores'.$row['refjugadores'].'" value="'.$row['reftipojugadores'].'" />';
+
+			$cad .= '<hr></div>';
+      }
+
+      echo $cad;
+   }
 
    function traerCategorias($serviciosReferencias) {
       $res = $serviciosReferencias->traerCategorias();

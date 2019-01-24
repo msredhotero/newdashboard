@@ -311,52 +311,60 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										</div>
 										</div>
 										<div class="row">
-										<div class="col-lg-12 col-md-12">
-											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-												<label for="buscarlbl">Buscar Jugador:</label>
-											</div>
-											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
-					                        	<div style="position: relative; height: 80px;">
+											<div class="col-lg-12 col-md-12">
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+													<label for="buscarlbl">Buscar Jugador:</label>
+												</div>
+												<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
+						                        	<div style="position: relative; height: 80px;">
 
-					                                <input id="round" class="countrie" style="widows:100%;"/>
-					                            </div>
-					                            <div id="selction-ajax"></div>
+						                                <input id="round" class="countrie" style="widows:100%;"/>
+						                            </div>
+						                            <div id="selction-ajax"></div>
 
 
-											</div>
-										</div>
-										</div>
-										<div class="row">
-										<div class="col-lg-12 col-md-12">
-											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-												<label for="buscarlbl">Tipo Jugador:</label>
-											</div>
-											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
-												<select class="form-control show-tick" data-live-search="true" id="reftipojugadores" name="reftipojugadores">
-			                                        <?php echo $cadRefTipoJug; ?>
-			                                    </select>
-											</div>
-										</div>
-										</div>
-										<div class="row">
-										<div class="col-lg-12 col-md-12 hidden">
-											<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-												<label for="buscarlbl">Solicitar Habilitación:</label>
-											</div>
-
-											<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
-												<div class='switch'>
-												<label><input type='checkbox' id="habilita" name="habilita"/><span class='lever switch-col-green'></span></label>
 												</div>
 											</div>
 										</div>
-										</div>
 										<div class="row">
-										<div class="col-lg-12 col-md-12">
-											<div class="alert bg-orange animated bounce delay-5s">
-												<i class="material-icons">assignment_late</i> <strong>Aclaración!</strong> La habilitación la autorizará la asociación
+											<div class="col-lg-12 col-md-12">
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+													<label for="buscarlbl">Tipo Jugador:</label>
+												</div>
+												<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
+													<select class="form-control show-tick" data-live-search="true" id="reftipojugadores" name="reftipojugadores">
+				                                        <?php echo $cadRefTipoJug; ?>
+				                                    </select>
+												</div>
 											</div>
 										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12 hidden">
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+													<label for="buscarlbl">Solicitar Habilitación:</label>
+												</div>
+
+												<div class="col-lg-8 col-md-8 col-sm-8 col-xs-7">
+													<div class='switch'>
+													<label><input type='checkbox' id="habilita" name="habilita"/><span class='lever switch-col-green'></span></label>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12">
+												<div class="alert bg-orange animated bounce delay-5s">
+													<i class="material-icons">assignment_late</i> <strong>Aclaración!</strong> La habilitación la autorizará la asociación
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12">
+												<h5 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>¿DESEA MANTENER LA EXCEPCION DE ESTOS JUGADORES?</b></h5>
+												<div class="lstPlantelExcepcion">
+
+												</div>
+											</div>
 										</div>
 
 									</div>
@@ -621,6 +629,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 				success:  function (response) {
 					if (response == '') {
 						traerJugadoresPlantel();
+						traerJugadoresPlantelExcepcion();
 					} else {
 						alert(response);
 					}
@@ -680,7 +689,28 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			});
 		}
 
+		function traerJugadoresPlantelExcepcion() {
+
+			$.ajax({
+				data:  {idequipo: <?php echo $idequipo; ?>,
+						idtemporada: <?php echo $ultimaTemporada; ?>,
+						idcountrie: <?php echo $_SESSION['idclub_aif']; ?>,
+						accion: 'generarPlantelTemporadaAnteriorExcepciones'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+
+				},
+				success:  function (response) {
+
+					$('.lstPlantelExcepcion').html(response);
+
+				}
+			});
+		}
+
 		traerJugadoresPlantel();
+		traerJugadoresPlantelExcepcion();
 
 		function agregarJugador(refjugadores, reftipojugadores, refequipos, refcountries, refcategorias, reftemporada, nuevo) {
 
@@ -702,6 +732,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 				success:  function (response) {
 					if (response == '') {
 						traerJugadoresPlantel();
+						traerJugadoresPlantelExcepcion();
 						$('#habilita').prop('checked',false);
 						swal({
 								title: "Respuesta",
@@ -712,6 +743,50 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 						});
 					} else {
 						showConfirmMessageAgregar(response, refjugadores);
+
+					}
+
+				}
+			});
+		}
+
+
+		function agregarJugadorExcepcion(refjugadores, reftipojugadores, refequipos, refcountries, refcategorias, reftemporada, nuevo) {
+
+			$.ajax({
+				data:  {refjugadores: refjugadores,
+						reftipojugadores: reftipojugadores,
+						refequipos: refequipos,
+						reftemporada: reftemporada,
+						refcountries: refcountries,
+						refcategorias: refcategorias,
+						nuevo: 0,
+						habilita: 1,
+						accion: 'insertarConectorAjax'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+					$('#habilita').prop('checked',false);
+				},
+				success:  function (response) {
+					if (response == '') {
+						traerJugadoresPlantel();
+						traerJugadoresPlantelExcepcion();
+						swal({
+								title: "Respuesta",
+								text: "Jugador Cargado con exito!!",
+								type: "success",
+								timer: 1500,
+								showConfirmButton: false
+						});
+					} else {
+						swal({
+								title: "Respuesta",
+								text: "Error: " + response,
+								type: "danger",
+								timer: 1500,
+								showConfirmButton: false
+						});
 
 					}
 
@@ -739,6 +814,14 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			agregarJugador($(this).attr("id"), $('#reftipojugadores').val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>, $('#nuevo').val());
 
 		});//fin del boton modificar
+
+		$(document).on('click', '.varCargarExcepcion', function(e){
+
+			agregarJugadorExcepcion($(this).attr("id"), $('#reftipojugadores' + $(this).attr("id")).val(), <?php echo $idequipo; ?>, <?php echo $_SESSION['idclub_aif']; ?>, <?php echo $idcategoria; ?>, <?php echo $ultimaTemporada; ?>, 0);
+
+		});//fin del boton modificar
+
+
 
 
 		var options = {

@@ -97,7 +97,10 @@ $pdf->SetAutoPageBreak(false,1);
 
    $pdf->SetFont('Arial','',9);
    $pdf->SetX(5);
-	$pdf->Cell(200,5,utf8_decode('* Jugadores con solicitud de habilitación'),0,0,'L',false);
+	$pdf->Cell(200,5,utf8_decode('* Jugadores con solicitud de excepción'),0,0,'L',false);
+   $pdf->Ln();
+   $pdf->SetX(5);
+	$pdf->Cell(200,5,utf8_decode('** Jugadores con solicitud de excepción, generada desde la temporada pasada'),0,0,'L',false);
 	$pdf->SetFont('Arial','',10);
    $pdf->Ln();
 	$pdf->SetX(5);
@@ -150,11 +153,20 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 	$pdf->SetX(5);
 	$pdf->SetFont('Arial','',10);
 	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
-   if ($rowE['habilitacionpendiente'] == 'Si') {
-      $pdf->Cell(90,5,'* '.utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+
+   /// veo si la habilitacion ya la tenia la temporada apsada //
+   $habTemporadaPasada = $serviciosReferencias->verificaEdadCategoriaJugadorMenor($rowE['refjugadores'], $rowE['refcategorias'], $rowE['reftipojugadores']);
+
+   if ($habTemporadaPasada == 1) {
+      $pdf->Cell(90,5,'** '.utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
    } else {
-      $pdf->Cell(90,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+      if ($rowE['habilitacionpendiente'] == 'Si') {
+         $pdf->Cell(90,5,'* '.utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+      } else {
+         $pdf->Cell(90,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+      }
    }
+
 	$pdf->Cell(30,5,($rowE['nrodocumento']),1,0,'C',false);
 	$pdf->Cell(40,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);
    $pdf->Cell(25,5,($rowE['fechanacimiento']),1,0,'C',false);
