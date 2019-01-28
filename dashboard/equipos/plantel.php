@@ -71,6 +71,12 @@ $division = mysql_result($resEquipos,0,'division');
 $equipo = mysql_result($resEquipos,0,'nombre');
 $estado = mysql_result($resEquipos,0,'estado');
 
+// para traer el res de los equipos Delegados
+$resEquipoDelegados = $serviciosReferencias->traerEquiposdelegadosPorEquipoTemporada($idequipo, $ultimaTemporada);
+
+$idEstadoEquipoDelegado = mysql_result($resEquipoDelegados,0,'refestados');
+// fin
+
 $idusuario = $_SESSION['usuaid_aif'];
 
 $confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
@@ -96,6 +102,15 @@ switch ($idEstado) {
 		break;
 	case (4):
 		$lblEstado = 'label-danger';
+		break;
+	case (5):
+		$lblEstado = 'label-warning';
+		break;
+	case (6):
+		$lblEstado = 'label-success';
+		break;
+	case (7):
+		$lblEstado = 'label-success';
 		break;
 }
 
@@ -302,7 +317,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 											</div>
 										</div>
 									</div>
-									<div class="col-lg-6 col-md-6" v-show="confirmado != 7">
+									<div class="col-lg-6 col-md-6" v-show="idestadoequipodelegado == 3">
 										<div class="row">
 										<div class="col-lg-12 col-md-12">
 											<div class="alert bg-red animated shake">
@@ -392,12 +407,12 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 								</div>
 
 								<div class="button-demo">
-									<button v-if="confirmado == 7" type="button" class="btn bg-brown waves-effect imprimir">
+									<button v-if="idestadoequipodelegado == 5 || idestadoequipodelegado == 7" type="button" class="btn bg-brown waves-effect imprimir">
 										<i class="material-icons">print</i>
 										<span>IMPRIMIR LISTA DE BUENA FE</span>
 									</button>
 
-									<button v-if="confirmado != 7" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
+									<button v-if="idestadoequipodelegado == 3 || idestadoequipodelegado == 4" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
 										<i class="material-icons">assignment_turned_in</i>
 										<span>PRESENTAR</span>
 									</button>
@@ -493,7 +508,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 				</div>
 				<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
 				<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
-				<input type="hidden" value="7" name="refestados" id="refestados" />
+				<input type="hidden" value="5" name="refestados" id="refestados" />
 				<input type="hidden" value="<?php echo $idequipo; ?>" name="refequipo" id="refequipo" />
 				<div class="modal-footer">
 					<button type="submit" class="btn bg-orange waves-effect">
@@ -627,6 +642,8 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			$.ajax({
 				data:  {id: id,
 						idcabecera: <?php echo $confirmo; ?>,
+						idequipo: <?php echo $idequipo; ?>,
+						ultimaTemporada: <?php echo $ultimaTemporada; ?>,
 						accion: 'eliminarConectorDefinitivamenteDelegado'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
@@ -663,7 +680,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		}
 
 		$(document).on('click', '.varEliminarJugador', function(e){
-			if (<?php echo $idEstado; ?> == 7) {
+			if ((<?php echo $idEstadoEquipoDelegado; ?> == 5) || (<?php echo $idEstadoEquipoDelegado; ?> == 7)) {
 				alert("La lista ya fue presentada, no puede eliminar ningun jugador del plantel.");
 			} else {
 				if (!isNaN($(this).attr("id"))) {
@@ -937,6 +954,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			activeDelegados: {},
 			activeJugadores: {},
 			activeDefinicion: [],
+			idestadoequipodelegado: <?php echo $idEstadoEquipoDelegado; ?>,
 			showModal: false,
 			confirmado: <?php echo $idEstado; ?>,
 			verificarFusion: <?php echo $verificarFusion; ?>
@@ -997,7 +1015,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
-						this.confirmado = 7
+						this.idestadoequipodelegado = 5
 						$("#largeModal").modal("hide");
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")

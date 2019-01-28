@@ -293,9 +293,19 @@ switch ($accion) {
 
       $idcabecera = $_POST['idcabecera'];
 
+      $idequipo = $_POST['idequipo'];
+
+      $ultimaTemporada = $_POST['ultimaTemporada'];
+
       $resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($idcabecera);
 
-      if (mysql_result($resCabecera,0,'refestados') == 7) {
+      // para traer el res de los equipos Delegados
+      $resEquipoDelegados = $serviciosReferencias->traerEquiposdelegadosPorEquipoTemporada($idequipo, $ultimaTemporada);
+
+      $idEstadoEquipoDelegado = mysql_result($resEquipoDelegados,0,'refestados');
+      // fin
+
+      if (($idEstadoEquipoDelegado == 7) || ($idEstadoEquipoDelegado == 5)) {
          echo 'La lista de buena fe ya fue entregada, no puede realizar cambios';
       } else {
          //verifico que no esta cargado en ningun fixture sino le doy una baja logica  //eliminarConector
@@ -767,7 +777,7 @@ switch ($accion) {
 		$id = $_POST['idcabecera'];
 		$idestado = $_POST['refestados'];
 
-      if ($idestado != 7) {
+      if ($idestado != 5) {
 		   $res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
       } else {
          // modifico el estado del equipo delegado
@@ -806,7 +816,7 @@ switch ($accion) {
          $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
       }
 
-      if ($idestado == 7) {
+      if ($idestado == 5) {
 
          $resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 

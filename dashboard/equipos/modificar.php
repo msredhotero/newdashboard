@@ -286,14 +286,14 @@ switch ($idEstado) {
 												<td style="text-align: center;">
 													<ul class="list-inline">
 														<li>
-															<div v-if="equipo.refestados == 3 || equipo.refestados == 7">
-															<button v-if="confirmado == 3 || confirmado == 7" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
+															<div v-if="equipo.refestados == 3 || equipo.refestados == 7 || equipo.refestados == 5">
+															<button v-if="confirmado == 3 || confirmado == 7 || equipo.refestados == 5" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
 																<i class="material-icons">group</i>
 															</button>
 															</div>
 														</li>
 														<li>
-															<div v-if="equipo.refestados == 7">
+															<div v-if="equipo.refestados == 7 || equipo.refestados == 5">
 															<button type="button" class="btn bg-green waves-effect" :id="equipo.idequipo" @click="imprmirM(equipo.idequipo)">
 																<i class="material-icons">done_all</i>
 															</button>
@@ -423,7 +423,7 @@ switch ($idEstado) {
 	$(document).ready(function(){
 
 		$(document).on('click', '.imprimirM', function(){
-			window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + $(this).attr("id"); ,'_blank');
+			window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + $(this).attr("id") ,'_blank');
 		});
 
 
