@@ -193,6 +193,53 @@ class ServiciosReferencias {
 	}
 
 
+
+		function generarPlantelTemporadaAnteriorExcepcionesTodos($idtemporada, $idcountrie, $idequipo) {
+			$sql = "SELECT
+						    '',
+						    ".$idtemporada." as reftemporadas,
+						    '' as refusuarios,
+						c.refjugadores,
+						c.reftipojugadores,
+						c.refequipos,
+						c.refcountries,
+						c.refcategorias,
+						c.esfusion,
+						c.activo,
+						1 as refestados,
+						0 as habilitacionpendiente,
+						0 as refjugadorespre,
+						jug.nrodocumento,
+						c.idconector,
+						concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+						year(now()) - year(jug.fechanacimiento) as edad
+						FROM
+						    dbconector c
+						inner join dbjugadores jug ON jug.idjugador = c.refjugadores
+
+			where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie."
+					and c.activo = 1";
+			//die(var_dump($sql));
+			$res = $this->query($sql,0);
+
+			$habilitacionpendiente = 0;
+
+			$ar = array();
+
+			while ($row = mysql_fetch_array($res)) {
+
+				$vEdad = $this->verificaEdadCategoriaJugador($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
+
+				$vEdadMenor = $this->verificaEdadCategoriaJugadorMenor($row['refjugadores'], $row['refcategorias'], $row['reftipojugadores']);
+
+				if (($vEdad == 0) && ($vEdadMenor == 1)) {
+					array_push($ar, array('refjugadores' => $row['refjugadores'], 'reftipojugadores' => $row['reftipojugadores'], 'nrodocumento' => $row['nrodocumento'], 'nombrecompleto' => $row['nombrecompleto'], 'edad' => $row['edad'], 'idconector' => $row['idconector']));
+				}
+			}
+			return $ar;
+		}
+
+
 	function traerJugadoresPorCountriesBaja($idCountries) {
 	    $sql = "select
 	            j.nrodocumento,
@@ -1862,6 +1909,57 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 	$res = $this->query($sql,0);
 	//die(var_dump($sql));
 	return $res;
+	}
+
+
+
+		function traerConectorActivosPorEquiposDelegadoSinExcepcion($refEquipos, $reftemporadas, $refusuarios='') {
+		$sql = "select
+			c.idconector,
+			cat.categoria,
+			equ.nombre as equipo,
+			co.nombre as countrie,
+			tip.tipojugador,
+			(case when c.esfusion = 1 then 'Si' else 'No' end) as esfusion,
+			(case when c.activo = 1 then 'Si' else 'No' end) as activo,
+			c.refjugadores,
+			c.reftipojugadores,
+			c.refequipos,
+			c.refcountries,
+			c.refcategorias,
+			concat(jug.apellido,', ',jug.nombres) as nombrecompleto,
+			jug.nrodocumento,
+			jug.fechanacimiento,
+			tip.idtipojugador,
+			year(now()) - year(jug.fechanacimiento) as edad,
+			jug.fechabaja,
+			jug.fechaalta,
+			(case when c.habilitacionpendiente = 1 then 'Si' else 'No' end) as habilitacionpendiente
+
+		from
+		dbconectordelegados c
+				inner join
+			dbjugadores jug ON jug.idjugador = c.refjugadores
+				inner join
+			tbtipodocumentos ti ON ti.idtipodocumento = jug.reftipodocumentos
+				inner join
+			dbcountries co ON co.idcountrie = jug.refcountries
+				inner join
+			tbtipojugadores tip ON tip.idtipojugador = c.reftipojugadores
+				inner join
+			dbequiposdelegados equ ON equ.idequipo = c.refequipos
+				inner join
+			tbdivisiones di ON di.iddivision = equ.refdivisiones
+				inner join
+			tbposiciontributaria po ON po.idposiciontributaria = co.refposiciontributaria
+				inner join
+			tbcategorias cat ON cat.idtcategoria = c.refcategorias
+			where (equ.idequipo = ".$refEquipos." and c.activo = 1 and c.reftemporadas = ".$reftemporadas.")
+					and c.habilitacionpendiente = 0
+		order by concat(jug.apellido,', ',jug.nombres)";
+		$res = $this->query($sql,0);
+		//die(var_dump($sql));
+		return $res;
 	}
 
 

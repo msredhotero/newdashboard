@@ -36,10 +36,18 @@ $reftemporadas = $ultimaTemporada;
 
 /////////////////////////////  fin parametross  ///////////////////////////
 $resEquipo = $serviciosReferencias->traerEquiposdelegadosPorEquipoTemporada($refEquipos,$reftemporadas);
+$resEquipoAux = $serviciosReferencias->traerEquiposdelegadosPorEquipoTemporada($refEquipos,$reftemporadas);
+
 
 $resDatos = $serviciosReferencias->traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, $refusuarios='');
 
-$nombre 	= mysql_result($resEquipo,0,'nombre');
+$resDatosNuevo = $serviciosReferencias->traerConectorActivosPorEquiposDelegadoNuevo($refEquipos, $reftemporadas, $refusuarios='');
+
+$excepciones = $serviciosReferencias->generarPlantelTemporadaAnteriorExcepcionesTodos($reftemporadas, mysql_result($resEquipoAux,0,'refcountries'), $refEquipos);
+
+$nombre 	= mysql_result($resEquipoAux,0,'nombre');
+
+
 
 
 $pdf = new FPDF();
@@ -95,22 +103,18 @@ $pdf->SetAutoPageBreak(false,1);
 	$pdf->Ln();
 	$pdf->SetX(5);
 
-   $pdf->SetFont('Arial','',9);
-   $pdf->SetX(5);
-	$pdf->Cell(200,5,utf8_decode('* Jugadores con solicitud de excepción'),0,0,'L',false);
-   $pdf->Ln();
-   $pdf->SetX(5);
-	$pdf->Cell(200,5,utf8_decode('** Jugadores con solicitud de excepción, generada desde la temporada pasada'),0,0,'L',false);
 	$pdf->SetFont('Arial','',10);
    $pdf->Ln();
 	$pdf->SetX(5);
 
 	$pdf->SetFont('Arial','',11);
 	$pdf->Cell(5,5,'',1,0,'C',true);
-	$pdf->Cell(90,5,'JUGADOR',1,0,'C',true);
-	$pdf->Cell(30,5,'NRO. DOC.',1,0,'C',true);
-	$pdf->Cell(40,5,'TIPO JUGADOR',1,0,'C',true);
-   $pdf->Cell(25,5,'FECHA NAC.',1,0,'C',true);
+	$pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+   $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+   $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+   $pdf->Cell(50,5,'CLUB',1,0,'C',true);
 
 	$cantPartidos = 0;
 	$i=0;
@@ -118,8 +122,117 @@ $pdf->SetAutoPageBreak(false,1);
 	$contadorY1 = 44;
 	$contadorY2 = 44;
 
-   $arFusiones = array();
+   $arExcepciones = array();
+
 while ($rowE = mysql_fetch_array($resDatos)) {
+	$i+=1;
+
+
+	if ($i > 50) {
+		Footer($pdf);
+		$pdf->AddPage();
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+		$pdf->SetFont('Arial','B',10);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetY(25);
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$i=0;
+
+		$pdf->SetFont('Arial','',11);
+		$pdf->Cell(5,5,'',1,0,'C',true);
+      $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+   	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+   	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+      $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+      $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+      $pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+	}
+
+   /// veo si la habilitacion ya la tenia la temporada apsada //
+   $habTemporadaPasada = $serviciosReferencias->verificaEdadCategoriaJugadorMenor($rowE['refjugadores'], $rowE['refcategorias'], $rowE['reftipojugadores']);
+
+   $excepto = array_search($rowE['nrodocumento'], array_column($excepciones, 'nrodocumento'));
+
+   if ($excepto !== false) {
+      array_push($arExcepciones, array('nombrecompleto' => '** '.utf8_decode($rowE['nombrecompleto']),
+                                       'tipojugador' => $rowE['tipojugador'],
+                                       'nrodocumento' => $rowE['nrodocumento'],
+                                       'fechanacimiento' => $rowE['fechanacimiento'],
+                                       'edad' => $rowE['edad'],
+                                       'countrie' => $rowE['countrie']));
+   } else {
+      if ($rowE['habilitacionpendiente'] == 'Si') {
+         array_push($arExcepciones, array('nombrecompleto' => '* '.utf8_decode($rowE['nombrecompleto']),
+                                          'tipojugador' => $rowE['tipojugador'],
+                                          'nrodocumento' => $rowE['nrodocumento'],
+                                          'fechanacimiento' => $rowE['fechanacimiento'],
+                                          'edad' => $rowE['edad'],
+                                          'countrie' => $rowE['countrie']));
+      } else {
+
+         $cantPartidos += 1;
+
+         $pdf->Ln();
+      	$pdf->SetX(5);
+      	$pdf->SetFont('Arial','',10);
+      	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+
+
+         $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+      	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
+      	$pdf->Cell(20,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);
+         $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
+         $pdf->Cell(12,5,$rowE['edad'],1,0,'C',false);
+         $pdf->Cell(50,5,$rowE['countrie'],1,0,'L',false);
+
+         $contadorY1 += 4;
+      }
+   }
+
+
+
+
+
+
+
+	//$pdf->SetY($contadorY1);
+
+
+}
+
+
+$pdf->Ln();
+
+$pdf->SetX(5);
+$pdf->Ln();
+$pdf->Ln();
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(200,5,'Jugadores Nuevos',0,0,'C',false);
+$pdf->Ln();
+$pdf->Ln();
+
+$pdf->SetFont('Arial','',10);
+$pdf->Ln();
+$pdf->SetX(5);
+
+$pdf->SetFont('Arial','',11);
+$pdf->Cell(5,5,'',1,0,'C',true);
+$pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+$pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+$pdf->Cell(12,5,'EDAD',1,0,'C',true);
+$pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+
+while ($rowE = mysql_fetch_array($resDatosNuevo)) {
 	$i+=1;
 	$cantPartidos += 1;
 
@@ -141,10 +254,12 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 
 		$pdf->SetFont('Arial','',11);
 		$pdf->Cell(5,5,'',1,0,'C',true);
-      $pdf->Cell(90,5,'JUGADOR',1,0,'C',true);
-   	$pdf->Cell(30,5,'NRO. DOC.',1,0,'C',true);
-   	$pdf->Cell(40,5,'TIPO JUGADOR',1,0,'C',true);
-      $pdf->Cell(25,5,'FECHA NAC.',1,0,'C',true);
+      $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+   	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+   	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+      $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+      $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+      $pdf->Cell(50,5,'CLUB',1,0,'C',true);
 
 	}
 
@@ -154,23 +269,113 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 	$pdf->SetFont('Arial','',10);
 	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
 
-   /// veo si la habilitacion ya la tenia la temporada apsada //
-   $habTemporadaPasada = $serviciosReferencias->verificaEdadCategoriaJugadorMenor($rowE['refjugadores'], $rowE['refcategorias'], $rowE['reftipojugadores']);
 
-   if ($habTemporadaPasada == 1) {
-      $pdf->Cell(90,5,'** '.utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+   if ($rowE['habilitacionpendiente'] == 'Si') {
+      array_push($arExcepciones, array('nombrecompleto' => '* '.utf8_decode($rowE['nombrecompleto']),
+                                       'tipojugador' => $rowE['tipojugador'],
+                                       'nrodocumento' => $rowE['nrodocumento'],
+                                       'fechanacimiento' => $rowE['fechanacimiento'],
+                                       'edad' => $rowE['edad'],
+                                       'countrie' => $rowE['countrie']));
    } else {
-      if ($rowE['habilitacionpendiente'] == 'Si') {
-         $pdf->Cell(90,5,'* '.utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
-      } else {
-         $pdf->Cell(90,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
-      }
+      $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+   	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
+   	$pdf->Cell(20,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);
+      $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
+      $pdf->Cell(12,5,$rowE['edad'],1,0,'C',false);
+      $pdf->Cell(50,5,$rowE['countrie'],1,0,'L',false);
    }
 
-	$pdf->Cell(30,5,($rowE['nrodocumento']),1,0,'C',false);
-	$pdf->Cell(40,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);
-   $pdf->Cell(25,5,($rowE['fechanacimiento']),1,0,'C',false);
 
+
+
+
+
+	$contadorY1 += 4;
+
+	//$pdf->SetY($contadorY1);
+
+
+}
+
+
+$pdf->Ln();
+
+
+
+$pdf->SetX(5);
+$pdf->Ln();
+$pdf->Ln();
+$pdf->SetFont('Arial','B',12);
+$pdf->Cell(200,5,'Excepciones Jugadores',0,0,'C',false);
+$pdf->Ln();
+$pdf->Ln();
+$pdf->SetFont('Arial','',9);
+$pdf->SetX(5);
+$pdf->Cell(200,5,utf8_decode('* Jugadores con solicitud de excepción'),0,0,'L',false);
+$pdf->Ln();
+$pdf->SetX(5);
+$pdf->Cell(200,5,utf8_decode('** Jugadores con solicitud de excepción, generada desde la temporada pasada'),0,0,'L',false);
+$pdf->SetFont('Arial','',10);
+$pdf->Ln();
+$pdf->SetX(5);
+
+$pdf->SetFont('Arial','',10);
+$pdf->Ln();
+$pdf->SetX(5);
+
+$pdf->SetFont('Arial','',11);
+$pdf->Cell(5,5,'',1,0,'C',true);
+$pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+$pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+$pdf->Cell(12,5,'EDAD',1,0,'C',true);
+$pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+foreach ($arExcepciones as $valor) {
+	$i+=1;
+	$cantPartidos += 1;
+
+	if ($i > 50) {
+		Footer($pdf);
+		$pdf->AddPage();
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+		$pdf->SetFont('Arial','B',10);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetY(25);
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$i=0;
+
+		$pdf->SetFont('Arial','',11);
+		$pdf->Cell(5,5,'',1,0,'C',true);
+      $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+   	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+   	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+      $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+      $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+      $pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+	}
+
+
+	$pdf->Ln();
+	$pdf->SetX(5);
+	$pdf->SetFont('Arial','',10);
+	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+
+   $pdf->Cell(73,5,utf8_decode($valor['nombrecompleto']),1,0,'L',false);
+	$pdf->Cell(20,5,($valor['nrodocumento']),1,0,'C',false);
+	$pdf->Cell(20,5,utf8_decode($valor['tipojugador']),1,0,'L',false);
+   $pdf->Cell(20,5,($valor['fechanacimiento']),1,0,'C',false);
+   $pdf->Cell(12,5,$valor['edad'],1,0,'C',false);
+   $pdf->Cell(50,5,$valor['countrie'],1,0,'L',false);
 
 	$contadorY1 += 4;
 

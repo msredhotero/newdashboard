@@ -360,7 +360,14 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										</div>
 										<div class="row">
 											<div class="col-lg-12 col-md-12">
-												<h5 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>¿DESEA MANTENER LA EXCEPCION DE ESTOS JUGADORES?</b></h5>
+												<div class="alert bg-cyan animated bounce delay-5s">
+													<i class="material-icons">assignment_late</i> <strong>Aclaración!</strong> Si no solicita la excepción el jugador será dado de baja del equipo.
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-lg-12 col-md-12">
+												<h5 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>¿DESEA SOLICITAR NUEVAMENTE ANTE LA CD LA EXCEPCION OTORGADA LA TEMPORADA ANTERIOR?</b></h5>
 												<div class="lstPlantelExcepcion">
 
 												</div>
