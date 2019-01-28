@@ -145,7 +145,7 @@ $cadRefTipoJug		=	$serviciosFunciones->devolverSelectBox($resTipoJugador,array(1
 /////////////////////////      BUSCO SI TIENE ALGUNA FUSION   ////////////////////////
 
 $resFusiones = $serviciosReferencias->traerFusionPorEquiposDelegados(mysql_result($resEquipoDelegados,0,'idequipodelegado'));
-$cadCountries = '';
+$cadCountries = $_SESSION['idclub_aif'];
 if (mysql_num_rows($resFusiones) > 0) {
 	while ($row = mysql_fetch_array($resFusiones)) {
 		$cadCountries .= ','.$row['idcountrie'];
