@@ -619,7 +619,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 			}
 		};
 
-		$('.imprimir').click(function() {
+		$(document).on('click', '.imprimir', function(){
 			window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + <?php echo $idequipo; ?> ,'_blank');
 		});
 
