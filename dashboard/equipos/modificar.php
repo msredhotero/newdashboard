@@ -284,11 +284,24 @@ switch ($idEstado) {
 													</div>
 												</td>
 												<td style="text-align: center;">
-													<div v-if="equipo.refestados == 3">
-													<button v-if="confirmado == 3 || confirmado == 7" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
-														<i class="material-icons">group</i>
-													</button>
-													</div>
+													<ul class="list-inline">
+														<li>
+															<div v-if="equipo.refestados == 3 || equipo.refestados == 7">
+															<button v-if="confirmado == 3 || confirmado == 7" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
+																<i class="material-icons">group</i>
+															</button>
+															</div>
+														</li>
+														<li>
+															<div v-if="equipo.refestados == 7">
+															<button type="button" class="btn bg-green waves-effect" :id="equipo.idequipo" @click="imprmirM(equipo.idequipo)">
+																<i class="material-icons">done_all</i>
+															</button>
+															</div>
+														</li>
+													</ul>
+
+
 												</td>
 											</tr>
 
@@ -300,13 +313,7 @@ switch ($idEstado) {
 								</div>
 								<hr>
 
-								<div class="button-demo">
-									<button v-if="confirmado == 2" type="button" class="btn bg-brown waves-effect imprimir">
-										<i class="material-icons">print</i>
-										<span>IMPRIMIR LISTA DE EQUIPOS</span>
-									</button>
 
-								</div>
 
 
 							<div>
@@ -415,8 +422,8 @@ switch ($idEstado) {
 
 	$(document).ready(function(){
 
-		$('.imprimir').click(function() {
-			window.open("../../reportes/rptEquiposCountriesDelegados.php?idcountrie=" + <?php echo $_SESSION['idclub_aif']; ?> ,'_blank');
+		$(document).on('click', '.imprimirM', function(){
+			window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + $(this).attr("id"); ,'_blank');
 		});
 
 
@@ -548,6 +555,9 @@ switch ($idEstado) {
 					this.$swal("Ok!", res.data.datos[0], "success")
 
 				})
+			},
+			imprmirM (id) {
+				window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + id ,'_blank')
 			}
 		}
 	})

@@ -158,8 +158,11 @@ while ($rowE = mysql_fetch_array($resDatos)) {
    /// veo si la habilitacion ya la tenia la temporada apsada //
    $habTemporadaPasada = $serviciosReferencias->verificaEdadCategoriaJugadorMenor($rowE['refjugadores'], $rowE['refcategorias'], $rowE['reftipojugadores']);
 
-   $excepto = array_search($rowE['nrodocumento'], array_column($excepciones, 'nrodocumento'));
-
+   if (count($excepciones) > 0) {
+      $excepto = array_search($rowE['nrodocumento'], array_column($excepciones, 'nrodocumento'));
+   } else {
+      $excepto = false;
+   }
    if ($excepto !== false) {
       array_push($arExcepciones, array('nombrecompleto' => '** '.utf8_decode($rowE['nombrecompleto']),
                                        'tipojugador' => $rowE['tipojugador'],
@@ -184,7 +187,7 @@ while ($rowE = mysql_fetch_array($resDatos)) {
       	$pdf->SetFont('Arial','',10);
       	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
 
-
+         $pdf->SetFont('Arial','',9);
          $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
       	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
       	$pdf->Cell(20,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);

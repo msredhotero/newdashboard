@@ -998,6 +998,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 						this.confirmado = 7
+						$("#largeModal").modal("hide");
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}

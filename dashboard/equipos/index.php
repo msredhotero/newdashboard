@@ -1126,7 +1126,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 						this.$swal("Ok!", res.data.mensaje, "success")
 						setTimeout(function(){
 							window.location.href = 'modificar.php';
-						}, 2000);
+						}, 3000);
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}

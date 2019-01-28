@@ -1108,6 +1108,15 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 		return $res;
 	}
 
+	function modificarEquiposdelegadosEstado($id, $refestados) {
+		$sql = "update dbequiposdelegados
+		set
+			refestados = ".$refestados."
+		where idequipo =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 
 	function eliminarEquiposdelegados($id) {
 		$this->eliminarFusionEquiposPorEquipo($id);
@@ -1264,6 +1273,10 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 						WHEN est.idestado = 2 THEN 'label-warning'
 						WHEN est.idestado = 3 THEN 'label-success'
 						WHEN est.idestado = 4 THEN 'label-danger'
+						WHEN est.idestado = 7 THEN 'label-success'
+						WHEN est.idestado = 5 THEN 'label-warning'
+						WHEN est.idestado = 6 THEN 'label-info'
+						WHEN est.idestado = 8 THEN 'label-warning'
 					END) AS label,
 					est.idestado as refestados,
                     coalesce(max(fe.refcountries),0) as esfusion,

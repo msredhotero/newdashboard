@@ -767,7 +767,13 @@ switch ($accion) {
 		$id = $_POST['idcabecera'];
 		$idestado = $_POST['refestados'];
 
-		$res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
+      if ($idestado != 7) {
+		   $res = $serviciosReferencias->modificarCabeceraconfirmacionEstado($id,$idestado);
+      } else {
+         // modifico el estado del equipo delegado
+         $refequipo = $_POST['refequipo'];
+         $res = $serviciosReferencias->modificarEquiposdelegadosEstado($refequipo,$idestado);
+      }
 
 		$resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($id);
 
