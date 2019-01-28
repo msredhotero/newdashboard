@@ -121,6 +121,9 @@ switch ($idEstado) {
 	case (8):
 		$lblEstado = 'label-warning';
 		break;
+	case (7):
+		$lblEstado = 'label-success';
+		break;
 	default:
 		$lblEstado = 'label-warning';
 		break;
@@ -282,7 +285,7 @@ switch ($idEstado) {
 												</td>
 												<td style="text-align: center;">
 													<div v-if="equipo.refestados == 3">
-													<button v-if="confirmado == 3" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
+													<button v-if="confirmado == 3 || confirmado == 7" type="button" class="btn bg-blue-grey waves-effect btnequipo" :id="equipo.idequipo" @click="redirigir(equipo.idequipo)">
 														<i class="material-icons">group</i>
 													</button>
 													</div>
