@@ -788,7 +788,7 @@ switch ($accion) {
 		$id2 			= 0;
 		$id3 			= 0;
 
-      if ($idestado == 2) {
+      if ($idestado == 8) {
          // envio email a la asociacion con pdf adjunto
 
          // creo las tareas para las fusiones

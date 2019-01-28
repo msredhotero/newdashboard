@@ -2544,7 +2544,6 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 					ce.nombre AS countrypadre,
 					e.nombre AS equipo,
 					c.nombre AS countrie,
-					cc.refcountries,
 					cc.refequipos,
 					c.idcountrie
 				FROM
@@ -2563,7 +2562,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 						AND c.idcountrie <> ce.idcountrie
 						AND e.idequipo = ".$idequipo."
 						AND ce.idcountrie = ".$idcountrie."
-				GROUP BY ce.nombre , e.nombre , c.nombre , cc.refcountries , cc.refequipos";
+				GROUP BY ce.nombre , e.nombre , c.nombre , cc.refequipos";
 
 		$res = $this->query($sql,0);
 		return $res;
