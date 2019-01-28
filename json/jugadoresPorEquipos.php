@@ -24,6 +24,7 @@ $countries = $_GET['countrie'];
 
 $resTraerJugadores = $serviciosReferencias->traerJugadoresPorCountries($countries);
 
+//die(var_dump($resTraerJugadores));
 $resTraerJugadoresNuevos = $serviciosReferencias->traerJugadoresprePorCountries($countries);
 /*
 id: "'.$row[0].'",
@@ -39,12 +40,12 @@ $cadJugadores = '';
 			  },';
 	}
 
-	while ($row = mysql_fetch_array($resTraerJugadoresNuevos)) {
+	while ($rowB = mysql_fetch_array($resTraerJugadoresNuevos)) {
 		//$cadJugadores .= '"'.$row[0].'": "'.$row['apellido'].', '.$row['nombres'].' - '.$row['nrodocumento'].'",';
 		$cadJugadores .= '
 		      {
-				"name": "'.str_replace("'","",str_replace('"','',$row['apellido'])).', '.str_replace("'","",str_replace('"','',$row['nombres'].' - '.$row['nrodocumento'])).' (Nuevo)",
-				"id": "'.$row[0].'","nuevo": "1"
+				"name": "'.str_replace("'","",str_replace('"','',$rowB['apellido'])).', '.str_replace("'","",str_replace('"','',$rowB['nombres'].' - '.$rowB['nrodocumento'])).' (Nuevo)",
+				"id": "'.$rowB[0].'","nuevo": "1"
 			  },';
 	}
 

@@ -853,7 +853,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 		var options = {
 
 		  url: function(phrase) {
-			return "../../json/jugadoresPorEquipos.php?countrie='<?php echo $cadCountries; ?>'";
+			return "../../json/jugadoresPorEquipos.php?countrie=<?php echo $cadCountries; ?>";
 		  },
 
 		  getValue: function(element) {
