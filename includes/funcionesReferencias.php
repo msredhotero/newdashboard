@@ -788,7 +788,7 @@ class ServiciosReferencias {
 	            inner
 	            join        dbcountries cc
 	            on          cc.idcountrie = j.refcountries
-	            where       cc.idcountrie in (".$lstCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00')
+	            where       cc.idcountrie in (".$lstCountries.") and (j.fechabaja = '1900-01-01' or j.fechabaja = '0000-00-00' or j.fechabaja is null)
 	            order by concat(j.apellido,', ',j.nombres)";
 	    $res = $this->query($sql,0);
 	    return $res;
