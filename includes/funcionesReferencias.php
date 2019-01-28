@@ -2323,6 +2323,22 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		return $res;
 	}
 
+	function traerVigenciasoperacionesPorModuloVigenciasNuevo($idModulo, $fecha) {
+		$sqlExistente = "select idvigenciaoperacion,refmodulos,vigenciadesde,vigenciahasta,observaciones from dbvigenciasoperaciones order by idvigenciaoperacion desc limit 1";
+
+		$resExistente = $this->query($sqlExistente,0);
+
+		if (mysql_num_rows($resExistente)>0) {
+			$sql = "select idvigenciaoperacion,refmodulos,vigenciadesde,vigenciahasta,observaciones from dbvigenciasoperaciones where refmodulos =".$idModulo." and (('".$fecha."' between vigenciadesde and vigenciahasta) or ('".$fecha."' >= vigenciadesde and vigenciahasta is null)) and idvigenciaoperacion = ".mysql_result($resExistente,0,0);
+
+		} else {
+			$sql = "select idvigenciaoperacion,refmodulos,vigenciadesde,vigenciahasta,observaciones from dbvigenciasoperaciones where refmodulos =".$idModulo." and (('".$fecha."' between vigenciadesde and vigenciahasta) or ('".$fecha."' >= vigenciadesde and vigenciahasta is null)) and idvigenciaoperacion = 0";
+		}
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	function traerVigenciasoperacionesPorModuloVigencias($idModulo, $fecha) {
 		$sql = "select idvigenciaoperacion,refmodulos,vigenciadesde,vigenciahasta,observaciones from dbvigenciasoperaciones where refmodulos =".$idModulo." and (('".$fecha."' between vigenciadesde and vigenciahasta) or ('".$fecha."' >= vigenciadesde and vigenciahasta is null))";
 		$res = $this->query($sql,0);

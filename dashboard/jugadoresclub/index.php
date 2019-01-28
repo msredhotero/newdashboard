@@ -74,7 +74,7 @@ if ($_SESSION['idroll_aif'] == 4) {
 }
 
 
-$resPermiteRegistrar = $serviciosReferencias->traerVigenciasoperacionesPorModuloVigencias(2,date('Y-m-d'));
+$resPermiteRegistrar = $serviciosReferencias->traerVigenciasoperacionesPorModuloVigenciasNuevo(2,date('Y-m-d'));
 
 if (mysql_num_rows($resPermiteRegistrar)>0) {
 	$permiteRegistrar = 1;
@@ -96,9 +96,9 @@ $resHabilitado = $serviciosReferencias->traerCierrepadronesPorCountry($refClub);
 
 $habilitado = 0;
 if (mysql_num_rows($resHabilitado)>0) {
-	$habilitado = 1;
-} else {
 	$habilitado = 0;
+} else {
+	$habilitado = 1;
 }
 /////////////////////// Opciones para la creacion del view  apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email/////////////////////
 
@@ -383,7 +383,7 @@ if ($_SESSION['refroll_aif'] != 1) {
                         </div>
                         <div class="body table-responsive">
 							<div class="row" style="margin-bottom:10px;">
-							<?php if ($habilitado == 1) { ?>
+							<?php if (($habilitado == 1) && ($permiteRegistrar == 1)) { ?>
 							<button type="button" class="btn btn-success waves-effect" data-toggle="modal" data-target="#myModal3" id="agregarContacto">
 								<i class="material-icons">add_circle</i>
 								<span>Agregar Jugador</span>
@@ -485,11 +485,6 @@ if ($_SESSION['refroll_aif'] != 1) {
 						</div>
 						<div class="button-demo">
 							<button type="button" class="btn btn-danger" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
-						<?php if ($habilitado == 0) { ?>
-							<button type="button" class="btn btn-success cerrar" id="btnAbrir" style="margin-left:0px;">Abrir</button>
-						<?php } else { ?>
-							<button type="button" class="btn btn-warning cerrar" id="btnCerrar" style="margin-left:0px;">Cerrar</button>
-						<?php } ?>
 
 							<button type="button" class="btn btn-danger" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
 						</div>
@@ -511,7 +506,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 		</div>
 	</div>
 
-	<?php if ($habilitado == 1) { ?>
+	<?php if (($habilitado == 1) && ($permiteRegistrar == 1)) { ?>
 
 
 
@@ -731,7 +726,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 			e.preventDefault();
 		});
 
-		<?php if ($habilitado == 1) { ?>
+		<?php if (($habilitado == 1) && ($permiteRegistrar == 1)) { ?>
 		$("#example1").on("click",'.varborrar', function(){
 				usersid =  $(this).attr("id");
 				if (!isNaN(usersid)) {
