@@ -70,6 +70,7 @@ $idcategoria = mysql_result($resEquipos,0,'refcategorias');
 $division = mysql_result($resEquipos,0,'division');
 $equipo = mysql_result($resEquipos,0,'nombre');
 $estado = mysql_result($resEquipos,0,'estado');
+$fusionCompleta = mysql_result($resEquipos,0,'fusion');
 
 // para traer el res de los equipos Delegados
 $resEquipoDelegados = $serviciosReferencias->traerEquiposdelegadosPorEquipoTemporada($idequipo, $ultimaTemporada);
@@ -408,13 +409,17 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 									<p><strong>Importante!</strong> En curso el proceso, presione "PRESENTAR" para enviar toda la información a la Asociación.</p>
 								</div>
 
+								<div class="alert bg-deep-orange" v-show="verificarFusion < 3">
+									<p><strong>Importante!</strong> Para darle curso a la Presentación, debe completar todas las solicitudes de Fusión.</p>
+								</div>
+
 								<div class="button-demo">
 									<button v-if="idestadoequipodelegado == 5 || idestadoequipodelegado == 7" type="button" class="btn bg-brown waves-effect imprimir">
 										<i class="material-icons">print</i>
 										<span>IMPRIMIR LISTA DE BUENA FE</span>
 									</button>
 
-									<button v-if="idestadoequipodelegado == 3 || idestadoequipodelegado == 4" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
+									<button v-if="(idestadoequipodelegado == 3 || idestadoequipodelegado == 4) && verificarFusion >= 3" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
 										<i class="material-icons">assignment_turned_in</i>
 										<span>PRESENTAR</span>
 									</button>

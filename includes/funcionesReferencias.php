@@ -908,6 +908,12 @@ function insertarConectordelegados($reftemporadas,$refusuarios,$refjugadores,$re
 	return $res;
 	}
 
+	function eliminarConectordelegadosPorCountrie($refequipos, $refcountries) {
+	$sql = "delete from dbconectordelegados where refequipos = ".$refequipos." and refcountries = ".$refcountries;
+	$res = $this->query($sql,0);
+	return $res;
+	}
+
 
 	function traerConectordelegados() {
 	$sql = "select
@@ -1447,7 +1453,12 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 					ee.refdivisiones,
 					'label-success' as label,
 					3 as refestados,
-					ee.refcategorias
+					ee.refcategorias,
+					(select
+					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
+					from dbfusionequipos fe
+					inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion
 				FROM
 					dbequipos ee
 						LEFT JOIN
@@ -1486,7 +1497,12 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 						WHEN est.idestado = 4 THEN 'label-danger'
 					END) AS label,
 					est.idestado as refestados,
-					e.refcategorias
+					e.refcategorias,
+					(select
+					(case when coalesce(min(fe.refestados),1) = 3 then 3 else 0 end) as idestado
+					from dbfusionequipos fe
+					inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+					where fe.refequiposdelegados = e.idequipodelegado and ed.refcountries = ".$id.") as fusion
 				FROM
 					dbequiposdelegados e
 						INNER JOIN
@@ -2491,12 +2507,48 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 	}
 
 	function traerFusionPorEquiposDelegados($idequipodelegado) {
-		$sql = "select
-					cc.idcountrie, cc.nombre as countrie , est.idestado, est.estado, (case when viejo = 1 then 'Antiguo' else 'Nuevo' end) as viejo
-				from dbcountries cc
-				inner join dbfusionequipos fe on fe.refcountries = cc.idcountrie
-				inner join tbestados est ON est.idestado = fe.refestados
-				where fe.refequiposdelegados = ".$idequipodelegado;
+		$sql = "SELECT
+					    cc.idcountrie,
+					    cc.nombre AS countrie,
+					    est.idestado,
+					    est.estado,
+					    (CASE
+					        WHEN viejo = 1 THEN 'Antiguo'
+					        ELSE 'Nuevo'
+					    END) AS viejo
+					FROM
+					    dbcountries cc
+					        INNER JOIN
+					    dbfusionequipos fe ON fe.refcountries = cc.idcountrie
+					        INNER JOIN
+					    tbestados est ON est.idestado = fe.refestados
+					WHERE
+					    fe.refequiposdelegados = ".$idequipodelegado;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerFusionPorIdEquipos($idequipo) {
+		$sql = "SELECT
+					    cc.idcountrie,
+					    cc.nombre AS countrie,
+					    est.idestado,
+					    est.estado,
+					    (CASE
+					        WHEN viejo = 1 THEN 'Antiguo'
+					        ELSE 'Nuevo'
+					    END) AS viejo
+					FROM
+					    dbcountries cc
+					        INNER JOIN
+					    dbfusionequipos fe ON fe.refcountries = cc.idcountrie
+					        INNER JOIN
+					    tbestados est ON est.idestado = fe.refestados
+						 	INNER JOIN
+						dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
+					WHERE
+					    ed.idequipo = ".$idequipo;
 
 		$res = $this->query($sql,0);
 		return $res;

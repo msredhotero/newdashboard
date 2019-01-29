@@ -783,6 +783,18 @@ switch ($accion) {
          // modifico el estado del equipo delegado
          $refequipo = $_POST['refequipo'];
          $res = $serviciosReferencias->modificarEquiposdelegadosEstado($refequipo,$idestado);
+
+         // elimino los jugadores de los countries donde no se acepto la fusion
+         $resGetAllFusiones = $serviciosReferencias->traerFusionPorIdEquipos($refequipo);
+
+         if (mysql_num_rows($resGetAllFusiones) > 0) {
+            while ($rowFu = mysql_fetch_array($resGetAllFusiones)) {
+               if ($rowFu['idestado'] != 3) {
+                  // elimino
+                  $resEliminar = $serviciosReferencias->eliminarConectordelegadosPorCountrie($refequipo, $rowFu['idcountrie']);
+               }
+            }
+         }
       }
 
 		$resCabecera = $serviciosReferencias->traerCabeceraconfirmacionPorId($id);
