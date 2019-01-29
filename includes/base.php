@@ -34,6 +34,7 @@ class BaseHTML {
 
 
     function cargarArchivosJS($altura ,$ar = array()) {
+      
 
         $arNuevo = array(0=>'<script src="'.$altura.'plugins/jquery/jquery.min.js"></script>',
                          1=>'<script src="'.$altura.'plugins/bootstrap/js/bootstrap.js"></script>',
@@ -47,9 +48,10 @@ class BaseHTML {
                          9=>'<script src="'.$altura.'plugins/jquery-validation/jquery.validate.js"></script>',
                          10=>'<script src="'.$altura.'plugins/jquery-steps/jquery.steps.js"></script>',
                          11=>'<script src="'.$altura.'plugins/sweetalert/sweetalert.min.js"></script>',
-                         12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>');
+                         12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>',
+                         13=>'<script src="'.$altura.'js/script.js"></script>');
 
-        $cad = '';
+        $cad = '<input type="hidden" id="club" name="club" value="'.$_SESSION['idclub_aif'].'" /><input type="hidden" id="altura" name="altura" value="'.$altura.'" />';
 
         foreach($arNuevo as $var) {
             $cad .= $var.'<br>';

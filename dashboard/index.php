@@ -92,7 +92,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script src="https://unpkg.com/vue-swal"></script>
-    
+
     <script src="../components/mensajes.js"></script>
 
     <style>
@@ -140,10 +140,10 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../'); ?>
     <main id="app">
     <section class="content" style="margin-top:-35px;">
-    
+
         <div class="container-fluid">
             <div class="row clearfix">
-                
+
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">
                         <div class="icon">
@@ -172,11 +172,11 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
             </div>
         </div>
 
-    
+
     </section>
 
-    
-    
+
+
 
     <!-- Modal Large Size -->
     <transition name="fade">
@@ -184,11 +184,11 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
     <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
     </form>
     </transition>
-    
+
     </main>
-    
+
     <?php echo $baseHTML->cargarArchivosJS('../'); ?>
-    
+
 
     <script>
         $(document).ready(function(){
@@ -210,34 +210,11 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
             });
 
             $("#btnmodalPerfil9").submit(function(e){
-    
+
                 e.preventDefault();
             });
 
-            function traerTareas() {
-                $.ajax({
-                    dataType: "json",
-                    data:  { 
-                        idcountrie: <?php echo $_SESSION['idclub_aif']; ?>, 
-                        accion: 'traerTareasGeneralPorCountrieIncompletas'
-                    },
-                    url:   '../ajax/ajax.php',
-                    type:  'post',
-                    beforeSend: function () {
-                        $('.tasks').html('');
-                    },
-                    success:  function (response) {
-                        $('.tasks').html(response.respuesta);
-                        $('.tareas-cantidad').html(response.cantidad);
-                    }
-                });
-            }
-            
-            traerTareas();
 
-            setInterval(function() {
-                traerTareas();
-            },5000);
         });
     </script>
 
@@ -254,7 +231,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                     errorMensaje: '',
                     successMensaje: ''
                 }
-                
+
 			},
 			mounted () {
 				this.getDelegado()
@@ -281,7 +258,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                 getDelegado () {
 					axios.post('../ajax/ajax.php',paramsGetDelegado)
 					.then(res => {
-                        
+
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 						this.activeDelegados = res.data.datos[0]
 					})
@@ -296,15 +273,15 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                         } else {
                             this.$swal("Error!", res.data.mensaje, "error")
                         }
-                        
+
                     });
 
-                    
+
                 }
 			}
 		})
     </script>
-    
+
 </body>
 <?php } ?>
 </html>
