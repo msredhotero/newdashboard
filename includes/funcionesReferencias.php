@@ -142,6 +142,19 @@ class ServiciosReferencias {
 				$resI = $this->query($sqlInsert,1);
 			}
 		}
+
+		// elimino los jugadores de los countries donde no se acepto la fusion
+		$resGetAllFusiones = $this->traerFusionPorIdEquipos($idequipo);
+
+		if (mysql_num_rows($resGetAllFusiones) > 0) {
+			while ($rowFu = mysql_fetch_array($resGetAllFusiones)) {
+				if ($rowFu['idestado'] != 3) {
+					// elimino
+					$resEliminar = $this->eliminarConectordelegadosPorCountrie($idequipo, $rowFu['idcountrie']);
+				}
+			}
+		}
+
 		return $res;
 	}
 
