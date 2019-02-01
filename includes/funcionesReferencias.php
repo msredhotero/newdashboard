@@ -2272,6 +2272,33 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 	}
 
 
+	function traerJugadoresPorNroDocumento($nrodocumento) {
+		$sql = "select
+					j.idjugador,
+					tip.tipodocumento,
+					j.nrodocumento,
+					j.apellido,
+					j.nombres,
+					j.email,
+					j.fechanacimiento,
+					j.fechaalta,
+					j.fechabaja,
+					cou.nombre as country,
+					j.observaciones,
+					j.reftipodocumentos,
+					j.refcountries
+			from dbjugadores j
+			inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos
+			inner join dbcountries cou ON cou.idcountrie = j.refcountries
+			inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+			where j.nrodocumento = ".$nrodocumento."
+		order by 1";
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
 	function existeJugadorPre($nroDocumento) {
 		$sql = "select idjugadorpre from dbjugadorespre where nrodocumento = ".$nroDocumento;
 		$res = $this->query($sql,0);
