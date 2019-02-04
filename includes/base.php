@@ -48,8 +48,7 @@ class BaseHTML {
                          9=>'<script src="'.$altura.'plugins/jquery-validation/jquery.validate.js"></script>',
                          10=>'<script src="'.$altura.'plugins/jquery-steps/jquery.steps.js"></script>',
                          11=>'<script src="'.$altura.'plugins/sweetalert/sweetalert.min.js"></script>',
-                         12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>',
-                         13=>'<script src="'.$altura.'js/script.js"></script>');
+                         12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>');
 
         $cad = '<input type="hidden" id="club" name="club" value="'.$_SESSION['idclub_aif'].'" /><input type="hidden" id="altura" name="altura" value="'.$altura.'" />';
 
@@ -188,7 +187,7 @@ class BaseHTML {
                             <div class="btn-group user-helper-dropdown">
                                 <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                                 <ul class="dropdown-menu pull-right">';
-      if ($_SESSION['idroll_aif'] == 4) {                          
+      if ($_SESSION['idroll_aif'] == 4) {
          $cad .= '<li><a href="javascript:void(0);" id="menuPerfil"><i class="material-icons">person</i>Perfil</a></li>
                                     <li role="separator" class="divider"></li>';
       }

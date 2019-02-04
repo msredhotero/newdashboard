@@ -90,7 +90,46 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;
 }
 
+$resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
 
+// traer foto
+		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(mysql_result($resResultado,0,0),1);
+		if (mysql_num_rows($resFoto) > 0) {
+			$estadoFoto = mysql_result($resFoto, 0,'estado');
+			$idEstadoFoto = mysql_result($resFoto, 0,'refestados');
+			$foto1 = mysql_result($resFoto, 0,'imagen');
+			$archivo = mysql_result($resFoto, 0,'archivo');
+		} else {
+			$estadoFoto = 'Sin carga';
+			$idEstadoFoto = 0;
+			$foto1 = '';
+		}
+
+		$spanFoto = '';
+		$permite = 0;
+
+		switch ($idEstadoFoto) {
+			case 0:
+				$spanFoto = 'label-primary';
+				$permite = 1;
+				break;
+			case 1:
+				$spanFoto = 'label-info';
+				$permite = 1;
+				break;
+			case 2:
+				$spanFoto = 'label-warning';
+				$permite = 0;
+				break;
+			case 3:
+				$spanFoto = 'label-success';
+				$permite = 0;
+				break;
+			case 4:
+				$spanFoto = 'label-danger';
+				$permite = 1;
+				break;
+		}
 
 
 ?>
@@ -154,7 +193,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 				</div>
 			</div>
 		</div>
-		<p>Please wait...</p>
+		<p>Cargando...</p>
 	</div>
 </div>
 <!-- #END# Page Loader -->
@@ -205,14 +244,24 @@ if (mysql_num_rows($resTemporadas)>0) {
 						<div class="body table-responsive">
 							<div class="row">
 
-                                <div class="col-xs-6 col-md-6 col-lg-6">
-                                    <a href="javascript:void(0);" class="thumbnail">
-                                        <img v-bind:src="activeCountry.imagen" class="img-responsive">
-                                    </a>
-                                </div>
+								<div class="col-xs-6 col-md-6 col-lg-6">
+									<a href="javascript:void(0);" class="thumbnail">
+										<img class="img-responsive">
+									</a>
+								</div>
+								<div class="col-xs-6 col-md-6 col-lg-6">
+									<h4>Estado: <span id="estado" class="label <?php echo $spanFoto; ?>"></span></h4>
+									<?php if ($permite == 1) { ?>
+									<div class="button-demo">
+										<button type="button" class="btn bg-orange waves-effect btnPresentar" id="btnPresentar">
+                                 <i class="material-icons">save</i>
+                                 <span>PRESENTAR</span>
+                              </button>
+									<?php } ?>
+									</div>
+								</div>
 
-
-                            </div>
+							</div>
 
 							</div>
 						</div>
@@ -228,7 +277,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 		</div>
 
 
-		<div class="row clearfix">
+		<div class="row clearfix subirImagen">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="card">
 					<div class="header">
@@ -259,6 +308,8 @@ if (mysql_num_rows($resTemporadas)>0) {
 							</div>
 							<div class="fallback">
 								<input name="file" type="file" id="archivos" />
+								<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
+								<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="1" />
 
 							</div>
 						</form>
@@ -286,13 +337,6 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 <!-- Dropzone Plugin Js -->
 <script src="../../plugins/dropzone/dropzone.js"></script>
-
-<!-- Modal Large Size -->
-<transition name="fade">
-<form class="form" @submit.prevent="guardarDelegado">
-<?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
-</form>
-</transition>
 
 
 <form class="form" @submit.prevent="realizarConsulta">
@@ -362,8 +406,9 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 	function traerImagen() {
 		$.ajax({
-			data:  {id: <?php echo $_SESSION['idclub_aif']; ?>,
-					accion: 'traerImgenFoto'},
+			data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
+					iddocumentacion: 1,
+					accion: 'traerImgenJugadorPorJugadorDocumentacion'},
 			url:   '../../ajax/ajax.php',
 			type:  'post',
 			beforeSend: function () {
@@ -371,11 +416,17 @@ if (mysql_num_rows($resTemporadas)>0) {
 			},
 			success:  function (response) {
 
-				$(".thumbnail img").attr("src",response);
+				$(".thumbnail img").attr("src",response.datos.imagen);
+				$('#estado').html(response.datos.estado);
 
 			}
 		});
 	}
+
+	traerImagen();
+
+
+
 
 	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
 
@@ -387,6 +438,10 @@ if (mysql_num_rows($resTemporadas)>0) {
 			done();
 		},
 		init: function() {
+			this.on("sending", function(file, xhr, formData){
+               formData.append("idjugador", '<?php echo mysql_result($resResultado,0,'idjugador'); ?>');
+					formData.append("iddocumentacion", '1');
+         });
 			this.on('success', function( file, resp ){
 				traerImagen();
 				swal("Correcto!", resp.replace("1", ""), "success");
@@ -399,17 +454,57 @@ if (mysql_num_rows($resTemporadas)>0) {
 	};
 
 	var myDropzone = new Dropzone("#archivos", {
+		params: {
+          idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
+          iddocumentacion: 1
+      },
 		url: 'subir.php'
 	});
 
 	$(document).ready(function(){
+
+		<?php if ($permite == 0) { ?>
+			$('.presentar').hide();
+			$('.subirImagen').hide();
+		<?php } ?>
 
 		var $demoMaskedInput = $('.demo-masked-input');
 
 		//Date
 		$demoMaskedInput.find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
 
+		function presentar() {
+			$.ajax({
+				data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
+						iddocumentacion: 1,
+						id: <?php echo mysql_result($resFoto,0,0); ?>,
+						accion: 'presentarDocumentacion'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
 
+				},
+				success:  function (response) {
+					$('#estado').removeClass('label-info');
+					$('#estado').removeClass('label-primary');
+					$('#estado').removeClass('label-danger');
+					$('#estado').removeClass('label-success');
+					$('#estado').addClass('label-warning');
+
+					$('#estado').html('FINALIZADO');
+
+					$('.btnPresentar').hide();
+					$('.subirImagen').hide();
+
+					swal("Correcto!", 'Se presento la documentacion Foto', "success");
+
+				}
+			});
+		}
+
+		$('#btnPresentar').click(function() {
+			presentar();
+		});
 
 	});
 </script>
@@ -418,13 +513,6 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 
 <script>
-	const paramsGetDelegado = new URLSearchParams();
-    paramsGetDelegado.append('accion','VtraerDelegadosPorId');
-	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
-
-	const paramsGetCountry = new URLSearchParams();
-    paramsGetCountry.append('accion','traerCountriesPorId');
-	paramsGetCountry.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 
 
 	Vue.component('modal', {
@@ -460,13 +548,10 @@ if (mysql_num_rows($resTemporadas)>0) {
 			errorMensaje: '',
 			successMensaje: '',
 			activeDelegados: {},
-			activeCountry: {},
 			showModal: false
 
 		},
 		mounted () {
-			this.getDelegado()
-			this.getCountry()
 		},
 		computed: {
 
@@ -486,52 +571,6 @@ if (mysql_num_rows($resTemporadas)>0) {
 					this.errorMensaje = ''
 					this.successMensaje = ''
 				}, 3000);
-
-			},
-			getDelegado () {
-					axios.post('../../ajax/ajax.php',paramsGetDelegado)
-					.then(res => {
-
-                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
-						this.activeDelegados = res.data.datos[0]
-					})
-			},
-			guardarDelegado (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-					//this.setMensajes(res)
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-
-				});
-
-
-			},
-			getCountry () {
-					axios.post('../../ajax/ajax.php',paramsGetCountry)
-					.then(res => {
-
-                        //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
-						this.activeCountry = res.data.datos[0]
-					})
-			},
-			guardarCountry (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-					//this.setMensajes(res)
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-
-				});
-
 
 			}
 		}

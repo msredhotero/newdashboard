@@ -81,7 +81,7 @@ $refCampo 	=  array("refusuarios");
 
 $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
-$idDocumentacion = 1;
+$idDocumentacion = 99;
 
 $resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
@@ -236,7 +236,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 					<div class="card ">
 						<div class="header bg-blue">
 							<h2>
-								Foto de Perfil
+								Documento Dorso
 							</h2>
 							<ul class="header-dropdown m-r--5">
 								<li class="dropdown">
@@ -290,7 +290,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 				<div class="card">
 					<div class="header">
 						<h2>
-							SELECCIONE SU FOTO DE PERFIL
+							SELECCIONE SU IMAGEN DEL DORSO DEL DOCUMENTO
 						</h2>
 						<ul class="header-dropdown m-r--5">
 							<li class="dropdown">
@@ -487,6 +487,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 		<?php } ?>
 
 
+
 		function presentar() {
 			$.ajax({
 				data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
@@ -510,7 +511,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 					$('.btnPresentar').hide();
 					$('.subirImagen').hide();
 
-					swal("Correcto!", 'Se presento la documentacion Foto', "success");
+					swal("Correcto!", 'Se presento la documentacion Documento Dorso', "success");
 
 				}
 			});

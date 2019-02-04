@@ -47,6 +47,13 @@ switch ($accion) {
 	case 'traerTareasGeneralPorCountrieIncompletas':
 		traerTareasGeneralPorCountrieIncompletas($serviciosNotificaciones);
 	break;
+   case 'traerImgenJugadorPorJugadorDocumentacion':
+      traerImgenJugadorPorJugadorDocumentacion($serviciosReferencias);
+   break;
+   case 'presentarDocumentacion':
+      presentarDocumentacion($serviciosReferencias, $serviciosNotificaciones);
+   break;
+
 
 
 		case 'insertarDelegados':
@@ -213,6 +220,93 @@ switch ($accion) {
 
 }
 /* Fin */
+
+   function presentarDocumentacion($serviciosReferencias, $serviciosNotificaciones) {
+      $servidorCarpeta = 'aifzn';
+
+      $idjugador = $_POST['idjugador'];
+      $iddocumentacion = $_POST['iddocumentacion'];
+
+      $coDescripcion = '';
+      switch ($iddocumentacion) {
+         case 2:
+            $coDescripcion = 'Frente';
+            break;
+         case 99:
+            $coDescripcion = 'Dorso';
+            break;
+
+         default:
+            $coDescripcion = '';
+            break;
+      }
+      
+      if ($iddocumentacion == 99) {
+         $iddocumentacion = 2;
+         $coDescripcion = 'Dorso';
+      }
+      $iddocumentacionjugadorimagen = $_POST['id'];
+
+      $resJugador = $serviciosReferencias->traerJugadoresPorId($idjugador);
+
+      $resDocumentaciones = $serviciosReferencias->traerDocumentacionesPorId($iddocumentacion);
+
+      $emailReferente = $serviciosReferencias->traerReferentePorNrodocumento(mysql_result($resJugador, 0, 'nrodocumento'));
+
+      $resModificarDocumentacionEstado = $serviciosReferencias->modificarEstadoDocumentacionjugadorimagenesPorId($iddocumentacionjugadorimagen,2);
+
+
+
+		//** creo la notificacion **//
+		$mensaje = 'Se presento una documentacion: '.mysql_result($resDocumentaciones,0,'descripcion').' '.$coDescripcion;
+		$idpagina = 1;
+		$autor = mysql_result($resJugador, 0, 'apellido').' '.mysql_result($resJugador, 0, 'nombres');
+		$destinatario = $emailReferente;
+		$id1 = $idjugador;
+		$id2 = 0;
+		$id3 = 0;
+		$icono = 'glyphicon glyphicon-eye-open';
+		$estilo = 'alert alert-success';
+		$fecha = date('Y-m-d H:i:s');
+		$url = "jugadores/documentaciones.php?id=".$idjugador;
+
+		$res = $serviciosNotificaciones->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
+		//** fin notificaion      **//
+
+      echo '';
+
+   }
+
+   function traerImgenJugadorPorJugadorDocumentacion($serviciosReferencias) {
+      $servidorCarpeta = 'aifzn';
+
+      $idjugador = $_POST['idjugador'];
+      $iddocumentacion = $_POST['iddocumentacion'];
+
+      $resV['datos'] = '';
+      $resV['error'] = false;
+
+      $resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idjugador,$iddocumentacion);
+
+      if (mysql_num_rows($resFoto) > 0) {
+         /* produccion
+         $imagen = 'https://www.saupureinconsulting.com.ar/aifzn/'.mysql_result($resFoto,0,'archivo').'/'.mysql_result($resFoto,0,'imagen');
+         */
+
+         //desarrollo
+         $imagen = '../../../../'.$servidorCarpeta.'/'.mysql_result($resFoto,0,'archivo').'/'.mysql_result($resFoto,0,'imagen');
+         $resV['datos'] = array('imagen' => $imagen, 'estado' => mysql_result($resFoto,0,'estado'), 'idFoto' => mysql_result($resFoto,0,0));
+         $resV['error'] = false;
+      } else {
+         $imagen = '../../imagenes/sin_img.jpg';
+         $resV['datos'] = array('imagen' => $imagen, 'estado' => 'Imagen No Cargada', 'idFoto' => 0);
+         $resV['error'] = false;
+      }
+
+
+      header('Content-type: application/json');
+		echo json_encode($resV);
+   }
 
    function registrarSocio($serviciosUsuarios, $ServiciosReferencias) {
       $email				=	$_POST['email'];

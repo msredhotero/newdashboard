@@ -7,7 +7,158 @@
 
 date_default_timezone_set('America/Buenos_Aires');
 
+
+
 class ServiciosReferencias {
+
+
+	function borrarArchivoJugadores($id,$directorio) {
+
+		$sql    =   "delete from dbdocumentacionjugadorimagenes where iddocumentacionjugadorimagen =".$id;
+
+		$res =  $this->borrarDirecctorio("./../../../../".$directorio);
+
+		rmdir("./../../../../".$directorio);
+		$this->query($sql,0);
+
+		return '';
+	}
+
+	function eliminarFotoJugadoresID($refdocumentaciones, $refjugadorespre, $idAux=0) {
+		$servidorCarpeta = 'aifzn';
+
+      $sql        =   "select concat('".$servidorCarpeta."/data','/',s.iddocumentacionjugadorimagen) as archivo, s.iddocumentacionjugadorimagen
+                         from dbdocumentacionjugadorimagenes s
+                         where s.refdocumentaciones =".$refdocumentaciones." and (s.idjugador =".$refjugadorespre." or s.refjugadorespre=".$idAux.")";
+      $resImg     =   $this->query($sql,0);
+
+      if (mysql_num_rows($resImg)>0) {
+         $res        =   $this->borrarArchivoJugadores(mysql_result($resImg,0,1),mysql_result($resImg,0,0));
+      } else {
+         $res = true;
+      }
+      if ($res != '') {
+         return 'Error al eliminar datos';
+      } else {
+         return 'Se elimino la imagen correctamente';
+      }
+ }
+
+
+	/* PARA Documentacionjugadorimagenes */
+
+	function insertarDocumentacionjugadorimagenes($refdocumentaciones,$refjugadorespre,$imagen,$type,$refestados, $idjugador) {
+		$sql = "insert into dbdocumentacionjugadorimagenes(iddocumentacionjugadorimagen,refdocumentaciones,refjugadorespre,imagen,type,refestados, idjugador)
+		values ('',".$refdocumentaciones.",".$refjugadorespre.",'".($imagen)."','".($type)."',".$refestados.",".$idjugador.")";
+
+		$res = $this->query($sql,1);
+		return $res;
+	}
+
+
+	function modificarDocumentacionjugadorimagenes($id,$refdocumentaciones,$refjugadorespre,$imagen,$type,$refestados) {
+		$sql = "update dbdocumentacionjugadorimagenes
+		set
+		refdocumentaciones = ".$refdocumentaciones.",refjugadorespre = ".$refjugadorespre.",imagen = '".($imagen)."',type = '".($type)."',refestados = ".$refestados."
+		where iddocumentacionjugadorimagen =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function modificarDocumentacionjugadorimagenesIDjugador($refjugadorespre,$idjugador) {
+		$sql = "update dbdocumentacionjugadorimagenes
+		set
+		idjugador = ".$idjugador."
+		where refjugadorespre =".$refjugadorespre;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function modificarEstadoDocumentacionjugadorimagenesPorJugadorDocumentacion($idjugador,$iddocumentacion,$refestados) {
+		$sql = "update dbdocumentacionjugadorimagenes
+		set
+		refestados = ".$refestados."
+		where refjugadorespre =".$idjugador." and refdocumentaciones =".$iddocumentacion;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function modificarEstadoDocumentacionjugadorimagenesPorId($id,$refestados) {
+		$sql = "update dbdocumentacionjugadorimagenes
+		set
+		refestados = ".$refestados."
+		where iddocumentacionjugadorimagen =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function eliminarDocumentacionjugadorimagenes($id) {
+		$sql = "delete from dbdocumentacionjugadorimagenes where iddocumentacionjugadorimagen =".$id;
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function traerDocumentacionjugadorimagenes() {
+		$sql = "select
+		d.iddocumentacionjugadorimagen,
+		d.refdocumentaciones,
+		d.refjugadorespre,
+		d.imagen,
+		d.type,
+		d.refestados
+		from dbdocumentacionjugadorimagenes d
+		order by 1";
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function traerDocumentacionjugadorimagenesPorId($id) {
+		$sql = "select iddocumentacionjugadorimagen,refdocumentaciones,refjugadorespre,imagen,type,refestados from dbdocumentacionjugadorimagenes where iddocumentacionjugadorimagen =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+
+	function traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idJugador, $idDocumentacion, $idJugadorPre=0) {
+		$sql = "select
+		                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
+		            from dbdocumentacionjugadorimagenes dj
+		            inner join tbestados e ON e.idestado = dj.refestados
+		        where (dj.idjugador =".$idJugador." or dj.refjugadorespre = ".$idJugadorPre.") and dj.refdocumentaciones = ".$idDocumentacion;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	function traerDocumentacionjugadorimagenesPorJugadorDocumentacionID($idJugador, $idDocumentacion, $idJugadorPre=0) {
+		$sql = "select
+		                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
+		            from dbdocumentacionjugadorimagenes dj
+		            inner join tbestados e ON e.idestado = dj.refestados
+		        where (dj.idjugador =".$idJugador." or dj.refjugadorespre = ".$idJugadorPre.") and dj.refdocumentaciones = ".$idDocumentacion;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+
+	/* Fin */
+	/* /* Fin de la Tabla: dbdocumentacionjugadorimagenes*/
+
 
 	function GUID()
 	{
@@ -285,6 +436,27 @@ class ServiciosReferencias {
 		if (mysql_num_rows($res)>0) {
 			return mysql_result($res,0,0);
 		}
+		return 'aif@intercountryfutbol.com.ar';
+	}
+
+	function traerReferentePorNrodocumento($nrodocumento) {
+		$sql = "select
+						coalesce(u.email,'') as email
+					from        dbjugadorespre j
+					left
+					join        dbcountries c
+					on          j.refcountries = c.idcountrie
+					left
+					join        dbusuarios u
+					on          u.idusuario = c.refusuarios
+				where       j.nrodocumento = ".$nrodocumento;
+
+		$res = $this->query($sql,0);
+
+		if (mysql_num_rows($res)>0) {
+			return mysql_result($res,0,0);
+		}
+
 		return 'aif@intercountryfutbol.com.ar';
 	}
 
@@ -809,6 +981,13 @@ class ServiciosReferencias {
 
 	function traerJugadoresPorId($id) {
 		$sql = "select idjugador,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,fechabaja,refcountries,observaciones from dbjugadores where idjugador =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerDocumentacionesPorId($id) {
+		$sql = "select iddocumentacion,descripcion, (case when obligatoria = 1 then 'Si' else 'No' end) as obligatoria,observaciones from tbdocumentaciones where iddocumentacion =".$id;
 
 		$res = $this->query($sql,0);
 		return $res;
