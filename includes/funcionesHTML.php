@@ -6,21 +6,21 @@ date_default_timezone_set('America/Buenos_Aires');
 class ServiciosHTML {
 
 function menu($usuario,$titulo,$rol,$empresa) {
-	
-	$sql = "select idmenu,url,icono, nombre, permiso from predio_menu where permiso like '%".$rol."%' order by orden";
+
+	$sql = "select idmenu,url,icono, nombre, permiso from predio_menu where permiso like '%".$rol."%' and grupo = 0 order by orden";
 	$res = $this->query($sql,0);
-	
+
 	$cadmenu = "";
 	$cadhover= "";
 
-	
+
 	$cant = 1;
 	while ($row = mysql_fetch_array($res)) {
 		if ($titulo == $row['nombre']) {
 			$nombre = $row['nombre'];
-			$row['url'] = "index.php";	
+			$row['url'] = "index.php";
 		}
-		
+
 		if (strpos($row['permiso'],$rol) !== false) {
 			if ($row['idmenu'] == 1) {
 				$cadmenu .= '<li>
@@ -29,11 +29,7 @@ function menu($usuario,$titulo,$rol,$empresa) {
 									<span>'.$row['nombre'].'</span>
 								</a>
 							</li>';
-				//$cadmenu = $cadmenu.'<li class="arriba"><div class="'.$row['icono'].'"></div><a href="'.$row['url'].'">'.$row['nombre'].'</a></li>';
-				/*$cadhover = $cadhover.' <li class="arriba">
-											<div class="'.$row['icono'].'2" id="tooltip'.$cant.'"></div>
-											<div class="tooltip-dash">'.$row['nombre'].'</div>
-										</li>';	*/
+
 			} else {
 				$cadmenu .= '<li>
 								<a href="'.$row['url'].'">
@@ -41,22 +37,71 @@ function menu($usuario,$titulo,$rol,$empresa) {
 									<span>'.$row['nombre'].'</span>
 								</a>
 							</li>';
-				/*
-				$cadmenu = $cadmenu.'<li><div class="'.$row['icono'].'"></div><a href="'.$row['url'].'">'.$row['nombre'].'</a></li>';
-				$cadhover = $cadhover.'  <li>
-											<div class="'.$row['icono'].'2" id="tooltip'.$cant.'"></div>
-											<div class="tooltip-con">'.$row['nombre'].'</div>
-										</li>';*/
+
 			}
 		}
 		$cant+=1;
 	}
-	
-	
+
+	if ($_SESSION['idroll_aif'] == 5) {
+		$sql = "select idmenu,url,icono, nombre, permiso from predio_menu where permiso like '%".$rol."%' and grupo = 10 order by orden";
+		$res = $this->query($sql,0);
+
+		$cadmenu .= '<a href="javascript:void(0);" class="menu-toggle">
+	                            <i class="material-icons">archive</i>
+	                            <span>Arhivos</span>
+	                        </a>
+	                        <ul class="ml-menu">';
+		$cadhover= "";
+
+
+		$cant = 1;
+		while ($row = mysql_fetch_array($res)) {
+			if ($titulo == $row['nombre']) {
+				$nombre = $row['nombre'];
+				$row['url'] = "index.php";
+			}
+
+			if (strpos($row['permiso'],$rol) !== false) {
+				if ($row['idmenu'] == 1) {
+					$cadmenu .= '<li>
+									<a href="'.$row['url'].'">
+										<i class="material-icons">'.$row['icono'].'</i>
+										<span>'.$row['nombre'].'</span>
+									</a>
+								</li>';
+					//$cadmenu = $cadmenu.'<li class="arriba"><div class="'.$row['icono'].'"></div><a href="'.$row['url'].'">'.$row['nombre'].'</a></li>';
+					/*$cadhover = $cadhover.' <li class="arriba">
+												<div class="'.$row['icono'].'2" id="tooltip'.$cant.'"></div>
+												<div class="tooltip-dash">'.$row['nombre'].'</div>
+											</li>';	*/
+				} else {
+
+					$cadmenu .= '<li>
+									<a href="'.$row['url'].'">
+										<i class="material-icons">'.$row['icono'].'</i>
+										<span>'.$row['nombre'].'</span>
+									</a>
+								</li>';
+					/*
+					$cadmenu = $cadmenu.'<li><div class="'.$row['icono'].'"></div><a href="'.$row['url'].'">'.$row['nombre'].'</a></li>';
+					$cadhover = $cadhover.'  <li>
+												<div class="'.$row['icono'].'2" id="tooltip'.$cant.'"></div>
+												<div class="tooltip-con">'.$row['nombre'].'</div>
+											</li>';*/
+				}
+			}
+			$cant+=1;
+		}
+
+		$cadmenu .= '</ul>';
+	}
+
+
 	$menu = utf8_encode($cadmenu);
-	
+
 	return $menu;
-	
+
 }
 
 
@@ -64,49 +109,49 @@ function menu($usuario,$titulo,$rol,$empresa) {
 function validacion($tabla) {
 	$sql	=	"show columns from ".$tabla;
 	$res 	=	$this->query($sql,0);
-	
+
 	$formJquery = '';
 	$formValidador = '';
-	
+
 	$links = '$(".ver").click(function(event){
 			url = "ver.php";
 			$(location).attr("href",url);
 	});//fin del boton eliminar
-	
+
 	$(".varborrar").click(function(event){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 			$("#idEliminar").val(usersid);
 			$("#dialog2").dialog("open");
 		  } else {
-			alert("Error, vuelva a realizar la acci�n.");	
+			alert("Error, vuelva a realizar la acci�n.");
 		  }
 	});//fin del boton eliminar
-	
+
 	$(".varmodificar").click(function(event){
 		  usersid =  $(this).attr("id");
 		  if (!isNaN(usersid)) {
 			url = "modificar.php?id=" + usersid;
 			$(location).attr("href",url);
 		  } else {
-			alert("Error, vuelva a realizar la acci�n.");	
+			alert("Error, vuelva a realizar la acci�n.");
 		  }
 	});//fin del boton modificar';
-	
+
 	if ($res == false) {
 		return 'Error al traer datos';
 	} else {
-		
+
 		$jquery	=	'';
 		$cuerpoValidacion = '';
-		
+
 		while ($row = mysql_fetch_array($res)) {
 			if (($row[3] != 'PRI') && ($row[2] == 'NO')) {
 				if (strpos($row[1],"decimal") !== false) {
 					//debo validar que sea un numero
-					
+
 					$jquery	=	$jquery.'
-					
+
 					$("#'.$row[0].'").click(function(event) {
 						$("#'.$row[0].'").removeClass("alert-danger");
 						if ($(this).val() == "") {
@@ -114,32 +159,32 @@ function validacion($tabla) {
 							$("#'.$row[0].'").attr("placeholder","Ingrese el '.ucwords($row[0]).'...");
 						}
 					});
-				
+
 					$("#'.$row[0].'").change(function(event) {
 						$("#'.$row[0].'").removeClass("alert-danger");
 						$("#'.$row[0].'").attr("placeholder","Ingrese el '.ucwords($row[0]).'");
 					});
-					
+
 					';
-					
+
 					$cuerpoValidacion = $cuerpoValidacion.'
-					
+
 						if ($("#'.$row[0].'").val() == "") {
 							$error = "Es obligatorio el campo '.ucwords($row[0]).'.";
 							$("#'.$row[0].'").addClass("alert-danger");
 							$("#'.$row[0].'").attr("placeholder",$error);
 						}
-					
+
 					';
-					
-					
+
+
 				} else {
 					if ($row[0] == "refroll") {
 						$label = "Rol";
 						$campo = $row[0];
-						
+
 						$jquery	=	$jquery.'
-					
+
 						$("#'.$campo.'").click(function(event) {
 							$("#'.$campo.'").removeClass("alert-danger");
 							if ($(this).val() == "") {
@@ -147,31 +192,31 @@ function validacion($tabla) {
 								$("#'.$campo.'").attr("placeholder","Ingrese el '.$label.'...");
 							}
 						});
-					
+
 						$("#'.$campo.'").change(function(event) {
 							$("#'.$campo.'").removeClass("alert-danger");
 							$("#'.$campo.'").attr("placeholder","Ingrese el '.$label.'");
 						});
-						
+
 						';
-						
-						
+
+
 						$cuerpoValidacion = $cuerpoValidacion.'
-					
+
 							if ($("#'.$campo.'").val() == "") {
 								$error = "Es obligatorio el campo '.$label.'.";
 								$("#'.$campo.'").addClass("alert-danger");
 								$("#'.$campo.'").attr("placeholder",$error);
 							}
-						
+
 						';
-						
+
 					} else {
 						$label = ucwords($row[0]);
 						$campo = $row[0];
-						
+
 						$jquery	=	$jquery.'
-					
+
 						$("#'.$campo.'").click(function(event) {
 							$("#'.$campo.'").removeClass("alert-danger");
 							if ($(this).val() == "") {
@@ -179,33 +224,33 @@ function validacion($tabla) {
 								$("#'.$campo.'").attr("placeholder","Ingrese el '.$label.'...");
 							}
 						});
-					
+
 						$("#'.$campo.'").change(function(event) {
 							$("#'.$campo.'").removeClass("alert-danger");
 							$("#'.$campo.'").attr("placeholder","Ingrese el '.$label.'");
 						});
-						
+
 						';
-						
-						
+
+
 						$cuerpoValidacion = $cuerpoValidacion.'
-					
+
 							if ($("#'.$campo.'").val() == "") {
 								$error = "Es obligatorio el campo '.$label.'.";
 								$("#'.$campo.'").addClass("alert-danger");
 								$("#'.$campo.'").attr("placeholder",$error);
 							}
-						
+
 						';
 					}
-					
-					
+
+
 				}
 			}
 		}
-		
+
 		$formJquery = $formJquery.$jquery;
-		
+
 		$formValidador = $formValidador.'
 			function validador(){
 
@@ -214,9 +259,9 @@ function validacion($tabla) {
 					return $error;
 			}
 		';
-		
+
 		return $links.$formJquery.$formValidador;
-	}	
+	}
 }
 
 
@@ -267,7 +312,7 @@ function footer() {
 }
 
 function query($sql,$accion) {
-		
+
 		require_once 'appconfig.php';
 
 		$appconfig	= new appconfig();
@@ -276,24 +321,24 @@ function query($sql,$accion) {
 		$database	= $datos['database'];
 		$username	= $datos['username'];
 		$password	= $datos['password'];
-		
+
 /*		$hostname = "localhost";
 		$database = "lacalder_diablo";
 		$username = "lacalderadeldiab";
 		$password = "caldera4415";
 		*/
-		
+
 		$conex = mysql_connect($hostname,$username,$password) or die ("no se puede conectar".mysql_error());
-		
+
 		mysql_select_db($database);
-		
+
 		$result = mysql_query($sql,$conex);
 		if ($accion && $result) {
 			$result = mysql_insert_id();
 		}
 		mysql_close($conex);
 		return $result;
-		
+
 	}
 
 }

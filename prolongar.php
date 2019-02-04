@@ -2,6 +2,7 @@
 
 require 'includes/funcionesUsuarios.php';
 
+
 session_start();
 
 $serviciosUsuario = new ServiciosUsuarios();
@@ -9,31 +10,20 @@ $serviciosUsuario = new ServiciosUsuarios();
 
 $ui = $_GET['token'];
 
-$resActivacion = $serviciosUsuario->traerActivacionusuariosPorTokenFechas($ui);
+$resActivacion = $serviciosUsuario->traerActivacionusuariosPorToken($ui);
 
 $cadResultado = '';
 
 if (mysql_num_rows($resActivacion) > 0) {
 	$idusuario = mysql_result($resActivacion,0,'refusuarios');
 
-	//pongo al usuario $activo
-	$resUsuario = $serviciosUsuario->activarUsuario($idusuario);
+	// prolongo la activacion
+	$resConcretar = $serviciosUsuario->modificarActivacionusuariosRenovada($idusuario,$ui,'','');
 
-	// concreto la activacion
-	$resConcretar = $serviciosUsuario->eliminarActivacionusuarios(mysql_result($resActivacion,0,0));
-
-	$cadResultado = 'Su usuario fue activado correctamente, ya puede iniciar sessión!!';
+	$cadResultado = 'Vuelva intentar activarse haciendo click <a href="activacion.php?token='.$ui.'">AQUI</a>!!';
 } else {
 
-	$resToken = $serviciosUsuario->traerActivacionusuariosPorToken($ui);
-
-	if (mysql_num_rows($resToken) > 0) {
-
-		$cadResultado = 'La vigencia para darse de alta a caducado, haga click <a href="prolongar.php?token='.$ui.'">AQUI</a> para prolongar la activación';
-	} else {
-		$cadResultado = 'Esta clave de Activación es inexistente o su usuario ya fue actvado';
-	}
-
+	$cadResultado = 'Esta clave de Activación es inexistente';
 }
 
 
@@ -72,8 +62,8 @@ if (mysql_num_rows($resActivacion) > 0) {
 <body class="login-page">
     <div class="login-box">
         <div class="logo">
-			  <a href="javascript:void(0);">Activar <b>AIF</b></a>
-			  <small>Administración de Equipos, Countries, Jugadores y Datos Personales</small>
+            <a href="javascript:void(0);">Prolongar <b>AIF</b></a>
+            <small>Administración de Equipos, Countries, Jugadores y Datos Personales</small>
         </div>
         <div class="card">
             <div class="body">

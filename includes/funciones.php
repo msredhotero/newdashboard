@@ -1678,6 +1678,331 @@ class Servicios {
 	}
 
 
+	function camposTablaVer($id,$lblid,$tabla,$lblcambio,$lblreemplazo,$refdescripcion,$refCampo) {
+
+
+		switch ($tabla) {
+			case 'dbjugadores':
+				$sqlMod = "select
+							j.idjugador,
+							j.nrodocumento,
+							j.apellido,
+							j.nombres,
+							j.email,
+							j.fechanacimiento,
+							j.fechaalta,
+							(case when j.fechabaja = '1900-01-01' then ''
+									when j.fechabaja = '0000-00-00' then ''
+									when j.fechabaja is null then ''
+									when j.fechabaja is not null then j.fechabaja end) fechabaja,
+							j.observaciones,
+							j.reftipodocumentos,
+							j.refcountries
+									from ".$tabla." j where j.".$lblid." = ".$id;
+				$resMod = $this->query($sqlMod,0);
+				break;
+			case 'tbtipostrabajos':
+				$sqlMod = "select idtipotrabajo,
+													tipotrabajo,
+													(case when activo = 1 then 'Si' else 'No' end) activo
+									from ".$tabla." where ".$lblid." = ".$id;
+				$resMod = $this->query($sqlMod,0);
+				break;
+			case 'tbmotivosoportunidades':
+				$sqlMod = "select idmotivooportunidad,
+													motivo,
+													(case when activo = 1 then 'Si' else 'No' end) activo
+									from ".$tabla." where ".$lblid." = ".$id;
+				$resMod = $this->query($sqlMod,0);
+				break;
+			case 'dbempleados':
+				$sqlMod = "select idempleado,
+										apellido,
+										nombre,
+										nrodocumento,
+										cuit,
+										fechanacimiento,
+										domicilio,
+										telefonofijo,
+										telefonomovil,
+										sexo,
+										email,
+										(case when activo = 1 then 'Si' else 'No' end) as activo
+									from ".$tabla." where ".$lblid." = ".$id;
+				$resMod = $this->query($sqlMod,0);
+				break;
+			case 'dbconceptos':
+				$sqlMod = "select idconcepto,
+										concepto,
+										abreviatura,
+										leyenda,
+										(case when activo = 1 then 'Si' else 'No' end) as activo
+									from ".$tabla." where ".$lblid." = ".$id;
+				$resMod = $this->query($sqlMod,0);
+				break;
+
+			default:
+				$sqlMod = "select * from ".$tabla." where ".$lblid." = ".$id;
+				$resMod = $this->query($sqlMod,0);
+		}
+		/*if ($tabla == 'dbtorneos') {
+			$resMod = $this->TraerIdTorneos($id);
+		} else {
+			$sqlMod = "select * from ".$tabla." where ".$lblid." = ".$id;
+			$resMod = $this->query($sqlMod,0);
+		}*/
+		$sql	=	"show columns from ".$tabla;
+		$res 	=	$this->query($sql,0);
+
+		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","idusuario");
+
+		$camposEscondido = "";
+		$lblObligatorio = '';
+		$valorBit = 0;
+		/* Analizar para despues */
+		/*if (count($refencias) > 0) {
+			$j = 0;
+
+			foreach ($refencias as $reftablas) {
+				$sqlTablas = "select id".$reftablas.", ".$refdescripcion[$j]." from ".$reftablas." order by ".$refdescripcion[$j];
+				$resultadoRef[$j][0] = $this->query($sqlTablas,0);
+				$resultadoRef[$j][1] = $refcampos[$j];
+			}
+		}*/
+
+
+		if ($res == false) {
+			return 'Error al traer datos';
+		} else {
+
+			$form	=	'';
+
+			while ($row = mysql_fetch_array($res)) {
+				$label = $row[0];
+				$i = 0;
+
+				if ($row[2]=='NO') {
+					$lblObligatorio = ' required ';
+				} else {
+					$lblObligatorio = '';
+				}
+
+				foreach ($lblcambio as $cambio) {
+					if ($row[0] == $cambio) {
+						$label = $lblreemplazo[$i];
+						$i = 0;
+						break;
+					} else {
+						$label = $row[0];
+					}
+					$i = $i + 1;
+				}
+
+				if (in_array($row[0],$ocultar)) {
+					$lblOculta = "none";
+				} else {
+					$lblOculta = "block";
+				}
+
+				if ($row[3] != 'PRI') {
+					if (strpos($row[1],"decimal") !== false) {
+						$form	=	$form.'
+
+						<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+							<label for="'.$label.'" class="control-label" style="text-align:left">'.ucwords($label).'</label>
+							<div class="input-group col-md-12">
+								<span class="input-group-addon">$</span>
+								<input type="text" class="form-control" id="'.strtolower($row[0]).'" name="'.strtolower($row[0]).'" value="'.mysql_result($resMod,0,$row[0]).'" required>
+								<span class="input-group-addon">.00</span>
+							</div>
+						</div>
+
+						';
+					} else {
+						if ( in_array($row[0],$refCampo) ) {
+
+							$campo = strtolower($row[0]);
+
+							$option = $refdescripcion[array_search($row[0], $refCampo)];
+
+							$form	=	$form.'
+
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:'.$lblOculta.'">
+									<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+									<select class="form-control show-tick" id="'.strtolower($campo).'" name="'.strtolower($campo).'">
+
+											';
+
+								$form	=	$form.$option;
+
+								$form	=	$form.'</select>
+
+								</div>
+
+								';
+
+						} else {
+
+							if (strpos($row[1],"bit") !== false) {
+								$label = ucwords($label);
+								$campo = strtolower($row[0]);
+
+								$activo = '';
+								if (mysql_result($resMod,0,$row[0])==1){
+									$activo = 'checked';
+								}
+								$valorBit = mysql_result($resMod,0,$row[0]);
+
+								$form	=	$form.'
+
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display:'.$lblOculta.'">
+									<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+									<div class="switch">';
+								if ($valorBit == 'Si') {
+									$form	=	$form.'	<label><input name="'.$campo.'" id="'.$campo.'" type="checkbox" checked/><span class="lever switch-col-green"></span></label>
+									</div>
+								</div>
+
+								';
+								} else {
+									$form	=	$form.'	<label><input name="'.$campo.'" id="'.$campo.'" type="checkbox"/><span class="lever switch-col-green"></span></label>
+									</div>
+								</div>
+
+								';
+								}
+
+
+
+							} else {
+
+								if (strpos($row[1],"date") !== false) {
+									$label = ucwords($label);
+									$campo = strtolower($row[0]);
+
+									$form	=	$form.'
+
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop">
+										<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+										<div class="input-group col-md-6">
+											<input class="form-control date" type="text" value="'.mysql_result($resMod,0,$row[0]).'" name="'.$campo.'" id="'.$campo.'" '.$lblObligatorio.'/>
+										</div>
+
+									</div>
+
+									';
+
+									/*
+									$form	=	$form.'
+
+									<div class="form-group col-md-6">
+										<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+										<div class="input-group col-md-6">
+											<input class="form-control" type="text" name="'.$campo.'" id="'.$campo.'" value="Date"/>
+										</div>
+
+									</div>
+
+									';
+									*/
+								} else {
+
+									if (strpos($row[1],"time") !== false) {
+										$label = ucwords($label);
+										$campo = strtolower($row[0]);
+
+										$form	=	$form.'
+
+										<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+											<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+											<div class="input-group bootstrap-timepicker col-md-6">
+												<input id="timepicker2" value="'.mysql_result($resMod,0,$row[0]).'" name="'.$campo.'" class="form-control">
+												<span class="input-group-addon">
+<span class="glyphicon glyphicon-time"></span>
+</span>
+											</div>
+
+										</div>
+
+										';
+
+									} else {
+										if ((integer)(str_replace('varchar(','',$row[1])) > 200) {
+											$label = ucwords($label);
+											$campo = strtolower($row[0]);
+
+											$form	=	$form.'
+
+											<div class="form-group col-md-6" style="display:'.$lblOculta.'">
+												<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+												<div class="input-group col-md-12">
+													<textarea readonly="readonly" type="text" rows="2" cols="6" class="form-control" id="'.$campo.'" name="'.$campo.'" placeholder="Ingrese el '.$label.'..." required>'.utf8_encode(mysql_result($resMod,0,$row[0])).'</textarea>
+												</div>
+
+											</div>
+
+											';
+
+										} else {
+
+											if ($row[1] == 'MEDIUMTEXT') {
+											$label = ucwords($label);
+											$campo = strtolower($row[0]);
+
+											$form	=	$form.'
+
+											<div class="form-group col-md-12" style="display:'.$lblOculta.'">
+												<label for="'.$campo.'" class="control-label" style="text-align:left">'.$label.'</label>
+												<div class="input-group col-md-12">
+													<textarea name="'.$campo.'" id="'.$campo.'" rows="200" cols="160">
+														Ingrese la noticia.
+													</textarea>
+
+
+												</div>
+
+											</div>
+
+											';
+
+											} else {
+												$label = ucwords($label);
+												$campo = strtolower($row[0]);
+
+												$form	=	$form.'
+												<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:'.$lblOculta.'">
+													<label class="form-label">'.$label.'</label>
+													<div class="form-group">
+														<div class="form-line">
+															<input readonly="readonly" value="'.(mysql_result($resMod,0,$row[0])).'" type="text" class="form-control" id="'.$campo.'" name="'.$campo.'" '.$lblObligatorio.'>
+
+														</div>
+													</div>
+												</div>
+
+												';
+											}
+										}
+									}
+								}
+							}
+						}
+
+
+					}
+				} else {
+
+					$camposEscondido = $camposEscondido.'';
+				}
+			}
+			/* <input type="text" value="'.utf8_encode(mysql_result($resMod,0,$row[0])).'" class="form-control" id="'.$campo.'" name="'.$campo.'" placeholder="Ingrese el '.$label.'..." required>  ///////////////////////////////  verificar al subir al servidor   /////////////////////////////////*/
+			$formulario = $form."<br><br>".$camposEscondido;
+
+			return $formulario;
+		}
+	}
+
+
 
 
 	function TraerUsuario($nombre,$pass) {

@@ -31,16 +31,11 @@ $tituloWeb = mysql_result($configuracion,0,'sistema');
 
 $breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
 
-$club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
-
-$cantidadEquipos = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
-
-
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Orden";
+$singular = "Socio";
 
-$plural = "Ordenes";
+$plural = "Socio";
 
 $eliminar = "eliminarOrdenes";
 
@@ -51,20 +46,50 @@ $insertar = "insertarDelegados";
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
+if ($_SESSION['idroll_aif'] == 4) {
+	$club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
 
-$tabla 			= "dbdelegados";
+	$cantidadEquipos = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
 
-$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
-$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
+	$tabla 			= "dbdelegados";
+
+	$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
+	$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
 
 
-$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
-$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
+	$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
+	$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
 
-$refdescripcion = array(0 => $cadRef);
-$refCampo 	=  array("refusuarios");
+	$refdescripcion = array(0 => $cadRef);
+	$refCampo 	=  array("refusuarios");
 
-$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+	$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+}
+
+if ($_SESSION['idroll_aif'] == 5) {
+	$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
+
+	$tabla 			= "dbjugadores";
+
+	$lblCambio	 	= array("reftipodocumentos","nrodocumento","fechanacimiento","fechaalta","fechabaja","refcountries");
+	$lblreemplazo	= array("Tipo Documento","Nro Documento","Fecha Nacimiento","Fecha Alta","Fecha Baja","Countries");
+
+
+	$resTipoDoc 	= $serviciosReferencias->traerTipodocumentosPorId(mysql_result($resJugador,0,'reftipodocumentos'));
+	$cadRef 	= $serviciosFunciones->devolverSelectBox($resTipoDoc,array(1),'');
+
+	$resCountries 	= $serviciosReferencias->traerCountriesPorId(mysql_result($resJugador,0,'refcountries'));
+	$cadRef2 	= $serviciosFunciones->devolverSelectBox($resCountries,array(6),'');
+
+	$refdescripcion = array(0 => $cadRef,1 => $cadRef2);
+	$refCampo 	=  array("reftipodocumentos","refcountries");
+
+	$idTabla = 'idjugador';
+
+	$id = mysql_result($resJugador,0,'idjugador');
+
+	$frm 	= $serviciosFunciones->camposTablaVer($id, $idTabla,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+}
 
 ///////////////////////////              fin                   ////////////////////////
 
@@ -143,7 +168,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 
         <div class="container-fluid">
             <div class="row clearfix">
-
+					<?php if ($_SESSION['idroll_aif'] == 4) { ?>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">
                         <div class="icon">
@@ -168,7 +193,42 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
                         </div>
                     </div>
                 </div>
+				<?php } ?>
+				<?php if ($_SESSION['idroll_aif'] == 5) { ?>
+					<div class="row">
 
+
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="card ">
+						<div class="header bg-blue">
+							<h2>
+								<?php echo strtoupper($plural); ?>
+							</h2>
+							<ul class="header-dropdown m-r--5">
+								<li class="dropdown">
+									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										<i class="material-icons">more_vert</i>
+									</a>
+									<ul class="dropdown-menu pull-right">
+
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<div class="body table-responsive">
+							<form class="form" id="formCountry">
+
+								<div class="row">
+									<?php echo $frm; ?>
+								</div>
+							</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+				<?php } ?>
             </div>
         </div>
 
@@ -179,12 +239,13 @@ $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lbl
 
 
     <!-- Modal Large Size -->
+	 <?php if ($_SESSION['idroll_aif'] == 4) { ?>
     <transition name="fade">
     <form class="form" @submit.prevent="guardarDelegado">
     <?php echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
     </form>
     </transition>
-
+	<?php } ?>
     </main>
 
     <?php echo $baseHTML->cargarArchivosJS('../'); ?>

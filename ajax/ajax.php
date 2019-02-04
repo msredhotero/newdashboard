@@ -41,7 +41,7 @@ switch ($accion) {
     	buscarSocio($serviciosUsuarios, $serviciosReferencias);
     break;
     case 'registrarSocio':
-      registrarSocio($ServiciosUsuarios, $serviciosReferencias);
+      registrarSocio($serviciosUsuarios, $serviciosReferencias);
    break;
 
 	case 'traerTareasGeneralPorCountrieIncompletas':
@@ -214,12 +214,12 @@ switch ($accion) {
 }
 /* Fin */
 
-   function registrarSocio($ServiciosUsuarios, $ServiciosReferencias) {
+   function registrarSocio($serviciosUsuarios, $ServiciosReferencias) {
       $email				=	$_POST['email'];
-      $password			=	$_POST['password'];
-      $id					=	$_POST['idjugador'];
+      $password			=	$_POST['pass'];
+      $id					=	$_POST['id'];
 
-      $existeEmail = $ServiciosUsuarios->existeUsuario($email);
+      $existeEmail = $serviciosUsuarios->existeUsuario($email);
 
       $resV['datos'] = '';
       $resV['error'] = false;
@@ -228,7 +228,7 @@ switch ($accion) {
          echo "Ya existe un usuario con ese email";
       } else {
            //doy de alta en usuarios alagente
-           $res = $ServiciosUsuarios->registrarSocio($email, $password);
+           $res = $serviciosUsuarios->registrarSocio($email, $password, $id);
            if ((integer)$res > 0) {
              $resV['datos'] = array('mensaje' => 'Le enviamos un email a su correo para que active su cuenta.');
              $resV['error'] = false;

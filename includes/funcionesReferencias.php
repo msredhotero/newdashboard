@@ -2261,6 +2261,17 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		return $res;
 	}
 
+	function traerTipodocumentosPorId($id) {
+		$sql = "select
+		t.idtipodocumento,
+		t.tipodocumento
+		from tbtipodocumentos t
+		where t.idtipodocumento = ".$id."
+		order by 1";
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	function existeJugador($nroDocumento) {
 		$sql = "select idjugador from dbjugadores where nrodocumento = ".$nroDocumento;
 		$res = $this->query($sql,0);
@@ -2292,6 +2303,35 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 			inner join dbcountries cou ON cou.idcountrie = j.refcountries
 			inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
 			where j.nrodocumento = ".$nrodocumento."
+		order by 1";
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
+	function traerJugadoresPorEmail($email) {
+		$sql = "select
+					j.idjugador,
+					tip.tipodocumento,
+					j.nrodocumento,
+					j.apellido,
+					j.nombres,
+					j.email,
+					j.fechanacimiento,
+					j.fechaalta,
+					(case when j.fechabaja = '1900-01-01' then ''
+							when j.fechabaja = '0000-00-00' then ''
+							when j.fechabaja is null then ''
+							when j.fechabaja is not null then j.fechabaja end) fechabaja,
+					cou.nombre as country,
+					j.observaciones,
+					j.reftipodocumentos,
+					j.refcountries
+			from dbjugadores j
+			inner join tbtipodocumentos tip ON tip.idtipodocumento = j.reftipodocumentos
+			inner join dbcountries cou ON cou.idcountrie = j.refcountries
+			inner join tbposiciontributaria po ON po.idposiciontributaria = cou.refposiciontributaria
+			where j.email = '".$email."'
 		order by 1";
 
 		$res = $this->query($sql,0);

@@ -329,6 +329,10 @@ function registrarSocio($email, $password,$idjugador) {
 	} else {
 		$this->insertarActivacionusuarios($res,$token,'','');
 
+      // creo la relacion socio y usuarios por el email
+      $resModJug = $this->modificarJugadorEmail($idjugador, $email);
+
+
 		$this->enviarEmail($email,'Alta de Usuario',utf8_decode($cuerpo));
 
 		return $res;
@@ -370,7 +374,7 @@ return $res;
 function modificarActivacionusuariosRenovada($refusuarios,$token,$vigenciadesde,$vigenciahasta) {
 $sql = "update dbactivacionusuarios
 set
-vigenciadesde = now(),vigenciahasta = ADDDATE(now(), INTERVAL 2 DAY),token = '".($token)."'
+vigenciadesde = now(),vigenciahasta = ADDDATE(now(), INTERVAL 15 DAY),token = '".($token)."'
 where refusuarios =".$refusuarios;
 $res = $this->query($sql,0);
 return $res;
@@ -412,7 +416,7 @@ return $res;
 
 
 function traerActivacionusuariosPorToken($token) {
-$sql = "select idactivacionusuario,refusuarios,token,vigenciadesde,vigenciahasta from dbactivacionusuarios where token =".$token;
+$sql = "select idactivacionusuario,refusuarios,token,vigenciadesde,vigenciahasta from dbactivacionusuarios where token ='".$token."'";
 $res = $this->query($sql,0);
 return $res;
 }
@@ -512,6 +516,16 @@ function modificarUsuario($id,$usuario,$password,$refroles,$email,$nombrecomplet
 				nombrecompleto = '".utf8_decode($nombrecompleto)."'
 			WHERE idusuario = ".$id;
 	$res = $this->query($sql,0);
+	if ($res == false) {
+		return 'Error al modificar datos';
+	} else {
+		return '';
+	}
+}
+
+function modificarJugadorEmail($id, $email) {
+   $sql = "update dbjugadores set email = '".$email."' where idjugador = ".$id;
+   $res = $this->query($sql,0);
 	if ($res == false) {
 		return 'Error al modificar datos';
 	} else {

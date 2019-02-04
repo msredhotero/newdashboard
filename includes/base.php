@@ -34,7 +34,7 @@ class BaseHTML {
 
 
     function cargarArchivosJS($altura ,$ar = array()) {
-      
+
 
         $arNuevo = array(0=>'<script src="'.$altura.'plugins/jquery/jquery.min.js"></script>',
                          1=>'<script src="'.$altura.'plugins/bootstrap/js/bootstrap.js"></script>',
@@ -187,10 +187,12 @@ class BaseHTML {
                             <div class="email">'.$email.'</div>
                             <div class="btn-group user-helper-dropdown">
                                 <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
-                                <ul class="dropdown-menu pull-right">
-                                    <li><a href="javascript:void(0);" id="menuPerfil"><i class="material-icons">person</i>Perfil</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href="'.$altura.'logout.php"><i class="material-icons">input</i>Salir</a></li>
+                                <ul class="dropdown-menu pull-right">';
+      if ($_SESSION['idroll_aif'] == 4) {                          
+         $cad .= '<li><a href="javascript:void(0);" id="menuPerfil"><i class="material-icons">person</i>Perfil</a></li>
+                                    <li role="separator" class="divider"></li>';
+      }
+      $cad .= '<li><a href="'.$altura.'logout.php"><i class="material-icons">input</i>Salir</a></li>
                                 </ul>
                             </div>
                         </div>
