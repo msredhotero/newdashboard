@@ -348,7 +348,12 @@ switch ($accion) {
       if ($existeJugador == 1) {
 
          $resJugador = $serviciosReferencias->traerJugadoresPorNroDocumento($nrodocumento);
-         $existePreRegistro = $serviciosUsuarios->existeUsuarioPreRegistrado(mysql_result($resJugador,0,'email'));
+         if (mysql_num_rows($resJugador) > 0) {
+            $email = mysql_result($resJugador,0,'email');
+         } else {
+            $email = 'aaaa';
+         }
+         $existePreRegistro = $serviciosUsuarios->existeUsuarioPreRegistrado($email);
 
          if ($existePreRegistro == '') {
              $resV['datos'] = array('apellido' => mysql_result($resJugador,0,'apellido'), 'nombre' => mysql_result($resJugador,0,'nombres'), 'idjugador' => mysql_result($resJugador,0,'idjugador'));
