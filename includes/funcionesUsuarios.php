@@ -289,7 +289,7 @@ function registrarSocio($email, $password,$idjugador) {
 	$fechaprogramada =  date_format($fecha, 'Y-m-d');
 
 	$cuerpo .= '<p>Antes que nada por favor no responda este mail ya que no recibirá respuesta.</p>';
-	$cuerpo .= '<p>Recibimos su solicitud de alta como socio/jugador en la Asociación Intercountry de Fútbol Zona Norte. Para verificar(activar) tu casilla de correo por favor ingresá al siguiente link: <a href="http://www.saupureinconsulting.com.ar/aifzn/activacion/index.php?token='.$token.'" target="_blank">AQUI</a>.</p>';
+	$cuerpo .= '<p>Recibimos su solicitud de alta como socio/jugador en la Asociación Intercountry de Fútbol Zona Norte. Para verificar(activar) tu casilla de correo por favor ingresá al siguiente link: <a href="http://www.saupureinconsulting.com.ar/aifzncountriesdesarrollo/activacion/index.php?token='.$token.'" target="_blank">AQUI</a>.</p>';
 	$cuerpo .= '<p>Este link estara vigente hasta la fecha '.$fechaprogramada.', pasada esta fecha deberá solicitar mas tiempo para activar su cuenta.</p>';
 	$cuerpo .= '<p>Una vez hecho esto, el personal administrativo se pondrá en contacto mediante esta misma via para notificarle si su estado de alta se encuentra aprobado, de no ser así se detallará la causa.</p>';
 
@@ -451,28 +451,27 @@ function activarUsuario($refusuario) {
 /* Fin */
 /* /* Fin de la Tabla: dbactivacionusuarios*/
 
-function enviarEmail($destinatario,$asunto,$cuerpo) {
+function enviarEmail($destinatario,$asunto,$cuerpo, $referencia='') {
 
 
 	# Defina el número de e-mails que desea enviar por periodo. Si es 0, el proceso por lotes
 	# se deshabilita y los mensajes son enviados tan rápido como sea posible.
-	define("MAILQUEUE_BATCH_SIZE",0);
+   if ($referencia == '') {
+      $referencia = 'aif@intercountryfutbol.com.ar';
+   }
+   # Defina el número de e-mails que desea enviar por periodo. Si es 0, el proceso por lotes
+   # se deshabilita y los mensajes son enviados tan rápido como sea posible.
+   define("MAILQUEUE_BATCH_SIZE",0);
 
-	//para el envío en formato HTML
-	//$headers = "MIME-Version: 1.0\r\n";
+   //para el envío en formato HTML
+   //$headers = "MIME-Version: 1.0\r\n";
 
-	// Cabecera que especifica que es un HMTL
-	$headers  = 'MIME-Version: 1.0' . "\r\n";
-	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+   // Cabecera que especifica que es un HMTL
+   $headers  = 'MIME-Version: 1.0' . "\r\n";
+   $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 
-	//dirección del remitente
-	$headers .= "From: Daniel Eduardo Duranti <info@carnesacasa.com.ar>\r\n";
-
-	//ruta del mensaje desde origen a destino
-	$headers .= "Return-path: ".$destinatario."\r\n";
-
-	//direcciones que recibirán copia oculta
-	$headers .= "Bcc: info@carnesacasa.com.ar,msredhotero@msn.com\r\n";
+   //dirección del remitente
+   $headers .= utf8_decode("From: ASOCIACIÓN INTERCOUNTRY DE FÚTBOL ZONA NORTE <aif@intercountryfutbol.com.ar>\r\n");
 
 	mail($destinatario,$asunto,$cuerpo,$headers);
 }
