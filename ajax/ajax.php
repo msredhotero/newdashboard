@@ -319,7 +319,9 @@ switch ($accion) {
       $resV['error'] = false;
 
       if ($existeEmail == true) {
-         echo "Ya existe un usuario con ese email";
+         $resV['datos'] = array('mensaje' => "Ya existe un usuario con ese email");
+         $resV['error'] = true;
+
       } else {
            //doy de alta en usuarios alagente
            $res = $serviciosUsuarios->registrarSocio($email, $password, $id);

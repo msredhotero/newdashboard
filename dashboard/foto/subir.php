@@ -79,7 +79,7 @@ if (!isset($_SESSION['usua_aif']))
 
 		echo "Archivo guardado correctamente";
 	} else {
-		echo "Error al guardar el archivo ".$imagen_subida;
+		echo "Error al guardar el archivo ";
 	}
 
 
