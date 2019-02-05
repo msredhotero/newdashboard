@@ -63,7 +63,7 @@ if (!isset($_SESSION['usua_aif']))
 	 $imagen_subida = $dir_destino.$name;
 
 	 // desarrollo
-	 $nuevo_noentrar = '../../../../'.$servidorCarpeta.'/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
+	 $nuevo_noentrar = '../../../../'.$servidorCarpeta.'/'.'index.php';
 
 	 // produccion
 	 // $nuevo_noentrar = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
