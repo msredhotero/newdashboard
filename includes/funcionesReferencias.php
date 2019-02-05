@@ -25,7 +25,7 @@ class ServiciosReferencias {
 	}
 
 	function eliminarFotoJugadoresID($refdocumentaciones, $refjugadorespre, $idAux=0) {
-		$servidorCarpeta = 'aifzndesarrollo';
+		$servidorCarpeta = 'aifzn';
 
       $sql        =   "select concat('".$servidorCarpeta."/data','/',s.iddocumentacionjugadorimagen) as archivo, s.iddocumentacionjugadorimagen
                          from dbdocumentacionjugadorimagenes s

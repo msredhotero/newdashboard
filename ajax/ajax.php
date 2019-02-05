@@ -222,7 +222,7 @@ switch ($accion) {
 /* Fin */
 
    function presentarDocumentacion($serviciosReferencias, $serviciosNotificaciones) {
-      $servidorCarpeta = 'aifzndesarrollo';
+      $servidorCarpeta = 'aifzn';
 
       $idjugador = $_POST['idjugador'];
       $iddocumentacion = $_POST['iddocumentacion'];
@@ -278,7 +278,7 @@ switch ($accion) {
    }
 
    function traerImgenJugadorPorJugadorDocumentacion($serviciosReferencias) {
-      $servidorCarpeta = 'aifzndesarrollo';
+      $servidorCarpeta = 'aifzn';
 
       $idjugador = $_POST['idjugador'];
       $iddocumentacion = $_POST['iddocumentacion'];

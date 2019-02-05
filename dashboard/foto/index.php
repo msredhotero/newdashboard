@@ -169,6 +169,9 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 	<script src="https://unpkg.com/vue-swal"></script>
 
+	<script src="../../js/image-compressor.js"></script>
+
+
 	<!-- Bootstrap Material Datetime Picker Css -->
     <link href="../../plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
 
@@ -315,6 +318,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 						</ul>
 					</div>
 					<div class="body">
+
 						<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
 							<div class="dz-message">
 								<div class="drag-icon-cph">
@@ -324,6 +328,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 							</div>
 							<div class="fallback">
+
 								<input name="file" type="file" id="archivos" />
 								<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
 								<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
@@ -422,6 +427,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 <script>
 
+
 	function traerImagen() {
 		$.ajax({
 			data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
@@ -450,8 +456,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
 
 	Dropzone.options.frmFileUpload = {
-		maxFilesize: 2,
-		addRemoveLinks: true,
+		maxFilesize: 12,
 		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
 		accept: function(file, done) {
 			done();

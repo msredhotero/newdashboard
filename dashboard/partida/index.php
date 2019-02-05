@@ -446,7 +446,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
 
 	Dropzone.options.frmFileUpload = {
-		maxFilesize: 2,
+		maxFilesize: 50,
 		addRemoveLinks: true,
 		acceptedFiles: ".pdf",
 		accept: function(file, done) {

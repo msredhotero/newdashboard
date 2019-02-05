@@ -15,6 +15,9 @@ if (!isset($_SESSION['usua_aif']))
     include ('../../includes/funcionesReferencias.php');
     include ('../../includes/base.php');
 
+	 include '../../includes/ImageResize.php';
+	 include '../../includes/ImageResizeException.php';
+
     $serviciosFunciones 	= new Servicios();
     $serviciosUsuario 		= new ServiciosUsuarios();
     $serviciosHTML 			= new ServiciosHTML();
@@ -76,6 +79,9 @@ if (!isset($_SESSION['usua_aif']))
 
 
 	if (move_uploaded_file($templocation, $imagen_subida)) {
+		$image = new \Gumlet\ImageResize($imagen_subida);
+		$image->scale(50);
+		$image->save($imagen_subida);
 
 		echo "Archivo guardado correctamente";
 	} else {

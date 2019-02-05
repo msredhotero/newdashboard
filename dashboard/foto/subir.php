@@ -2,7 +2,7 @@
 
 session_start();
 
-$servidorCarpeta = 'aifzndesarrollo';
+$servidorCarpeta = 'aifzn';
 
 if (!isset($_SESSION['usua_aif']))
 {
@@ -14,6 +14,12 @@ if (!isset($_SESSION['usua_aif']))
     include ('../../includes/funcionesHTML.php');
     include ('../../includes/funcionesReferencias.php');
     include ('../../includes/base.php');
+
+
+	 include '../../includes/ImageResize.php';
+	 include '../../includes/ImageResizeException.php';
+
+
 
     $serviciosFunciones 	= new Servicios();
     $serviciosUsuario 		= new ServiciosUsuarios();
@@ -49,13 +55,15 @@ if (!isset($_SESSION['usua_aif']))
 	 $imagen = $serviciosReferencias->sanear_string(basename($archivo['name']));
 	 $type = $archivo["type"];
 
+
+
 	 $resDocumentacionImagen = $serviciosReferencias->insertarDocumentacionjugadorimagenes($_POST['iddocumentacion'],0,$imagen,$type,1,$_POST['idjugador']);
 
 	 $iddocumentacionjugadorimagen = $resDocumentacionImagen;
 
 
 	 // desarrollo
-	 $dir_destino = './../../../'.$servidorCarpeta.'/data/'.$iddocumentacionjugadorimagen.'/';
+	 $dir_destino = '../../../../'.$servidorCarpeta.'/data/'.$iddocumentacionjugadorimagen.'/';
 
 	 // produccion
 	 //$dir_destino = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.mysql_result($resFoto,0,'iddocumentacionjugadorimagen').'/';
@@ -63,7 +71,7 @@ if (!isset($_SESSION['usua_aif']))
 	 $imagen_subida = $dir_destino.$name;
 
 	 // desarrollo
-	 $nuevo_noentrar = './../../../'.$servidorCarpeta.'/'.'index.php';
+	 $nuevo_noentrar = '../../../../'.$servidorCarpeta.'/'.'index.php';
 
 	 // produccion
 	 // $nuevo_noentrar = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
@@ -76,6 +84,9 @@ if (!isset($_SESSION['usua_aif']))
 
 
 	if (move_uploaded_file($templocation, $imagen_subida)) {
+		$image = new \Gumlet\ImageResize($imagen_subida);
+		$image->scale(50);
+		$image->save($imagen_subida);
 
 		echo "Archivo guardado correctamente";
 	} else {
