@@ -448,7 +448,7 @@ class ServiciosReferencias {
 	function traerReferentePorNrodocumento($nrodocumento) {
 		$sql = "select
 						coalesce(u.email,'') as email
-					from        dbjugadorespre j
+					from        dbjugadores j
 					left
 					join        dbcountries c
 					on          j.refcountries = c.idcountrie
