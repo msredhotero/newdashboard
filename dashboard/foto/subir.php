@@ -2,7 +2,7 @@
 
 session_start();
 
-$servidorCarpeta = 'aifzn';
+$servidorCarpeta = 'aifzndesarrollo';
 
 if (!isset($_SESSION['usua_aif']))
 {
@@ -63,7 +63,7 @@ if (!isset($_SESSION['usua_aif']))
 
 
 	 // desarrollo
-	 $dir_destino = '../../../../'.$servidorCarpeta.'/data/'.$iddocumentacionjugadorimagen.'/';
+	 $dir_destino = './../../../'.$servidorCarpeta.'/data/'.$iddocumentacionjugadorimagen.'/';
 
 	 // produccion
 	 //$dir_destino = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.mysql_result($resFoto,0,'iddocumentacionjugadorimagen').'/';
@@ -71,7 +71,7 @@ if (!isset($_SESSION['usua_aif']))
 	 $imagen_subida = $dir_destino.$name;
 
 	 // desarrollo
-	 $nuevo_noentrar = '../../../../'.$servidorCarpeta.'/'.'index.php';
+	 $nuevo_noentrar = './../../../'.$servidorCarpeta.'/'.'index.php';
 
 	 // produccion
 	 // $nuevo_noentrar = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
