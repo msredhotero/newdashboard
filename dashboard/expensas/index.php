@@ -24,7 +24,7 @@ $baseHTML = new BaseHTML();
 //*** SEGURIDAD ****/
 include ('../../includes/funcionesSeguridad.php');
 $serviciosSeguridad = new ServiciosSeguridad();
-$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../foto/');
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../expensas/');
 //*** FIN  ****/
 
 $fecha = date('Y-m-d');
@@ -81,6 +81,7 @@ $refCampo 	=  array("refusuarios");
 
 $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
+$idDocumentacion = 6;
 
 $resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
@@ -92,21 +93,27 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
 
-// traer foto
-		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(mysql_result($resResultado,0,0),1);
+	$permite = 0;
+// traer documento frente
+		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(mysql_result($resResultado,0,0), $idDocumentacion);
 		if (mysql_num_rows($resFoto) > 0) {
 			$estadoFoto = mysql_result($resFoto, 0,'estado');
 			$idEstadoFoto = mysql_result($resFoto, 0,'refestados');
 			$foto1 = mysql_result($resFoto, 0,'imagen');
 			$archivo = mysql_result($resFoto, 0,'archivo');
+			$idFoto = mysql_result($resFoto,0,0);
+			$type = mysql_result($resFoto,0,'type');
 		} else {
 			$estadoFoto = 'Sin carga';
 			$idEstadoFoto = 0;
 			$foto1 = '';
+			$permite = 1;
+			$idFoto = 0;
+			$type = '';
 		}
 
 		$spanFoto = '';
-		$permite = 0;
+
 
 		switch ($idEstadoFoto) {
 			case 0:
@@ -129,6 +136,9 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 				$spanFoto = 'label-danger';
 				$permite = 1;
 				break;
+			default:
+				$permite = 1;
+			break;
 		}
 
 
@@ -169,6 +179,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
     <style>
         .alert > i{ vertical-align: middle !important; }
+		  .pdfobject-container { height: 30rem; border: 1rem solid rgba(0,0,0,.1); }
 
 
 	</style>
@@ -228,7 +239,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 					<div class="card ">
 						<div class="header bg-blue">
 							<h2>
-								Foto
+								Expensas (pdf - imagen)
 							</h2>
 							<ul class="header-dropdown m-r--5">
 								<li class="dropdown">
@@ -248,16 +259,18 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 									<a href="javascript:void(0);" class="thumbnail">
 										<img class="img-responsive">
 									</a>
+									<div id="example1"></div>
+
 								</div>
 								<div class="col-xs-6 col-md-6 col-lg-6">
 									<h4>Estado: <span id="estado" class="label <?php echo $spanFoto; ?>"></span></h4>
-									<?php if ($permite == 1) { ?>
+
 									<div class="button-demo">
 										<button type="button" class="btn bg-orange waves-effect btnPresentar" id="btnPresentar">
                                  <i class="material-icons">save</i>
                                  <span>PRESENTAR</span>
                               </button>
-									<?php } ?>
+										<input type="hidden" name="idFoto" id="idFoto" value="<?php echo $idFoto; ?>" />
 									</div>
 								</div>
 
@@ -282,7 +295,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 				<div class="card">
 					<div class="header">
 						<h2>
-							SELECCIONE SU FOTO DE PERFIL
+							SELECCIONE EL ARCHIVO PDF PARA SUBIR O LA IMAGEN
 						</h2>
 						<ul class="header-dropdown m-r--5">
 							<li class="dropdown">
@@ -303,13 +316,14 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 								<div class="drag-icon-cph">
 									<i class="material-icons">touch_app</i>
 								</div>
-								<h3>Arrastre y suelte una imagen aqui o haga click y busque una imagen en su ordenador.</h3>
+								<h3>Arrastre y suelte el archivo O imagen aqui o haga click y busque el archivo o imagen en su ordenador.</h3>
 
 							</div>
 							<div class="fallback">
 								<input name="file" type="file" id="archivos" />
 								<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
-								<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="1" />
+								<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+
 
 							</div>
 						</form>
@@ -337,6 +351,9 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 <!-- Dropzone Plugin Js -->
 <script src="../../plugins/dropzone/dropzone.js"></script>
+
+<script src="../../js/pdfobject.min.js"></script>
+
 
 
 <form class="form" @submit.prevent="realizarConsulta">
@@ -407,7 +424,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	function traerImagen() {
 		$.ajax({
 			data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
-					iddocumentacion: 1,
+					iddocumentacion: <?php echo $idDocumentacion; ?>,
 					accion: 'traerImgenJugadorPorJugadorDocumentacion'},
 			url:   '../../ajax/ajax.php',
 			type:  'post',
@@ -415,9 +432,22 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 			},
 			success:  function (response) {
+				var cadena = response.datos.type.toLowerCase();
 
-				$(".thumbnail img").attr("src",response.datos.imagen);
+				if (response.datos.type != '') {
+					if (cadena.indexOf("pdf") > -1) {
+						PDFObject.embed(response.datos.imagen, "#example1");
+						$('#example1').show();
+						$(".thumbnail").hide();
+					} else {
+						$(".thumbnail img").attr("src",response.datos.imagen);
+						$(".thumbnail").show();
+						$('#example1').hide();
+					}
+				}
+
 				$('#estado').html(response.datos.estado);
+				$('#idFoto').val(response.datos.idFoto);
 
 			}
 		});
@@ -433,18 +463,19 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	Dropzone.options.frmFileUpload = {
 		maxFilesize: 2,
 		addRemoveLinks: true,
-		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
 		accept: function(file, done) {
 			done();
 		},
 		init: function() {
 			this.on("sending", function(file, xhr, formData){
                formData.append("idjugador", '<?php echo mysql_result($resResultado,0,'idjugador'); ?>');
-					formData.append("iddocumentacion", '1');
+					formData.append("iddocumentacion", '<?php echo $idDocumentacion; ?>');
          });
 			this.on('success', function( file, resp ){
 				traerImagen();
 				swal("Correcto!", resp.replace("1", ""), "success");
+				$('.btnPresentar').show();
 			});
 
 			this.on('error', function( file, resp ){
@@ -456,28 +487,32 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	var myDropzone = new Dropzone("#archivos", {
 		params: {
           idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
-          iddocumentacion: 1
+          iddocumentacion: <?php echo $idDocumentacion; ?>
       },
 		url: 'subir.php'
 	});
 
 	$(document).ready(function(){
 
+
+
 		<?php if ($permite == 0) { ?>
-			$('.presentar').hide();
+			$('.btnPresentar').hide();
 			$('.subirImagen').hide();
 		<?php } ?>
 
-		var $demoMaskedInput = $('.demo-masked-input');
+		<?php if ($idFoto == 0) { ?>
+			$('.btnPresentar').hide();
 
-		//Date
-		$demoMaskedInput.find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
+		<?php } ?>
+
+
 
 		function presentar() {
 			$.ajax({
 				data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
-						iddocumentacion: 1,
-						id: <?php echo mysql_result($resFoto,0,0); ?>,
+						iddocumentacion: <?php echo $idDocumentacion; ?>,
+						id: $('#idFoto').val(),
 						accion: 'presentarDocumentacion'},
 				url:   '../../ajax/ajax.php',
 				type:  'post',
@@ -496,7 +531,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 					$('.btnPresentar').hide();
 					$('.subirImagen').hide();
 
-					swal("Correcto!", 'Se presento la documentacion Foto', "success");
+					swal("Correcto!", 'Se presento la documentacion Expensas', "success");
 
 				}
 			});

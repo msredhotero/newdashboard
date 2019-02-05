@@ -211,6 +211,12 @@ class ServiciosReferencias {
 			$string
 		);
 
+		$string = str_replace(
+			array(' '),
+			array(''),
+			$string
+		);
+
 
 
 		return $string;

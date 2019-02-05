@@ -251,6 +251,15 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 						</div>
 						<div class="body table-responsive">
 							<div class="row">
+								<div class="col-xs-12 col-md-12 col-lg-12">
+									<div class="alert alert-success">
+										<p><b>PROCEDA A CARGAR SU FOTO PERSONAL. LA MISMA DEBE TENER UN FONDO LISO. PUEDE OPTAR POR TOMARSE UNA FOTO CON SU SMARTPHONE O SUBIR UNA EXISTENTE. (RECOMENDACIÓN ADICIONAL, SUBIR LA FOTO VISTIENDO LA CAMISETA DEL COUNTRY).</b></p>
+									</div>
+								</div>
+
+							</div>
+
+							<div class="row">
 
 								<div class="col-xs-6 col-md-6 col-lg-6">
 									<a href="javascript:void(0);" class="thumbnail">

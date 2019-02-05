@@ -240,7 +240,7 @@ switch ($accion) {
             $coDescripcion = '';
             break;
       }
-      
+
       if ($iddocumentacion == 99) {
          $iddocumentacion = 2;
          $coDescripcion = 'Dorso';
@@ -295,11 +295,11 @@ switch ($accion) {
 
          //desarrollo
          $imagen = '../../../../'.$servidorCarpeta.'/'.mysql_result($resFoto,0,'archivo').'/'.mysql_result($resFoto,0,'imagen');
-         $resV['datos'] = array('imagen' => $imagen, 'estado' => mysql_result($resFoto,0,'estado'), 'idFoto' => mysql_result($resFoto,0,0));
+         $resV['datos'] = array('imagen' => $imagen, 'estado' => mysql_result($resFoto,0,'estado'), 'idFoto' => mysql_result($resFoto,0,0), 'type' => mysql_result($resFoto,0,'type'));
          $resV['error'] = false;
       } else {
          $imagen = '../../imagenes/sin_img.jpg';
-         $resV['datos'] = array('imagen' => $imagen, 'estado' => 'Imagen No Cargada', 'idFoto' => 0);
+         $resV['datos'] = array('imagen' => $imagen, 'estado' => 'Imagen No Cargada', 'idFoto' => 0, 'type' => '');
          $resV['error'] = false;
       }
 

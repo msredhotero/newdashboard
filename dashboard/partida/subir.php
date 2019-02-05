@@ -49,7 +49,7 @@ if (!isset($_SESSION['usua_aif']))
 	 $imagen = $serviciosReferencias->sanear_string(basename($archivo['name']));
 	 $type = $archivo["type"];
 
-	 $resDocumentacionImagen = $serviciosReferencias->insertarDocumentacionjugadorimagenes(1,0,$imagen,$type,1,$_POST['idjugador']);
+	 $resDocumentacionImagen = $serviciosReferencias->insertarDocumentacionjugadorimagenes($_POST['iddocumentacion'],0,$imagen,$type,1,$_POST['idjugador']);
 
 	 $iddocumentacionjugadorimagen = $resDocumentacionImagen;
 

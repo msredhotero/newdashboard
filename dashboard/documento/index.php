@@ -24,7 +24,7 @@ $baseHTML = new BaseHTML();
 //*** SEGURIDAD ****/
 include ('../../includes/funcionesSeguridad.php');
 $serviciosSeguridad = new ServiciosSeguridad();
-$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../foto/');
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../documento/');
 //*** FIN  ****/
 
 $fecha = date('Y-m-d');
@@ -250,6 +250,15 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 							</ul>
 						</div>
 						<div class="body table-responsive">
+							<div class="row">
+								<div class="col-xs-12 col-md-12 col-lg-12">
+									<div class="alert alert-success">
+										<p><b>SUBA UNA FOTO DE SU DNI TARJETA DE FRENTE. PROCURE QUE TODOS LOS DATOS SEAN LEGIBLES Y QUE LA CAMARA ESTE LO MAS CERCA POSIBLE DENTRO DE LOS LIMITES DEL DNI. SAQUE LA FOTO CON EL CELULAR EN HORIZONTAL.</b></p>
+									</div>
+								</div>
+
+							</div>
+
 							<div class="row">
 
 								<div class="col-xs-6 col-md-6 col-lg-6">
