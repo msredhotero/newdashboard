@@ -2,7 +2,7 @@
 
 session_start();
 
-$servidorCarpeta = 'aifzn';
+$servidorCarpeta = 'aifzndesarrollo';
 
 if (!isset($_SESSION['usua_aif']))
 {
