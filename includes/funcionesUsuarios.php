@@ -285,7 +285,7 @@ function registrarSocio($email, $password,$idjugador) {
 	$cuerpo = '';
 
 	$fecha = date_create(date('Y').'-'.date('m').'-'.date('d'));
-	date_add($fecha, date_interval_create_from_date_string('2 days'));
+	date_add($fecha, date_interval_create_from_date_string('15 days'));
 	$fechaprogramada =  date_format($fecha, 'Y-m-d');
 
 	$cuerpo .= '<p>Antes que nada por favor no responda este mail ya que no recibirá respuesta.</p>';
