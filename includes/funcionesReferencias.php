@@ -2794,6 +2794,29 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		return $res;
 	}
 
+	function traerFusionPorEquiposDelegadosAceptados($idequipodelegado) {
+		$sql = "SELECT
+					    cc.idcountrie,
+					    cc.nombre AS countrie,
+					    est.idestado,
+					    est.estado,
+					    (CASE
+					        WHEN viejo = 1 THEN 'Antiguo'
+					        ELSE 'Nuevo'
+					    END) AS viejo
+					FROM
+					    dbcountries cc
+					        INNER JOIN
+					    dbfusionequipos fe ON fe.refcountries = cc.idcountrie
+					        INNER JOIN
+					    tbestados est ON est.idestado = fe.refestados
+					WHERE
+					    fe.refequiposdelegados = ".$idequipodelegado." and fe.refestados = 3";
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	function traerFusionPorIdEquipos($idequipo) {
 		$sql = "SELECT
 					    cc.idcountrie,
