@@ -51,7 +51,7 @@ class BaseHTML {
                          12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>');
 
          if ($_SESSION['idroll_aif'] == 4) {
-            array_push($arNuevo,13 => '<script src="'.$altura.'js/script.js"></script>');
+            array_push($arNuevo, array(13 => '<script src="'.$altura.'js/script.js"></script>'));
          }
 
         $cad = '<input type="hidden" id="club" name="club" value="'.$_SESSION['idclub_aif'].'" /><input type="hidden" id="altura" name="altura" value="'.$altura.'" />';
