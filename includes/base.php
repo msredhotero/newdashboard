@@ -36,22 +36,37 @@ class BaseHTML {
     function cargarArchivosJS($altura ,$ar = array()) {
 
 
-        $arNuevo = array(0=>'<script src="'.$altura.'plugins/jquery/jquery.min.js"></script>',
-                         1=>'<script src="'.$altura.'plugins/bootstrap/js/bootstrap.js"></script>',
-                         2=>'<script src="'.$altura.'plugins/bootstrap-select/js/bootstrap-select.js"></script>',
-                         3=>'<script src="'.$altura.'plugins/jquery-slimscroll/jquery.slimscroll.js"></script>',
-                         4=>'<script src="'.$altura.'plugins/node-waves/waves.js"></script>',
-                         5=>'<script src="'.$altura.'js/admin.js"></script>',
-                         6=>'<script src="'.$altura.'js/demo.js"></script>',
-                         7=>'<script src="'.$altura.'plugins/bootstrap-notify/bootstrap-notify.js"></script>',
-                         8=>'<script src="'.$altura.'js/pages/ui/notifications.js"></script>',
-                         9=>'<script src="'.$altura.'plugins/jquery-validation/jquery.validate.js"></script>',
-                         10=>'<script src="'.$altura.'plugins/jquery-steps/jquery.steps.js"></script>',
-                         11=>'<script src="'.$altura.'plugins/sweetalert/sweetalert.min.js"></script>',
-                         12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>');
+
 
          if ($_SESSION['idroll_aif'] == 4) {
-            array_push($arNuevo, array(13 => '<script src="'.$altura.'js/script.js"></script>'));
+            $arNuevo = array(0=>'<script src="'.$altura.'plugins/jquery/jquery.min.js"></script>',
+                             1=>'<script src="'.$altura.'plugins/bootstrap/js/bootstrap.js"></script>',
+                             2=>'<script src="'.$altura.'plugins/bootstrap-select/js/bootstrap-select.js"></script>',
+                             3=>'<script src="'.$altura.'plugins/jquery-slimscroll/jquery.slimscroll.js"></script>',
+                             4=>'<script src="'.$altura.'plugins/node-waves/waves.js"></script>',
+                             5=>'<script src="'.$altura.'js/admin.js"></script>',
+                             6=>'<script src="'.$altura.'js/demo.js"></script>',
+                             7=>'<script src="'.$altura.'plugins/bootstrap-notify/bootstrap-notify.js"></script>',
+                             8=>'<script src="'.$altura.'js/pages/ui/notifications.js"></script>',
+                             9=>'<script src="'.$altura.'plugins/jquery-validation/jquery.validate.js"></script>',
+                             10=>'<script src="'.$altura.'plugins/jquery-steps/jquery.steps.js"></script>',
+                             11=>'<script src="'.$altura.'plugins/sweetalert/sweetalert.min.js"></script>',
+                             12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>',
+                             13 => '<script src="'.$altura.'js/script.js"></script>');
+         } else {
+            $arNuevo = array(0=>'<script src="'.$altura.'plugins/jquery/jquery.min.js"></script>',
+                             1=>'<script src="'.$altura.'plugins/bootstrap/js/bootstrap.js"></script>',
+                             2=>'<script src="'.$altura.'plugins/bootstrap-select/js/bootstrap-select.js"></script>',
+                             3=>'<script src="'.$altura.'plugins/jquery-slimscroll/jquery.slimscroll.js"></script>',
+                             4=>'<script src="'.$altura.'plugins/node-waves/waves.js"></script>',
+                             5=>'<script src="'.$altura.'js/admin.js"></script>',
+                             6=>'<script src="'.$altura.'js/demo.js"></script>',
+                             7=>'<script src="'.$altura.'plugins/bootstrap-notify/bootstrap-notify.js"></script>',
+                             8=>'<script src="'.$altura.'js/pages/ui/notifications.js"></script>',
+                             9=>'<script src="'.$altura.'plugins/jquery-validation/jquery.validate.js"></script>',
+                             10=>'<script src="'.$altura.'plugins/jquery-steps/jquery.steps.js"></script>',
+                             11=>'<script src="'.$altura.'plugins/sweetalert/sweetalert.min.js"></script>',
+                             12=>'<script src="'.$altura.'js/pages/forms/form-validation.js"></script>');
          }
 
         $cad = '<input type="hidden" id="club" name="club" value="'.$_SESSION['idclub_aif'].'" /><input type="hidden" id="altura" name="altura" value="'.$altura.'" />';
