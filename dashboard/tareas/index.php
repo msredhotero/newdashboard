@@ -88,12 +88,12 @@ $refCampo 	=  array("refusuarios");
 $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
+$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
-    $ultimaTemporada = 0;   
+    $ultimaTemporada = 0;
 }
 
 //die(var_dump($ultimaTemporada));
@@ -151,12 +151,12 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
-	
+
 	<!-- Animation Css -->
     <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -172,9 +172,9 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
     <style>
         .alert > i{ vertical-align: middle !important; }
 
-		
+
 	</style>
-	
+
 
 </head>
 
@@ -248,7 +248,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 										</div>
 
 									</div>
-									
+
 								</div>
 
 								<div class="row">
@@ -276,11 +276,11 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 														<span>Ver</span>
 													</button>
 												</td>
-												
+
 												<td>
 												<?php
 												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
+													if ($habilitado == 1) {
 												?>
 													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipoPasivo(equipo)">
 														<i class="material-icons">delete</i>
@@ -296,11 +296,11 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												?>
 												</td>
 											</tr>
-						
+
 											</tbody>
 										</table>
 									</form>
-										
+
 									</div>
 								</div>
 								<hr>
@@ -309,7 +309,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
 									<h4> <i class="material-icons">unarchive</i> Equipos que Quedarán</h4>
 									</div>
-									
+
 									<form class="form" id="formCountryEquiposMantenidos">
 										<table class="table table-bordered table-striped table-hover highlight" id="example">
 											<thead>
@@ -333,11 +333,11 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 														<span>Ver</span>
 													</button>
 												</td>
-												
+
 												<td>
 												<?php
 												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
+													if ($habilitado == 1) {
 												?>
 													<button type='button' class='btn bg-red waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
 														<i class="material-icons">clear</i>
@@ -349,10 +349,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												?>
 												</td>
 											</tr>
-						
+
 											</tbody>
 										</table>
-									
+
 									</div>
 
 
@@ -360,7 +360,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
 									<h4> <i class="material-icons">remove_circle</i> Equipos que seran Eliminados</h4>
 									</div>
-									
+
 									<form class="form" id="formCountryEquiposEliminados">
 										<table class="table table-bordered table-striped table-hover highlight" id="example">
 											<thead>
@@ -377,11 +377,11 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												<td>{{ equipo.nombre }}</td>
 												<td>{{ equipo.categoria }}</td>
 												<td>{{ equipo.division }}</td>
-												
+
 												<td>
 												<?php
 												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
+													if ($habilitado == 1) {
 												?>
 													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
 														<i class="material-icons">autorenew</i>
@@ -393,16 +393,16 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 												?>
 												</td>
 											</tr>
-						
+
 											</tbody>
 										</table>
-									
+
 									</div>
 								</div>
 								<hr>
 								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									
+
 										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
 											<h4> <i class="material-icons">add_circle</i> Equipos que seran Agregados</h4>
 										</div>
@@ -435,38 +435,38 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 														<span>Ver</span>
 													</button>
 												</td>
-												
+
 												<td>
 												<?php
 												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {	
+													if ($habilitado == 1) {
 												?>
 													<button type='button' class='btn btn-danger waves-effect eliminarEquiposDelegadoDefinitivo' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
 														<i class="material-icons">delete</i>
 														<span>Eliminar</span>
 													</button>
-													
-													
+
+
 												<?php
 													}
 												}
 												?>
 												</td>
 											</tr>
-						
+
 											</tbody>
 										</table>
-									
+
 									</div>
 								</div>
 								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
 								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
-							
+
 							<div>
 							<div class="alert bg-indigo">
 								<strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.
 							</div>
-							
+
 							</form>
 							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
 							<div class="button-demo" v-show="verificarFusion == 3">
@@ -478,7 +478,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
 							</div>
 							</form>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</div>
@@ -528,7 +528,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					<div class="form-group">
 						<div class="form-line">
 							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-							
+
 						</div>
 					</div>
 				</div>
@@ -594,7 +594,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 						</select>
 					</div>
 
-					
+
 				</div>
 				<div class="row">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
@@ -616,7 +616,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					<i class="material-icons">send</i>
 					<span>CREAR</span>
 				</button>
-				
+
             </slot>
           </div>
         </div>
@@ -626,7 +626,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 </script>
 </form>
 
-  
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -644,10 +644,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
       default content
     -->
 	<h3 slot="header">Crear Equipo</h3>
-	
+
   </modal2>
 
-											
+
 </main>
 
 
@@ -655,7 +655,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 <script>
 
-	
+
 
 	$(document).ready(function(){
 
@@ -670,7 +670,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
-	
+
 	const paramsGetEquipos = new URLSearchParams();
     paramsGetEquipos.append('accion','traerEquiposPorCountriesConFusion');
 	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
@@ -720,22 +720,22 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	paramsGeneral.append('accion','verFusion');
 	paramsGeneral.append('idequipodelegado',0);
 	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	
 
 
-	
+
+
 
 	Vue.component('modal', {
 		template: '#modal-template',
 		methods: {
 			enviarConsulta () {
-				
+
 				paramsNotificacion.set('mensaje',$('#mensaje').val());
-				
+
 				axios.post('../../ajax/ajax.php', paramsNotificacion)
 				.then(res => {
 					//this.setMensajes(res)
-					
+
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -743,7 +743,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 		}
@@ -757,27 +757,27 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			this.getAllEquiposNuevos()
 		},
 		methods: {
-			
+
 			crearEquipo () {
 				paramsCrearEquipo.set('nombre',$('#nombre').val());
 				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
 				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
 				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
 				paramsCrearEquipo.set('nuevo',1);
-				
-				
+
+
 				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
 				.then(res => {
 
 					if (res.data.error == '') {
 						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)	
+						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)
 						this.$emit('close')
-						
+
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 
@@ -785,7 +785,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	})
 
 
-	
+
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -801,8 +801,8 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			activeEquiposMantenidos: {},
 			showModal: false,
 			showModalEquipo: false,
-			verificarFusion: <?php echo $verificarFusion; ?>	
-			
+			verificarFusion: <?php echo $verificarFusion; ?>
+
 		},
 		mounted () {
 			this.getDelegado()
@@ -812,7 +812,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			this.getAllEquiposQuedan()
 		},
 		computed: {
-			
+
 		},
 		methods: {
 			setMensajes (res) {
@@ -833,7 +833,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 			getDelegado () {
 					axios.post('../../ajax/ajax.php',paramsGetDelegado)
 					.then(res => {
-                        
+
 						this.activeDelegados = res.data.datos[0]
 					})
 			},
@@ -846,10 +846,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 
-				
+
 			},
 			confirmarEquipos (e) {
 				axios.post('../../ajax/ajax.php', new FormData(e.target))
@@ -863,20 +863,20 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			},
 			getAllEquipos () {
 					axios.post('../../ajax/ajax.php',paramsGetEquipos)
 					.then(res => {
-                        
+
 						this.activeEquipos = res.data.datos
 					})
 			},
 			getAllEquiposEliminados () {
 					axios.post('../../ajax/ajax.php',paramsGetEquiposEliminados)
 					.then(res => {
-                        
+
 						this.activeEquiposEliminados = res.data.datos
 					})
 			},
@@ -887,7 +887,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				axios.post('../../ajax/ajax.php',paramsGeneral)
 				.then(res => {
 					this.$swal("Ok!", 'Fusion: ' + res.data.datos[0], "success")
-					
+
 				})
 			},
 			verFusionDelegados : function(id) {
@@ -898,7 +898,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				.then(res => {
 
 					this.$swal("Ok!", res.data.datos[0], "success")
-					
+
 				})
 			},
 			eliminarEquipoPasivo : function(equi){
@@ -908,7 +908,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
 				.then(res => {
-					
+
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
@@ -925,7 +925,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 				axios.post('../../ajax/ajax.php',paramsMantenerEquipo)
 				.then(res => {
-					
+
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
@@ -936,7 +936,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 					}
 				})
 			},
-			
+
 
 			eliminarEquipoDelegado : function(equi){
 
@@ -945,7 +945,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
 				.then(res => {
-					
+
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
@@ -963,7 +963,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
 				.then(res => {
-					
+
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 						this.getAllEquiposEliminados()
@@ -979,7 +979,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 				axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
 				.then(res => {
-					
+
 					this.activeEquiposNuevos = res.data.datos
 
 				})
@@ -988,7 +988,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 				axios.post('../../ajax/ajax.php',paramsGetEquiposQuedan)
 				.then(res => {
-					
+
 					this.activeEquiposMantenidos = res.data.datos
 
 				})
@@ -1001,5 +1001,3 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 </body>
 <?php } ?>
 </html>
-
-

@@ -82,12 +82,12 @@ $refCampo 	=  array("refusuarios");
 $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
+$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
-    $ultimaTemporada = 0;   
+    $ultimaTemporada = 0;
 }
 
 
@@ -115,7 +115,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -131,9 +131,9 @@ if (mysql_num_rows($resTemporadas)>0) {
     <style>
         .alert > i{ vertical-align: middle !important; }
 
-		
+
 	</style>
-	
+
 
 </head>
 
@@ -184,7 +184,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 
         	<div class="row">
 
-			
+
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="card ">
 						<div class="header bg-blue">
@@ -204,13 +204,13 @@ if (mysql_num_rows($resTemporadas)>0) {
 						</div>
 						<div class="body table-responsive">
 							<div class="row">
-                                
+
                                 <div class="col-xs-6 col-md-6 col-lg-6">
                                     <a href="javascript:void(0);" class="thumbnail">
                                         <img v-bind:src="activeCountry.imagen" class="img-responsive">
                                     </a>
                                 </div>
-                                
+
 
                             </div>
 							<form v-on:submit.prevent="guardarCountry" class="form" id="formCountry">
@@ -220,44 +220,44 @@ if (mysql_num_rows($resTemporadas)>0) {
 									<label class="form-label">Dirección</label>
                                         <div class="form-line">
                                             <input type="text" class="form-control" :value="activeCountry.direccion" v-modal="activeCountry.direccion" id="direccion" name="direccion" />
-                                            
+
                                         </div>
                                     </div>
 								</div>
-								
+
 								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="form-group">
 									<label class="form-label">Tel. Administrativo</label>
                                         <div class="form-line">
                                             <input type="text" class="form-control" :value="activeCountry.telefonoadministrativo" v-modal="activeCountry.telefonoadministrativo" id="telefonoadministrativo" name="telefonoadministrativo" />
-                                            
+
                                         </div>
                                     </div>
 								</div>
-								
+
 								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="form-group">
 									<label class="form-label">Tel. Campo</label>
                                         <div class="form-line">
                                             <input type="text" class="form-control" :value="activeCountry.telefonocampo" v-modal="activeCountry.telefonocampo" id="telefonocampo" name="telefonocampo" />
-                                            
+
                                         </div>
                                     </div>
 								</div>
-								
+
 
 								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="form-group">
 									<label class="form-label">Email</label>
                                         <div class="form-line">
                                             <input type="email" class="form-control" :value="activeCountry.email" v-modal="activeCountry.email" id="email" name="email" />
-                                            
+
                                         </div>
                                     </div>
 								</div>
 								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
 								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
-							
+
 							<div>
 							<div class="button-demo">
 								<button type="submit" class="btn bg-light-blue waves-effect">
@@ -267,16 +267,16 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 							</div>
 							</form>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</div>
-				
+
 
 			</div>
 
-            
-            
+
+
 
 		</div>
 
@@ -308,11 +308,11 @@ if (mysql_num_rows($resTemporadas)>0) {
 									<i class="material-icons">touch_app</i>
 								</div>
 								<h3>Arrastre y suelte una imagen aqui o haga click y busque una imagen en su ordenador.</h3>
-								
+
 							</div>
 							<div class="fallback">
 								<input name="file" type="file" id="archivos" />
-								
+
 							</div>
 						</form>
 					</div>
@@ -321,7 +321,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 		</div>
 	</div>
 
-	
+
 
 
 </section>
@@ -369,7 +369,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 					<div class="form-group">
 						<div class="form-line">
 							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-							
+
 						</div>
 					</div>
 				</div>
@@ -395,7 +395,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 </script>
 </form>
 
-  
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -415,17 +415,17 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 	function traerImagen() {
 		$.ajax({
-			data:  {id: <?php echo $_SESSION['idclub_aif']; ?>, 
+			data:  {id: <?php echo $_SESSION['idclub_aif']; ?>,
 					accion: 'traerImgenCountry'},
 			url:   '../../ajax/ajax.php',
 			type:  'post',
 			beforeSend: function () {
-					
+
 			},
 			success:  function (response) {
 
 				$(".thumbnail img").attr("src",response);
-					
+
 			}
 		});
 	}
@@ -462,7 +462,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 		//Date
 		$demoMaskedInput.find('.date').inputmask('yyyy-mm-dd', { placeholder: '____-__-__' });
 
-		
+
 
 	});
 </script>
@@ -474,23 +474,23 @@ if (mysql_num_rows($resTemporadas)>0) {
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
-	
+
 	const paramsGetCountry = new URLSearchParams();
     paramsGetCountry.append('accion','traerCountriesPorId');
 	paramsGetCountry.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	
+
 
 	Vue.component('modal', {
 		template: '#modal-template',
 		methods: {
 			enviarConsulta () {
-				
+
 				paramsNotificacion.set('mensaje',$('#mensaje').val());
-				
+
 				axios.post('../../ajax/ajax.php', paramsNotificacion)
 				.then(res => {
 					//this.setMensajes(res)
-					
+
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -498,7 +498,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 		}
@@ -514,15 +514,15 @@ if (mysql_num_rows($resTemporadas)>0) {
 			successMensaje: '',
 			activeDelegados: {},
 			activeCountry: {},
-			showModal: false	
-			
+			showModal: false
+
 		},
 		mounted () {
 			this.getDelegado()
 			this.getCountry()
 		},
 		computed: {
-			
+
 		},
 		methods: {
 
@@ -544,7 +544,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 			getDelegado () {
 					axios.post('../../ajax/ajax.php',paramsGetDelegado)
 					.then(res => {
-                        
+
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 						this.activeDelegados = res.data.datos[0]
 					})
@@ -559,15 +559,15 @@ if (mysql_num_rows($resTemporadas)>0) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 
-				
+
 			},
 			getCountry () {
 					axios.post('../../ajax/ajax.php',paramsGetCountry)
 					.then(res => {
-                        
+
                         //this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 						this.activeCountry = res.data.datos[0]
 					})
@@ -582,10 +582,10 @@ if (mysql_num_rows($resTemporadas)>0) {
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 
-				
+
 			}
 		}
 	})
@@ -593,5 +593,3 @@ if (mysql_num_rows($resTemporadas)>0) {
 </body>
 <?php } ?>
 </html>
-
-
