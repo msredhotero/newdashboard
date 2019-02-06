@@ -88,12 +88,12 @@ $refCampo 	=  array("refusuarios");
 $frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada(); 
+$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);    
+    $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
-    $ultimaTemporada = 0;   
+    $ultimaTemporada = 0;
 }
 
 //die(var_dump($ultimaTemporada));
@@ -137,12 +137,12 @@ $idequipodelegado = $_GET['id'];
 
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
-	
+
 	<!-- Animation Css -->
     <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -158,9 +158,9 @@ $idequipodelegado = $_GET['id'];
     <style>
         .alert > i{ vertical-align: middle !important; }
 
-		
+
 	</style>
-	
+
 
 </head>
 
@@ -276,16 +276,16 @@ $idequipodelegado = $_GET['id'];
 																<span>Marcar en Curso</span>
 															</button>
 														</div>
-														
+
 													</td>
 												</tr>
 											</tbody>
 										</table>
 										</form>
 									</div>
-									
+
 								</div>
-					
+
 						</div>
 					</div>
 				</div>
@@ -335,7 +335,7 @@ $idequipodelegado = $_GET['id'];
 					<div class="form-group">
 						<div class="form-line">
 							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-							
+
 						</div>
 					</div>
 				</div>
@@ -363,7 +363,7 @@ $idequipodelegado = $_GET['id'];
 
 
 
-  
+
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -381,7 +381,7 @@ $idequipodelegado = $_GET['id'];
 
 <script>
 
-	
+
 
 	$(document).ready(function(){
 
@@ -396,14 +396,14 @@ $idequipodelegado = $_GET['id'];
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
-	
+
 
 
 	const paramsGeneral = new URLSearchParams();
 	paramsGeneral.append('accion','traerFusionesPorEquipo');
 	paramsGeneral.append('idequipodelegado',<?php echo $idequipodelegado; ?>);
 	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	
+
 
 	const paramsAcciones = new URLSearchParams();
 	paramsAcciones.append('accion','');
@@ -411,19 +411,19 @@ $idequipodelegado = $_GET['id'];
 	paramsAcciones.append('refestados',0);
 
 
-	
+
 
 	Vue.component('modal', {
 		template: '#modal-template',
 		methods: {
 			enviarConsulta () {
-				
+
 				paramsNotificacion.set('mensaje',$('#mensaje').val());
-				
+
 				axios.post('../../ajax/ajax.php', paramsNotificacion)
 				.then(res => {
 					//this.setMensajes(res)
-					
+
 
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
@@ -431,7 +431,7 @@ $idequipodelegado = $_GET['id'];
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}
-					
+
 				});
 			}
 		}
@@ -440,7 +440,7 @@ $idequipodelegado = $_GET['id'];
 
 
 
-	
+
 	const app = new Vue({
 		el: "#app",
 		data: {
@@ -456,7 +456,7 @@ $idequipodelegado = $_GET['id'];
 			this.getFusiones()
 		},
 		computed: {
-			
+
 		},
 		methods: {
 			setMensajes (res) {
@@ -477,14 +477,14 @@ $idequipodelegado = $_GET['id'];
 			getDelegado () {
 				axios.post('../../ajax/ajax.php',paramsGetDelegado)
 				.then(res => {
-                    
+
 					this.activeDelegados = res.data.datos[0]
 				})
 			},
 			getFusiones () {
 				axios.post('../../ajax/ajax.php',paramsGeneral)
 				.then(res => {
-                    
+
 					this.fusiones = res.data.datos
 				})
 			},
@@ -496,7 +496,7 @@ $idequipodelegado = $_GET['id'];
 
 				axios.post('../../ajax/ajax.php',paramsAcciones)
 				.then(res => {
-                    
+
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
@@ -515,7 +515,7 @@ $idequipodelegado = $_GET['id'];
 
 				axios.post('../../ajax/ajax.php',paramsAcciones)
 				.then(res => {
-                    
+
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
 
@@ -534,5 +534,3 @@ $idequipodelegado = $_GET['id'];
 </body>
 <?php } ?>
 </html>
-
-

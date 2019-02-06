@@ -16,6 +16,7 @@ function traerTareas(club, altura) {
         dataType: "json",
         data:  {
             idcountrie: club,
+            altura: altura,
             accion: 'traerTareasGeneralPorCountrieIncompletas'
         },
         url:   altura + 'ajax/ajax.php',

@@ -779,6 +779,13 @@ switch ($accion) {
 
 	function traerTareasGeneralPorCountrieIncompletas($serviciosNotificaciones) {
 		$id = $_POST['idcountrie'];
+      $altura = $_POST['altura'];
+
+      if (strlen($altura) == 3) {
+         $altura = '';
+      } else {
+         $altura = '../';
+      }
 
 		$res = $serviciosNotificaciones->traerTareasGeneralPorCountrieIncompletas($id);
 
@@ -808,7 +815,7 @@ switch ($accion) {
 				}
 			}
 			$cad .= '<li>
-						<a href="'.$row['url'].$row['id1'].'" class=" waves-effect waves-block">
+						<a href="'.$altura.$row['url'].$row['id1'].'" class=" waves-effect waves-block">
 							<h4>
 								'.$row['tarea'].'
 								<small>'.$porcentaje.'%</small>
