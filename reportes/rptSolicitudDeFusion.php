@@ -120,7 +120,7 @@ Los jugadores de nuestra institución que formarán parte son los siguientes: ')
    	$pdf->Cell(40,5,'APELLIDO',1,0,'C',true);
    	$pdf->Cell(40,5,'NOMBRE',1,0,'C',true);
    	$pdf->Cell(30,5,'NRO DOC',1,0,'C',true);
-      $pdf->Cell(40,5,'FECHA NACIMIENTO',1,0,'C',true);
+      $pdf->Cell(45,5,'FECHA NACIMIENTO',1,0,'C',true);
 
       $cantPartidos = 0;
 
@@ -135,10 +135,10 @@ Los jugadores de nuestra institución que formarán parte son los siguientes: ')
          $pdf->SetX(5);
          $pdf->SetFont('Arial','',10);
          $pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
-         $pdf->Cell(40,5,utf8_decode($rowE['apellido']),1,0,'L',false);
-         $pdf->Cell(40,5,utf8_decode($rowE['nombres']),1,0,'L',false);
-         $pdf->Cell(30,5,utf8_decode($rowE['nrodocumento']),1,0,'C',false);
-         $pdf->Cell(40,5,utf8_decode($rowE['fechanacimiento']),1,0,'C',false);
+         $pdf->Cell(40,5,utf8_decode($row['apellido']),1,0,'L',false);
+         $pdf->Cell(40,5,utf8_decode($row['nombres']),1,0,'L',false);
+         $pdf->Cell(30,5,utf8_decode($row['nrodocumento']),1,0,'C',false);
+         $pdf->Cell(45,5,utf8_decode($row['fechanacimiento']),1,0,'C',false);
 
 
          $contadorY1 += 4;
