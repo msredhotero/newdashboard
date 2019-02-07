@@ -1070,13 +1070,15 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 						$('#fusioncountries').append('<option value="' + this.items[i].idcountrie + '" selected>' + this.items[i].countrie + '</option>')
 	            }
 
-					this.getAllEquiposEliminados()
-					this.getAllEquiposNuevos()
-					this.getAllEquiposQuedan()
-					this.getAllEquipos()
+
 
 
 				});
+
+				this.getAllEquiposEliminados()
+				this.getAllEquiposNuevos()
+				this.getAllEquiposQuedan()
+				this.getAllEquipos()
 			},
 			getUltimaDivision () {
 				axios.post('../../ajax/ajax.php', paramsCategoria)
