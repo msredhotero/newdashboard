@@ -134,7 +134,7 @@ $frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblC
 
 
 ////////////////////////////		 verifico si existe alguna fusion donde no se confirmaron los countries /////////////////////////
-$verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountrie($_SESSION['idclub_aif']);
+$verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountrieEquipo($_SESSION['idclub_aif'], $idequipo);
 
 ////////////////////////////// 				FIN				  /////////////////////////
 

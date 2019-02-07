@@ -138,6 +138,76 @@ class ServiciosNotificaciones {
         return $res;
     }
 
+
+    function traerTareasGeneralPorCountrieIncompletasajax($idcountrie, $length, $start, $busqueda) {
+
+      $where = '';
+
+		$busqueda = str_replace("'","",$busqueda);
+		if ($busqueda != '') {
+			$where = "and t.tarea like '%".$busqueda."%' or est.estado like '%".$busqueda."%' or o.telefono like '%".$busqueda."%' or o.email like '%".$busqueda."%' or tip.tipotrabajo like '%".$busqueda."%' or mot.motivo like '%".$busqueda."%' or est.estado like '%".$busqueda."%'";
+		}
+
+      $sql = "SELECT idtarea,
+                  t.tarea,
+                  est.estado,
+                  cm.nombre as clubmadre,
+                  t.fechacrea,
+                  t.usuariomodi,
+                  t.fechamodi,
+                  t.url,
+                  t.id1,
+                  t.id2,
+                  t.id3,
+                  t.refestados,
+                  t.refcountries,
+                  est.color,
+                  est.idestadotarea,
+                  t.usuariocrea,
+                  cc.nombre as countrie
+            FROM dbtareas t
+            inner join dbcountries cc ON cc.idcountrie = t.refcountries
+            inner join tbestadostareas est ON est.idestadotarea = t.refestados
+            inner join dbfusionequipos f ON f.idfusionequipo = t.id1
+            inner join dbequiposdelegados ed ON ed.idequipodelegado = f.refequiposdelegados
+            inner join dbcountries cm ON cm.idcountrie = ed.refcountries
+            where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,3,4,5)
+            order by est.estado, fechacrea desc";
+      $res = $this->query($sql,0);
+      return $res;
+   }
+
+
+   function traerTareasGeneralPorCountrieIncompletasN($idcountrie) {
+      $sql = "SELECT idtarea,
+                  t.tarea,
+                  est.estado,
+
+                  t.fechacrea,
+                  t.usuariomodi,
+                  t.fechamodi,
+                  t.url,
+                  t.id1,
+                  t.id2,
+                  t.id3,
+                  t.refestados,
+                  t.refcountries,
+                  est.color,
+                  est.idestadotarea,
+                  t.usuariocrea,
+                  cc.nombre as countrie
+            FROM dbtareas t
+            inner join dbcountries cc ON cc.idcountrie = t.refcountries
+            inner join tbestadostareas est ON est.idestadotarea = t.refestados
+            inner join dbfusionequipos f ON f.idfusionequipo = t.id1
+            inner join dbequiposdelegados ed ON ed.idequipodelegado = f.refequiposdelegados
+            inner join dbcountries cm ON cm.idcountrie = ed.refcountries
+            where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,3,4,5)
+            order by est.estado, fechacrea desc";
+      $res = $this->query($sql,0);
+      return $res;
+   }
+
     function insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) {
         $sql = "insert into dbnotificaciones(mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,leido)
         values ('".($mensaje)."',".$idpagina.",'".($autor)."','".($destinatario)."',".$id1.",".$id2.",".$id3.",'".($icono)."','".($estilo)."','".($fecha)."','".($url)."',0)";

@@ -30,106 +30,42 @@ $serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../equipos/');
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Equipos",$_SESSION['refroll_aif'],$_SESSION['email_aif']);
+$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Tipo de Monedas",$_SESSION['refroll_aif'],$_SESSION['email_aif']);
 
 $configuracion = $serviciosReferencias->traerConfiguracion();
 
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
-$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a><a href="javascript:void(0)" class="navbar-brand"><i class="material-icons">navigate_next</i></a><a class="navbar-brand active" href="index.php">Equipos</a>';
-
-$club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
-
-$permiteRegistrar = 1;
-
-$habilitado = 1;
-
+$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
-$singular = "Country";
+$singular = "Tarea";
 
-$plural = "Countries";
+$plural = "Tareas";
 
-$eliminar = "eliminarJugadoresclub";
+$eliminar = "eliminarTareas";
 
-$insertar = "insertarJugadoresclub";
+$insertar = "insertarTareas";
 
-$tituloWeb = "Gestión: AIF";
+$modificar = "modificarTareas";
+
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbjugadoresclub";
+$tabla 			= "dbtareas";
 
-$lblCambio	 	= array("");
-$lblreemplazo	= array("");
+$lblCambio	 	= array("refestados");
+$lblreemplazo	= array("Estados");
 
 
 $cadRef 	= '';
 
 $refdescripcion = array();
 $refCampo 	=  array();
+
+$frmUnidadNegocios 	= $serviciosFunciones->camposTablaViejo($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 //////////////////////////////////////////////  FIN de los opciones //////////////////////////
-
-
-
-$tabla 			= "dbdelegados";
-
-$lblCambio	 	= array("refusuarios","email1","email2","email3","email4");
-$lblreemplazo	= array("Usuario","Email de Contacto 1","Email de Contacto 2","Email de Contacto 3","Email de Contacto 4");
-
-
-$resModelo 	= $serviciosReferencias->traerUsuariosPorId($_SESSION['usuaid_aif']);
-$cadRef 	= $serviciosFunciones->devolverSelectBox($resModelo,array(5),'');
-
-$refdescripcion = array(0 => $cadRef);
-$refCampo 	=  array("refusuarios");
-
-$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
-
-
-$resTemporadas = $serviciosReferencias->traerUltimaTemporada();
-
-if (mysql_num_rows($resTemporadas)>0) {
-    $ultimaTemporada = mysql_result($resTemporadas,0,0);
-} else {
-    $ultimaTemporada = 0;
-}
-
-//die(var_dump($ultimaTemporada));
-
-$resEquiposCountries = $serviciosReferencias->traerEquiposPorCountries($_SESSION['idclub_aif']);
-
-$resCategorias 	= $serviciosReferencias->traerCategorias();
-$cadRefCategorias 	= $serviciosFunciones->devolverSelectBox($resCategorias,array(1),'');
-
-$resDivisiones 	= $serviciosReferencias->traerDivisiones();
-$cadRefDivisiones 	= $serviciosFunciones->devolverSelectBox($resDivisiones,array(1),'');
-
-$resCountries 	= $serviciosReferencias->traerCountriesMenosId($_SESSION['idclub_aif']);
-$cadRefCountries 	= $serviciosFunciones->devolverSelectBox($resCountries,array(1),'');
-
-
-$idusuario = $_SESSION['usuaid_aif'];
-
-$confirmo = $serviciosReferencias->existeCabeceraConfirmacion($ultimaTemporada, $_SESSION['idclub_aif']);
-
-$idEstado = 0;
-//die(var_dump($confirmo));
-if ($confirmo == 0) {
-	$serviciosReferencias->insertarCabeceraconfirmacion( $ultimaTemporada, $_SESSION['idclub_aif'], 1, $_SESSION['nombre_aif'], $_SESSION['nombre_aif']);
-
-	$idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$confirmo,"idcabeceraconfirmacion");
-}
-
-if ($idEstado > 1) {
-	header('Location: modificar.php');
-}
-
-////////////////////////////		 verifico si existe alguna fusion donde no se confirmaron los countries /////////////////////////
-$verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountrie($_SESSION['idclub_aif']);
-
-////////////////////////////// 				FIN				  /////////////////////////
 
 ?>
 
@@ -137,26 +73,23 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title><?php echo $tituloWeb; ?></title>
-    <!-- Favicon-->
-    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title><?php echo $tituloWeb; ?></title>
+	<!-- Favicon-->
+	<link rel="icon" href="../../favicon.ico" type="image/x-icon">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
 	<?php echo $baseHTML->cargarArchivosCSS('../../'); ?>
 
 	<link href="../../plugins/waitme/waitMe.css" rel="stylesheet" />
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
-	<!-- Animation Css -->
-    <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
-
 	<!-- VUE JS -->
-	<script src="../../js/vue.min.js"></script>
+	<script src="../../vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -164,19 +97,22 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 	<script src="https://unpkg.com/vue-swal"></script>
 
 	<!-- Bootstrap Material Datetime Picker Css -->
-    <link href="../../plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
-
-	<!-- Dropzone Css -->
-    <link href="../../plugins/dropzone/dropzone.css" rel="stylesheet">
-
-    <style>
-        .alert > i{ vertical-align: middle !important; }
+	<link href="../../plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
 
 
+	<link rel="stylesheet" href="../../DataTables/DataTables-1.10.18/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="../../DataTables/DataTables-1.10.18/css/dataTables.bootstrap.css">
+	<link rel="stylesheet" href="../../DataTables/DataTables-1.10.18/css/dataTables.jqueryui.min.css">
+	<link rel="stylesheet" href="../../DataTables/DataTables-1.10.18/css/jquery.dataTables.css">
+
+	<style>
+		.alert > i{ vertical-align: middle !important; }
 	</style>
 
 
 </head>
+
+
 
 <body class="theme-red">
 
@@ -193,7 +129,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				</div>
 			</div>
 		</div>
-		<p>Espere por favor...</p>
+		<p>Cargando...</p>
 	</div>
 </div>
 <!-- #END# Page Loader -->
@@ -215,17 +151,20 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 <?php echo $baseHTML->cargarNAV($breadCumbs); ?>
 <!-- #Top Bar -->
 <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], $resMenu,'../../'); ?>
-<main id="app">
+
 <section class="content" style="margin-top:-15px;">
 
 	<div class="container-fluid">
 		<div class="row clearfix">
-        	<div class="row">
+
+			<div class="row">
+
+
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="card ">
-						<div class="header bg-teal">
+						<div class="header bg-blue">
 							<h2>
-								Country: <?php echo $club; ?>
+								<?php echo strtoupper($plural); ?>
 							</h2>
 							<ul class="header-dropdown m-r--5">
 								<li class="dropdown">
@@ -233,250 +172,36 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 										<i class="material-icons">more_vert</i>
 									</a>
 									<ul class="dropdown-menu pull-right">
-										<li><a href="javascript:void(0);" @click="showModal = true">Realizar Consulta</a></li>
+
 									</ul>
 								</li>
 							</ul>
 						</div>
 						<div class="body table-responsive">
-								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<h4>Equipos Activos Actuales</h4>
-										<p>Recuerde que el plantel del equipo se deberá cargar </p>
-										<div class="alert alert-warning animated shake">
-											<strong>Importante!</strong> Toda la información será confirmada por la Asociación.
-										</div>
+							<form class="form" id="formCountry">
 
-									</div>
 
-								</div>
+								<div class="row" style="padding: 5px 20px;">
 
-								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-									<form class="form" id="formCountryEquiposEstable">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Es Fusion</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquipos" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusion(equipo.idequipo)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
-												</td>
-
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {
-												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquipo' @click="eliminarEquipoPasivo(equipo)">
-														<i class="material-icons">delete</i>
-														<span>Eliminar</span>
-													</button>
-													<button type='button' class='btn btn-success waves-effect' @click="mantenerEquipoPasivo(equipo)">
-														<i class="material-icons">add</i>
-														<span>Mantener</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
+									<table id="example" class="display table " style="width:100%">
+										<thead>
+											<tr>
+												<th>Tarea</th>
+												<th>Estado</th>
+												<th>Solicitante</th>
+												<th>Acciones</th>
 											</tr>
-
-											</tbody>
-										</table>
-									</form>
-
-									</div>
-								</div>
-								<hr>
-								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4> <i class="material-icons">unarchive</i> Equipos que Quedarán</h4>
-									</div>
-
-									<form class="form" id="formCountryEquiposMantenidos">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Es Fusion</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposMantenidos" :key="equipo.idequipodelegado">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
-												</td>
-
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {
-												?>
-													<button type='button' class='btn bg-red waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">clear</i>
-														<span>Sacar</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
+										</thead>
+										<tfoot>
+											<tr>
+												<th>Tarea</th>
+												<th>Estado</th>
+												<th>Solicitante</th>
+												<th>Acciones</th>
 											</tr>
-
-											</tbody>
-										</table>
-
-									</div>
-
-
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-									<h4> <i class="material-icons">remove_circle</i> Equipos que seran Eliminados</h4>
-									</div>
-
-									<form class="form" id="formCountryEquiposEliminados">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposEliminados" :key="equipo.idequipo">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {
-												?>
-													<button type='button' class='btn bg-green waves-effect eliminarEquipoDelegado' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">autorenew</i>
-														<span>Habilitar</span>
-													</button>
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-
-											</tbody>
-										</table>
-
-									</div>
+										</tfoot>
+									</table>
 								</div>
-								<hr>
-								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-
-										<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-											<h4> <i class="material-icons">add_circle</i> Equipos que seran Agregados</h4>
-										</div>
-										<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-											<button type="button" class="btn btn-success waves-effect" @click="showModalEquipo = true">
-                                    			<i class="material-icons">add_box</i>
-												<span>Agregar</span>
-											</button>
-										</div>
-									<form class="form" id="formCountryEquiposNuevos">
-										<table class="table table-bordered table-striped table-hover highlight" id="example">
-											<thead>
-												<tr>
-													<th>Equipo</th>
-													<th>Categoria</th>
-													<th>Division</th>
-													<th>Es Fusion</th>
-													<th>Acciones</th>
-												</tr>
-											</thead>
-											<tbody>
-
-											<tr v-for="equipo in activeEquiposNuevos" :key="equipo.idequipodelegado">
-												<td>{{ equipo.nombre }}</td>
-												<td>{{ equipo.categoria }}</td>
-												<td>{{ equipo.division }}</td>
-												<td>
-													<button v-if="equipo.esfusion > 0" type='button' class='btn btn-info waves-effect' @click="verFusionDelegados(equipo.idequipodelegado)">
-														<i class="material-icons">search</i>
-														<span>Ver</span>
-													</button>
-												</td>
-
-												<td>
-												<?php
-												if ($permiteRegistrar == 1) {
-													if ($habilitado == 1) {
-												?>
-													<button type='button' class='btn btn-danger waves-effect eliminarEquiposDelegadoDefinitivo' @click="eliminarEquiposDelegadoDefinitivo(equipo)">
-														<i class="material-icons">delete</i>
-														<span>Eliminar</span>
-													</button>
-
-
-												<?php
-													}
-												}
-												?>
-												</td>
-											</tr>
-
-											</tbody>
-										</table>
-
-									</div>
-								</div>
-								<input type="hidden" value="VmodificarCountries" name="accion" id="accion" />
-								<input type="hidden" id="id" name="id" :value="<?php echo $_SESSION['idclub_aif']; ?>"/>
-
-							<div>
-							<div class="alert bg-indigo">
-								<strong>Importante!</strong> Finalizado el proceso, presione "GUARDAR" para enviar toda la información a la Asociación.
-							</div>
-
-							</form>
-							<form class="form" id="formConfirmar" @submit.prevent="confirmarEquipos">
-							<div class="button-demo" v-show="verificarFusion == 3">
-								<button v-if="activeEquipos.length == 0" type="submit" class="btn bg-teal waves-effect">
-                                    <i class="material-icons">save</i>
-                                    <span>GUARDAR</span>
-                                </button>
-								<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
-								<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
-							</div>
 							</form>
 							</div>
 						</div>
@@ -488,6 +213,35 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 </section>
 
 
+
+
+	<!-- MODIFICAR -->
+		<form class="formulario" role="form" id="sign_in">
+		   <div class="modal fade" id="lgmModificar" tabindex="-1" role="dialog">
+		       <div class="modal-dialog modal-lg" role="document">
+		           <div class="modal-content">
+		               <div class="modal-header">
+		                   <h4 class="modal-title" id="largeModalLabel">MODIFICAR <?php echo strtoupper($singular); ?></h4>
+		               </div>
+		               <div class="modal-body">
+								<div class="frmAjaxModificar">
+
+								</div>
+
+		               </div>
+		               <div class="modal-footer">
+		                   <button type="button" class="btn btn-warning waves-effect modificar">MODIFICAR</button>
+		                   <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CERRAR</button>
+		               </div>
+		           </div>
+		       </div>
+		   </div>
+			<input type="hidden" id="accion" name="accion" value="<?php echo $modificar; ?>"/>
+		</form>
+
+
+
+
 <?php echo $baseHTML->cargarArchivosJS('../../'); ?>
 <!-- Wait Me Plugin Js -->
 <script src="../../plugins/waitme/waitMe.js"></script>
@@ -495,509 +249,270 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 <!-- Custom Js -->
 <script src="../../js/pages/cards/colored.js"></script>
 
-<script src="../../js/pages/ui/animations.js"></script>
+<script src="../../plugins/jquery-validation/jquery.validate.js"></script>
 
+<script src="../../js/pages/examples/sign-in.js"></script>
 
+<!-- Bootstrap Material Datetime Picker Plugin Js -->
+<script src="../../plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
 
-<!-- Modal Large Size -->
-<transition name="fade">
-<form class="form" @submit.prevent="guardarDelegado">
-<?php //echo $baseHTML->modalHTML('modalPerfil','Perfil','GUARDAR','Ingrese sus datos personales y los Email de los contactos','frmPerfil',$frmPerfil,'iddelegado','Delegados','VguardarDelegado'); ?>
-</form>
-</transition>
-
-
-<form class="form" @submit.prevent="realizarConsulta">
-<script type="text/x-template" id="modal-template">
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-
-          <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
-          </div>
-
-          <div class="modal-body">
-            <slot name="body">
-			  <h4>Ingrese su consulta y en la brevedad se comunicarán con usted</h4>
-			  	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<label class="form-label">Mensaje</label>
-					<div class="form-group">
-						<div class="form-line">
-							<input type="text" class="form-control" id="mensaje" name="mensaje" />
-
-						</div>
-					</div>
-				</div>
-            </slot>
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-			<button class="btn bg-grey waves-effect" @click="$emit('close')">
-                CANCELAR
-			  </button>
-			  <button type="button" class="btn bg-green waves-effect" @click="enviarConsulta()">
-					<i class="material-icons">send</i>
-					<span>ENVIAR</span>
-				</button>
-
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
-</script>
-</form>
-
-
-
-<form class="form" @submit.prevent="insertarEquiposdelegados">
-<script type="text/x-template" id="modal-template-equipo">
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-
-          <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
-          </div>
-
-          <div class="modal-body">
-            <slot name="body">
-
-			  	<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Nombre</label>
-						<div class="form-group">
-							<div class="form-line">
-								<input value="" type="text" class="form-control" id="nombre" name="nombre" require />
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Categoria</label>
-						<select class="form-control show-tick" id="refcategorias" name="refcategorias" require >
-							<?php echo $cadRefCategorias; ?>
-						</select>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-						<label class="form-label">Division</label>
-						<select class="form-control show-tick" id="refdivisiones" name="refdivisiones" require >
-							<?php echo $cadRefDivisiones; ?>
-						</select>
-					</div>
-
-
-				</div>
-				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-						<label class="form-label">Seleccione el Countrie para fusionarse de ser necesario</label>
-						<select multiple class="form-control bootstrap-select show-tick" id="fusioncountries" name="fusioncountries" require >
-							<?php echo $cadRefCountries; ?>
-						</select>
-					</div>
-				</div>
-            </slot>
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-			<button class="btn bg-grey waves-effect" @click="$emit('close')">
-                CANCELAR
-			  </button>
-			  	<button type="button" class="btn bg-green waves-effect" @click="crearEquipo()">
-					<i class="material-icons">send</i>
-					<span>CREAR</span>
-				</button>
-
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
-</script>
-</form>
-
-
-  <!-- use the modal component, pass in the prop -->
-  <modal v-if="showModal" @close="showModal = false">
-    <!--
-      you can use custom content here to overwrite
-      default content
-    -->
-    <h3 slot="header">Realizar Consulta</h3>
-  </modal>
-
-
-  <!-- use the modal component, pass in the prop -->
-  <modal2 v-if="showModalEquipo" @close="showModalEquipo = false" @recargarequiposnuevos="getAllEquiposNuevos">
-    <!--
-      you can use custom content here to overwrite
-      default content
-    -->
-	<h3 slot="header">Crear Equipo</h3>
-
-  </modal2>
-
-
-</main>
-
-
+<script src="../../DataTables/DataTables-1.10.18/js/jquery.dataTables.min.js"></script>
 
 
 <script>
-
-
-
 	$(document).ready(function(){
+		var table = $('#example').DataTable({
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "../../json/jstablasajax.php?tabla=tareas",
+			"language": {
+				"emptyTable":     "No hay datos cargados",
+				"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
+				"infoEmpty":      "Mostrar 0 hasta 0 del total de 0 filas",
+				"infoFiltered":   "(filtrados del total de _MAX_ filas)",
+				"infoPostFix":    "",
+				"thousands":      ",",
+				"lengthMenu":     "Mostrar _MENU_ filas",
+				"loadingRecords": "Cargando...",
+				"processing":     "Procesando...",
+				"search":         "Buscar:",
+				"zeroRecords":    "No se encontraron resultados",
+				"paginate": {
+					"first":      "Primero",
+					"last":       "Ultimo",
+					"next":       "Siguiente",
+					"previous":   "Anterior"
+				},
+				"aria": {
+					"sortAscending":  ": activate to sort column ascending",
+					"sortDescending": ": activate to sort column descending"
+				}
+			}
+		});
+
+		$("#sign_in").submit(function(e){
+			e.preventDefault();
+		});
+
+		$('#activo').prop('checked',true);
+
+		function frmAjaxModificar(id) {
+			$.ajax({
+				url: '../../ajax/ajax.php',
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: {accion: 'frmAjaxModificar',tabla: '<?php echo $tabla; ?>', id: id},
+				//mientras enviamos el archivo
+				beforeSend: function(){
+					$('.frmAjaxModificar').html('');
+				},
+				//una vez finalizado correctamente
+				success: function(data){
+
+					if (data != '') {
+						$('.frmAjaxModificar').html(data);
+					} else {
+						swal("Error!", data, "warning");
+
+						$("#load").html('');
+					}
+				},
+				//si ha ocurrido un error
+				error: function(){
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+					$("#load").html('');
+				}
+			});
+
+		}
 
 
+		function frmAjaxEliminar(id) {
+			$.ajax({
+				url: '../../ajax/ajax.php',
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: {accion: '<?php echo $eliminar; ?>', id: id},
+				//mientras enviamos el archivo
+				beforeSend: function(){
+
+				},
+				//una vez finalizado correctamente
+				success: function(data){
+
+					if (data == '') {
+						swal({
+								title: "Respuesta",
+								text: "Registro Eliminado con exito!!",
+								type: "success",
+								timer: 1500,
+								showConfirmButton: false
+						});
+						$('#lgmEliminar').modal('toggle');
+						table.ajax.reload();
+					} else {
+						swal({
+								title: "Respuesta",
+								text: data,
+								type: "error",
+								timer: 2000,
+								showConfirmButton: false
+						});
+
+					}
+				},
+				//si ha ocurrido un error
+				error: function(){
+					swal({
+							title: "Respuesta",
+							text: 'Actualice la pagina',
+							type: "error",
+							timer: 2000,
+							showConfirmButton: false
+					});
+
+				}
+			});
+
+		}
+
+		$("#example").on("click",'.btnEliminar', function(){
+			idTable =  $(this).attr("id");
+			$('#ideliminar').val(idTable);
+			$('#lgmEliminar').modal();
+		});//fin del boton eliminar
+
+		$('.eliminar').click(function() {
+			frmAjaxEliminar($('#ideliminar').val());
+		});
+
+		$("#example").on("click",'.btnModificar', function(){
+			idTable =  $(this).attr("id");
+			frmAjaxModificar(idTable);
+			$('#lgmModificar').modal();
+		});//fin del boton modificar
+
+		$('.nuevo').click(function(){
+
+			//información del formulario
+			var formData = new FormData($(".formulario")[0]);
+			var message = "";
+			//hacemos la petición ajax
+			$.ajax({
+				url: '../../ajax/ajax.php',
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: formData,
+				//necesario para subir archivos via ajax
+				cache: false,
+				contentType: false,
+				processData: false,
+				//mientras enviamos el archivo
+				beforeSend: function(){
+
+				},
+				//una vez finalizado correctamente
+				success: function(data){
+
+					if (data == '') {
+						swal({
+								title: "Respuesta",
+								text: "Registro Creado con exito!!",
+								type: "success",
+								timer: 1500,
+								showConfirmButton: false
+						});
+
+						$('#lgmNuevo').modal('hide');
+						$('#unidadnegocio').val('');
+						table.ajax.reload();
+					} else {
+						swal({
+								title: "Respuesta",
+								text: data,
+								type: "error",
+								timer: 2500,
+								showConfirmButton: false
+						});
+
+
+					}
+				},
+				//si ha ocurrido un error
+				error: function(){
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+					$("#load").html('');
+				}
+			});
+		});
+
+
+		$('.modificar').click(function(){
+
+			//información del formulario
+			var formData = new FormData($(".formulario")[1]);
+			var message = "";
+			//hacemos la petición ajax
+			$.ajax({
+				url: '../../ajax/ajax.php',
+				type: 'POST',
+				// Form data
+				//datos del formulario
+				data: formData,
+				//necesario para subir archivos via ajax
+				cache: false,
+				contentType: false,
+				processData: false,
+				//mientras enviamos el archivo
+				beforeSend: function(){
+
+				},
+				//una vez finalizado correctamente
+				success: function(data){
+
+					if (data == '') {
+						swal({
+								title: "Respuesta",
+								text: "Registro Modificado con exito!!",
+								type: "success",
+								timer: 1500,
+								showConfirmButton: false
+						});
+
+						$('#lgmModificar').modal('hide');
+						table.ajax.reload();
+					} else {
+						swal({
+								title: "Respuesta",
+								text: data,
+								type: "error",
+								timer: 2500,
+								showConfirmButton: false
+						});
+
+
+					}
+				},
+				//si ha ocurrido un error
+				error: function(){
+					$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+					$("#load").html('');
+				}
+			});
+		});
 	});
 </script>
 
 
 
 
-<script>
-	const paramsGetDelegado = new URLSearchParams();
-    paramsGetDelegado.append('accion','VtraerDelegadosPorId');
-	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 
-	const paramsGetEquipos = new URLSearchParams();
-    paramsGetEquipos.append('accion','traerEquiposPorCountriesConFusion');
-	paramsGetEquipos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquipos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
 
-	const paramsGetEquiposEliminados = new URLSearchParams();
-    paramsGetEquiposEliminados.append('accion','traerEquiposdelegadosEliminadosPorCountrie');
-	paramsGetEquiposEliminados.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposEliminados.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
 
-	const paramsGetEquiposNuevos = new URLSearchParams();
-    paramsGetEquiposNuevos.append('accion','traerEquiposdelegadosPorCountrie');
-	paramsGetEquiposNuevos.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposNuevos.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquiposNuevos.append('nuevo',1);
 
-	const paramsGetEquiposQuedan = new URLSearchParams();
-    paramsGetEquiposQuedan.append('accion','traerEquiposdelegadosPorCountrie');
-	paramsGetEquiposQuedan.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEquiposQuedan.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsGetEquiposQuedan.append('nuevo',0);
-
-	const paramsCrearEquipo = new URLSearchParams();
-    paramsCrearEquipo.append('accion','insertarEquiposdelegados');
-	paramsCrearEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsCrearEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-	paramsCrearEquipo.append('idusuario',<?php echo  $idusuario; ?>);
-	paramsCrearEquipo.append('refcategorias',0);
-	paramsCrearEquipo.append('refdivisiones',0);
-	paramsCrearEquipo.append('nombre','');
-	paramsCrearEquipo.append('refcountries','');
-
-	const paramsGetEliminarEquipoPasivo = new URLSearchParams();
-    paramsGetEliminarEquipoPasivo.append('accion','');
-	paramsGetEliminarEquipoPasivo.append('id',0);
-	paramsGetEliminarEquipoPasivo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsGetEliminarEquipoPasivo.append('idusuario',<?php echo  $idusuario; ?>);
-
-	const paramsMantenerEquipo = new URLSearchParams();
-	paramsMantenerEquipo.append('accion','mantenerEquipoPasivo');
-	paramsMantenerEquipo.append('id',0);
-	paramsMantenerEquipo.append('idtemporada',<?php echo  $ultimaTemporada; ?>);
-	paramsMantenerEquipo.append('idusuario',<?php echo  $idusuario; ?>);
-	paramsMantenerEquipo.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-
-	const paramsGeneral = new URLSearchParams();
-	paramsGeneral.append('accion','verFusion');
-	paramsGeneral.append('idequipodelegado',0);
-	paramsGeneral.append('idcountrie',<?php echo $_SESSION['idclub_aif']; ?>);
-
-
-
-
-
-	Vue.component('modal', {
-		template: '#modal-template',
-		methods: {
-			enviarConsulta () {
-
-				paramsNotificacion.set('mensaje',$('#mensaje').val());
-
-				axios.post('../../ajax/ajax.php', paramsNotificacion)
-				.then(res => {
-					//this.setMensajes(res)
-
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('close')
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-
-				});
-			}
-		}
-	})
-
-
-	Vue.component('modal2', {
-
-		template: '#modal-template-equipo',
-		mounted () {
-			this.getAllEquiposNuevos()
-		},
-		methods: {
-
-			crearEquipo () {
-				paramsCrearEquipo.set('nombre',$('#nombre').val());
-				paramsCrearEquipo.set('refcategorias',$('#refcategorias').val());
-				paramsCrearEquipo.set('refdivisiones',$('#refdivisiones').val());
-				paramsCrearEquipo.set('refcountries',$('#fusioncountries').val());
-				paramsCrearEquipo.set('nuevo',1);
-
-
-				axios.post('../../ajax/ajax.php', paramsCrearEquipo)
-				.then(res => {
-
-					if (res.data.error == '') {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.$emit('recargarequiposnuevos', this.activeEquiposNuevos)
-						this.$emit('close')
-
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-
-				});
-			}
-
-		}
-	})
-
-
-
-	const app = new Vue({
-		el: "#app",
-		data: {
-			pag: 1,
-			idclub: 5,
-			activeClass: 'waves-effect',
-			errorMensaje: '',
-			successMensaje: '',
-			activeDelegados: {},
-			activeEquipos: {},
-			activeEquiposEliminados: {},
-			activeEquiposNuevos: {},
-			activeEquiposMantenidos: {},
-			showModal: false,
-			showModalEquipo: false,
-			verificarFusion: <?php echo $verificarFusion; ?>
-
-		},
-		mounted () {
-			this.getDelegado()
-			this.getAllEquipos()
-			this.getAllEquiposEliminados()
-			this.getAllEquiposNuevos()
-			this.getAllEquiposQuedan()
-		},
-		computed: {
-
-		},
-		methods: {
-			setMensajes (res) {
-				this.getDelegado()
-
-				if (res.data.error) {
-					this.errorMensaje = res.data.mensaje
-				} else {
-					this.successMensaje = res.data.mensaje
-				}
-
-				setTimeout(() => {
-					this.errorMensaje = ''
-					this.successMensaje = ''
-				}, 3000);
-
-			},
-			getDelegado () {
-					axios.post('../../ajax/ajax.php',paramsGetDelegado)
-					.then(res => {
-
-						this.activeDelegados = res.data.datos[0]
-					})
-			},
-			guardarDelegado (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-
-				});
-
-
-			},
-			confirmarEquipos (e) {
-				axios.post('../../ajax/ajax.php', new FormData(e.target))
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						setTimeout(function(){
-							window.location.href = 'modificar.php';
-						}, 2000);
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-
-				});
-			},
-			getAllEquipos () {
-					axios.post('../../ajax/ajax.php',paramsGetEquipos)
-					.then(res => {
-
-						this.activeEquipos = res.data.datos
-					})
-			},
-			getAllEquiposEliminados () {
-					axios.post('../../ajax/ajax.php',paramsGetEquiposEliminados)
-					.then(res => {
-
-						this.activeEquiposEliminados = res.data.datos
-					})
-			},
-			verFusion : function(id) {
-				paramsGeneral.set('idequipodelegado',id);
-				paramsGeneral.set('accion','verFusion');
-
-				axios.post('../../ajax/ajax.php',paramsGeneral)
-				.then(res => {
-					this.$swal("Ok!", 'Fusion: ' + res.data.datos[0], "success")
-
-				})
-			},
-			verFusionDelegados : function(id) {
-				paramsGeneral.set('idequipodelegado',id);
-				paramsGeneral.set('accion','traerFusionPorEquiposDelegados');
-
-				axios.post('../../ajax/ajax.php',paramsGeneral)
-				.then(res => {
-
-					this.$swal("Ok!", res.data.datos[0], "success")
-
-				})
-			},
-			eliminarEquipoPasivo : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposEliminados()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			mantenerEquipoPasivo : function(equi){
-
-				paramsMantenerEquipo.set('id',equi.idequipo);
-
-				axios.post('../../ajax/ajax.php',paramsMantenerEquipo)
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposQuedan()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-
-
-			eliminarEquipoDelegado : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipo);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquipoPasivo');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-
-						this.getAllEquiposEliminados()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			eliminarEquiposDelegadoDefinitivo : function(equi){
-
-				paramsGetEliminarEquipoPasivo.set('id',equi.idequipodelegado);
-				paramsGetEliminarEquipoPasivo.set('accion','eliminarEquiposdelegados');
-
-				axios.post('../../ajax/ajax.php',paramsGetEliminarEquipoPasivo)
-				.then(res => {
-
-					if (!res.data.error) {
-						this.$swal("Ok!", res.data.mensaje, "success")
-						this.getAllEquiposEliminados()
-						this.getAllEquiposNuevos()
-						this.getAllEquiposQuedan()
-						this.getAllEquipos()
-					} else {
-						this.$swal("Error!", res.data.mensaje, "error")
-					}
-				})
-			},
-			getAllEquiposNuevos () {
-
-				axios.post('../../ajax/ajax.php',paramsGetEquiposNuevos)
-				.then(res => {
-
-					this.activeEquiposNuevos = res.data.datos
-
-				})
-			},
-			getAllEquiposQuedan () {
-
-				axios.post('../../ajax/ajax.php',paramsGetEquiposQuedan)
-				.then(res => {
-
-					this.activeEquiposMantenidos = res.data.datos
-
-				})
-			}
-
-
-		}
-	})
-</script>
 </body>
 <?php } ?>
 </html>

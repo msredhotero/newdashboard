@@ -1344,6 +1344,19 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 
 	}
 
+	function traerEstadosFusionesAceptadasPorCountrieEquipo($idcountrie, $idequipo) {
+
+		$sql = "select
+					coalesce(min(fe.refestados),1) as idestado
+				from dbfusionequipos fe
+				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				where ed.refcountries = ".$idcountrie." and ed.idequipo = ".$idequipo;
+
+		$res = $this->existeDevuelveId($sql);
+		return $res;
+
+	}
+
 
 	function traerEstadosFusionesAceptadasPorEquipo($idequiposdelegados ,$idcountrie) {
 
