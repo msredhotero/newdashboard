@@ -56,26 +56,26 @@ $pdf->Cell(0,10,'Firma Presidente o Secretario: ________________________________
 
 
 $cantidadJugadores = 0;
-#Establecemos los márgenes izquierda, arriba y derecha: 
-//$pdf->SetMargins(2, 2 , 2); 
+#Establecemos los márgenes izquierda, arriba y derecha:
+//$pdf->SetMargins(2, 2 , 2);
 
-#Establecemos el margen inferior: 
-$pdf->SetAutoPageBreak(false,1); 
+#Establecemos el margen inferior:
+$pdf->SetAutoPageBreak(false,1);
 
 
-	
+
 	$pdf->AddPage();
 	/***********************************    PRIMER CUADRANTE ******************************************/
-	
+
 	$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
 
 	/***********************************    FIN ******************************************/
-	
-	
-	
+
+
+
 	//////////////////// Aca arrancan a cargarse los datos de los equipos  /////////////////////////
 
-	
+
 	$pdf->SetFillColor(183,183,183);
 	$pdf->SetFont('Arial','B',10);
 	$pdf->Ln();
@@ -90,7 +90,7 @@ $pdf->SetAutoPageBreak(false,1);
 	$pdf->Ln();
 	$pdf->Ln();
 	$pdf->SetX(5);
-	
+
 	$pdf->SetFont('Arial','',8);
 	$pdf->Cell(5,4,'',1,0,'C',false);
 	$pdf->Cell(60,4,'Apellido y Nombre',1,0,'C',false);
@@ -102,17 +102,17 @@ $pdf->SetAutoPageBreak(false,1);
 
 	$cantPartidos = 0;
 	$i=0;
-	
+
 	$contadorY1 = 44;
 	$contadorY2 = 44;
 while ($rowE = mysql_fetch_array($resDatos)) {
-	$i+=1;	
+	$i+=1;
 	$cantPartidos += 1;
-	
+
 	if ($i > 50) {
 		Footer($pdf);
 		$pdf->AddPage();
-		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);	
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
 		$pdf->SetFont('Arial','B',10);
 		$pdf->Ln();
 		$pdf->Ln();
@@ -124,7 +124,7 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 		$pdf->SetX(5);
 
 		$i=0;
-		
+
 		$pdf->SetFont('Arial','',8);
 		$pdf->Cell(5,4,'',1,0,'C',false);
 		$pdf->Cell(60,4,'Apellido y Nombre',0,0,'C',false);
@@ -135,8 +135,8 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 		$pdf->Cell(30,4,'Art 2 Inciso D',1,0,'C',false);
 
 	}
-	
-	
+
+
 	$pdf->Ln();
 	$pdf->SetX(5);
 	$pdf->SetFont('Arial','',7);
@@ -148,14 +148,14 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 	$pdf->Cell(16,4,$rowE['fechabaja'],1,0,'C',false);
 	$pdf->Cell(30,4,$rowE['articulo'],1,0,'C',false);
 
-	
-	
-	
-		
+
+
+
+
 
 	$contadorY1 += 4;
 
-	//$pdf->SetY($contadorY1);		
+	//$pdf->SetY($contadorY1);
 
 
 }
@@ -178,7 +178,7 @@ Footer($pdf);
 
 $pdf->AddPage();
 //////////////////// Aca arrancan a cargarse los datos de los equipos  /////////////////////////
-	
+
 	$pdf->SetFillColor(183,183,183);
 	$pdf->SetFont('Arial','B',10);
 	$pdf->Ln();
@@ -199,17 +199,17 @@ $pdf->AddPage();
 
 	$cantPartidos = 0;
 	$i=0;
-	
+
 	$contadorY1 = 44;
 	$contadorY2 = 44;
 while ($rowE = mysql_fetch_array($lstNuevosJugadores)) {
-	$i+=1;	
+	$i+=1;
 	$cantPartidos += 1;
-	
+
 	if ($i > 50) {
 		Footer($pdf);
 		$pdf->AddPage();
-		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);	
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
 		$pdf->SetFont('Arial','B',10);
 		$pdf->Ln();
 		$pdf->Ln();
@@ -221,7 +221,7 @@ while ($rowE = mysql_fetch_array($lstNuevosJugadores)) {
 		$pdf->SetX(5);
 
 		$i=0;
-		
+
 		$pdf->SetFont('Arial','',8);
 		$pdf->Cell(5,4,'',1,0,'C',false);
 		$pdf->Cell(60,4,'Apellido y Nombre',0,0,'C',false);
@@ -230,8 +230,8 @@ while ($rowE = mysql_fetch_array($lstNuevosJugadores)) {
 		$pdf->Cell(40,4,'Nro Serie Lote',1,0,'C',false);
 
 	}
-	
-	
+
+
 	$pdf->Ln();
 	$pdf->SetX(5);
 	$pdf->SetFont('Arial','',7);
@@ -239,11 +239,11 @@ while ($rowE = mysql_fetch_array($lstNuevosJugadores)) {
 	$pdf->Cell(60,4,utf8_decode($rowE['apellido']).' '.utf8_decode($rowE['nombres']),1,0,'L',false);
 	$pdf->Cell(15,4,$rowE['nrodocumento'],1,0,'C',false);
 	$pdf->Cell(15,4,$rowE['fechanacimiento'],1,0,'C',false);
-	$pdf->Cell(40,4,$rowE['numeroserielote'],1,0,'C',false);	
+	$pdf->Cell(40,4,$rowE['numeroserielote'],1,0,'C',false);
 
 	$contadorY1 += 4;
 
-	//$pdf->SetY($contadorY1);		
+	//$pdf->SetY($contadorY1);
 
 
 }
@@ -267,7 +267,7 @@ Footer($pdf);
 $pdf->AddPage();
 
 $pdf->SetFont('Arial','',12);
-$pdf->Cell(200,5,utf8_decode('ACTUALIZACIÓN DE DATOS AÑO 2018'),0,0,'C',false);
+$pdf->Cell(200,5,utf8_decode('ACTUALIZACIÓN DE DATOS AÑO 2019'),0,0,'C',false);
 $pdf->Ln();
 $pdf->Ln();
 $pdf->Ln();
@@ -309,17 +309,17 @@ $pdf->Cell(200,5,utf8_decode('Categoría: ______________________________'),0,0,'
 $pdf->Ln();
 $pdf->Cell(200,5,utf8_decode('Dirección de la Administración: _________________________________________________________________________'),0,0,'L',false);$pdf->Ln();$pdf->Ln();
 $pdf->SetFont('Arial','',10);
-$pdf->Cell(200,5,utf8_decode('Localidad: __________________________  Código Postal: _____  Tel.: __________________  Fax: ___________________'),0,0,'L',false);$pdf->Ln(); 
+$pdf->Cell(200,5,utf8_decode('Localidad: __________________________  Código Postal: _____  Tel.: __________________  Fax: ___________________'),0,0,'L',false);$pdf->Ln();
 $pdf->Cell(200,5,'E-mail: _________________________________________________',0,0,'L',false);$pdf->Ln();
 $pdf->SetFont('Arial','b',10);
 $pdf->Cell(200,5,utf8_decode('Dirección del Country: _________________________________________________________________________________'),0,0,'L',false);$pdf->Ln();$pdf->Ln();
 $pdf->SetFont('Arial','',10);
-$pdf->Cell(200,5,utf8_decode('Localidad: __________________________  Código Postal: _____  Tel.: __________________  Fax: ___________________'),0,0,'L',false);$pdf->Ln(); 
+$pdf->Cell(200,5,utf8_decode('Localidad: __________________________  Código Postal: _____  Tel.: __________________  Fax: ___________________'),0,0,'L',false);$pdf->Ln();
 $pdf->Cell(200,5,'E-mail: _________________________________________________',0,0,'L',false);$pdf->Ln();$pdf->Ln();
 $pdf->Cell(200,5,utf8_decode('Condición de IVA: _____________________	CUIT: ______________________'),0,0,'L',false);$pdf->Ln();$pdf->Ln();
 $pdf->SetFont('Arial','b',10);
 $pdf->Cell(200,5,'Servicio de Emergencias (nombre y tel.): ________________________________________________________________',0,0,'L',false);$pdf->Ln();
-$pdf->Cell(200,5,' ___________________________________________________________________________________________________',0,0,'L',false);$pdf->Ln();$pdf->Ln();                                
+$pdf->Cell(200,5,' ___________________________________________________________________________________________________',0,0,'L',false);$pdf->Ln();$pdf->Ln();
 $pdf->Cell(200,5,utf8_decode('Camisetas (detallar colores y descripción):'),0,0,'L',false);$pdf->Ln();$pdf->Ln();
 $pdf->SetFont('Arial','',10);
 $pdf->Cell(200,5,'	Juego 1: ___________________________________________________________________________',0,0,'L',false);$pdf->Ln();
@@ -460,13 +460,13 @@ Footer($pdf);
 
 //$pdf->AddPage();
 	/***********************************    PRIMER CUADRANTE ******************************************/
-	
+
 //	$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
 
 	/***********************************    FIN ******************************************/
-	
-	
-	
+
+
+
 	//////////////////// Aca arrancan a cargarse los datos de los equipos  /////////////////////////
 
 	/*
@@ -481,7 +481,7 @@ Footer($pdf);
 	$pdf->Ln();
 	$pdf->Ln();
 	$pdf->SetX(5);
-	
+
 	$pdf->SetFont('Arial','',8);
 	$pdf->Cell(5,4,'',1,0,'C',false);
 	$pdf->Cell(60,4,'Apellido y Nombre',1,0,'C',false);
@@ -490,16 +490,16 @@ Footer($pdf);
 	$pdf->Cell(16,4,'Fecha Baja',1,0,'C',false);
 	$cantPartidos = 0;
 	$i=0;
-	
+
 	$contadorY1 = 44;
 	$contadorY2 = 44;
 while ($rowE = mysql_fetch_array($resDatosBaja)) {
-	$i+=1;	
+	$i+=1;
 	$cantPartidos += 1;
-	
+
 	if ($i > 61) {
 		$pdf->AddPage();
-		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);	
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
 		$pdf->SetFont('Arial','B',10);
 		$pdf->Ln();
 		$pdf->Ln();
@@ -511,7 +511,7 @@ while ($rowE = mysql_fetch_array($resDatosBaja)) {
 		$pdf->SetX(5);
 
 		$i=0;
-		
+
 		$pdf->SetFont('Arial','',8);
 		$pdf->Cell(5,4,'',1,0,'C',false);
 		$pdf->Cell(60,4,'Apellido y Nombre',0,0,'C',false);
@@ -519,8 +519,8 @@ while ($rowE = mysql_fetch_array($resDatosBaja)) {
 		$pdf->Cell(16,4,'Fecha Nac.',1,0,'C',false);
 		$pdf->Cell(16,4,'Fecha Baja',1,0,'C',false);
 	}
-	
-	
+
+
 	$pdf->Ln();
 	$pdf->SetX(5);
 	$pdf->SetFont('Arial','',7);
@@ -530,14 +530,14 @@ while ($rowE = mysql_fetch_array($resDatosBaja)) {
 	$pdf->Cell(16,4,$rowE['fechanacimiento'],1,0,'C',false);
 	$pdf->Cell(16,4,$rowE['fechabaja'],1,0,'C',false);
 
-	
-	
-	
-		
+
+
+
+
 
 	$contadorY1 += 4;
 
-	//$pdf->SetY($contadorY1);		
+	//$pdf->SetY($contadorY1);
 
 
 }
@@ -551,4 +551,3 @@ $pdf->Output($nombreTurno,'I');
 
 
 ?>
-

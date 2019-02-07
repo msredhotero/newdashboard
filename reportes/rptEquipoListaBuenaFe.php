@@ -46,7 +46,12 @@ $resDatosNuevo = $serviciosReferencias->traerConectorActivosPorEquiposDelegadoNu
 $excepciones = $serviciosReferencias->generarPlantelTemporadaAnteriorExcepcionesTodos($reftemporadas, mysql_result($resEquipoAux,0,'refcountries'), $refEquipos);
 
 $nombre 	= mysql_result($resEquipoAux,0,'nombre');
+$categoria = mysql_result($resEquipoAux,0,'categoria');
+$division = mysql_result($resEquipoAux,0,'division');
 
+$resclub = $serviciosReferencias->traerCountriesPorId(mysql_result($resEquipoAux,0,'refcountries'));
+
+$nombreclub= mysql_result($resclub,0,'nombre');
 
 
 
@@ -60,7 +65,7 @@ $pdf->SetY(-10);
 
 $pdf->SetFont('Arial','I',10);
 
-$pdf->Cell(0,10,'Firma: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
+$pdf->Cell(0,10,'Firma presidente y/o secretario: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
 }
 
 
@@ -128,7 +133,7 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 	$i+=1;
 
 
-	if ($i > 50) {
+	if ($i > 32) {
 		Footer($pdf);
 		$pdf->AddPage();
 		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
@@ -387,8 +392,66 @@ foreach ($arExcepciones as $valor) {
 
 }
 
-
+Footer($pdf);
+$pdf->AddPage();
+$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+$pdf->SetFont('Arial','B',10);
 $pdf->Ln();
+$pdf->Ln();
+$pdf->SetY(25);
+$pdf->SetX(5);
+$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.utf8_decode($nombre),1,0,'C',true);
+$pdf->Ln();
+$pdf->SetX(5);
+$pdf->Cell(200,5,'Categoria: '.utf8_decode(mysql_result($resEquipo,0,'categoria')).' - Division: '.utf8_decode(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+$pdf->Ln();
+$pdf->SetX(5);
+$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
+$pdf->SetFont('Arial','',10);
+$pdf->Ln();
+$pdf->Ln();
+$pdf->SetX(5);
+
+$resGetAllFusiones = $serviciosReferencias->traerFusionPorIdEquipos($refEquipos);
+
+if (mysql_num_rows($resGetAllFusiones) > 0) {
+   while ($rowFu = mysql_fetch_array($resGetAllFusiones)) {
+      if ($rowFu['idestado'] == 3) {
+         $countrie = $rowFu['countrie'];
+         $pdf->Ln();
+      	$pdf->SetX(5);
+
+      	$pdf->SetFont('Arial','',10);
+      	//$pdf->Cell(5,5,'',1,0,'C',true);
+      	$pdf->Multicell(200, 5, utf8_decode('Por medio de la presente, '.$nombreclub.' acepta la solicitud de fusión presentada por '.$countrie.' para el equipo '.$nombre.' en la categoría '.$categoria.' y división '.$division.', obligándose a respetar la normativa prevista por el reglamento interno de torneos de la AIF.'), 0, 'L', false);
+      }
+   }
+}
+
+
+Footer($pdf);
+$pdf->AddPage();
+$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+$pdf->SetFont('Arial','B',10);
+$pdf->Ln();
+$pdf->Ln();
+$pdf->SetY(25);
+$pdf->SetX(5);
+$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.utf8_decode($nombre),1,0,'C',true);
+$pdf->Ln();
+$pdf->SetX(5);
+$pdf->Cell(200,5,'Categoria: '.utf8_decode(mysql_result($resEquipo,0,'categoria')).' - Division: '.utf8_decode(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+$pdf->Ln();
+$pdf->SetX(5);
+$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
+$pdf->SetFont('Arial','',10);
+$pdf->Ln();
+$pdf->Ln();
+$pdf->SetX(5);
+
+$pdf->SetFont('Arial','',10);
+//$pdf->Cell(5,5,'',1,0,'C',true);
+$pdf->Multicell(200, 5, utf8_decode('Certifico que los arriba Inscriptos, detallados como pertenecientes al country al cual represento, son Socios-Propietarios de Lotes del Country (titulares, cónyugues, ascendientes, descendientes o yernos únicamente), y/o jugadores que se enmarcan dentro del artículo 2 incisos "a", "b" y "d" de vuestro reglamento de torneos, estando estatutariamente habilitados para representar a la Institución en competencias deportivas. Manifiesto conocer y aceptar en todas sus partes el Reglamento de los Torneos y el Reglamento del Tribunal de Disciplina, comprometiéndose el Country al que represento, a cumplir y hacer cumplir los derechos y obligaciones obrantes en los mismos y a comunicar a la Asociación, en forma inmediata, cualquier modificación en la condición o categoría de los socios-propietarios y/o familiares inscriptos en la presente lista.'), 0, 'L', false);
 
 
 Footer($pdf);

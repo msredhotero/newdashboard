@@ -54,7 +54,7 @@ $pdf->SetY(-10);
 
 $pdf->SetFont('Arial','I',10);
 
-$pdf->Cell(0,10,'Firma: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
+$pdf->Cell(0,10,'Firma presidente y/o secretario: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
 }
 
 
@@ -85,7 +85,7 @@ $pdf->SetAutoPageBreak(false,1);
 	$pdf->Ln();
 	$pdf->SetY(25);
 	$pdf->SetX(5);
-	$pdf->Cell(200,5,'Padron de Equipos Temporada 2019 - Club: '.utf8_decode($nombre),1,0,'C',true);
+	$pdf->Cell(200,5,'Equipos Temporada 2019 - Club: '.utf8_decode($nombre),1,0,'C',true);
 	$pdf->Ln();
 	$pdf->SetX(5);
 	$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);

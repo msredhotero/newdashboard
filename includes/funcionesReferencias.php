@@ -1469,13 +1469,13 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 						WHEN e.activo = 1 THEN 'Si'
 						ELSE 'No'
 					END) AS activo,
-					est.estado,
+					(case when est.idestado = 3 then 'Iniciado' else est.estado end) as estado,
 					cat.orden,
 					e.refdivisiones,
 					(CASE
 						WHEN est.idestado = 1 THEN 'label-info'
 						WHEN est.idestado = 2 THEN 'label-warning'
-						WHEN est.idestado = 3 THEN 'label-success'
+						WHEN est.idestado = 3 THEN 'label-warning'
 						WHEN est.idestado = 4 THEN 'label-danger'
 						WHEN est.idestado = 7 THEN 'label-success'
 						WHEN est.idestado = 5 THEN 'label-warning'
@@ -2892,6 +2892,42 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		return $res;
 	}
 
+	function traerJugadoresDeUnaFusion($idfusion, $idtemporada, $idcountrie) {
+		$sql = "SELECT
+				    j.apellido, j.nombres, j.nrodocumento, j.fechanacimiento
+				FROM
+				    dbfusionequipos fe
+				        INNER JOIN
+				    dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
+				        INNER JOIN
+				    dbconectordelegados cd ON cd.refcountries = ".$idcountrie."
+				        AND cd.refequipos = ed.idequipo
+				        AND cd.reftemporadas = ".$idtemporada."
+				        INNER JOIN
+				    dbjugadores j ON j.idjugador = cd.refjugadores
+				WHERE
+				    fe.idfusionequipo = ".$idfusion."
+				GROUP BY j.apellido , j.nombres , j.nrodocumento , j.fechanacimiento
+				UNION ALL SELECT
+				    j.apellido, j.nombres, j.nrodocumento, j.fechanacimiento
+				FROM
+				    dbfusionequipos fe
+				        INNER JOIN
+				    dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
+				        INNER JOIN
+				    dbconectordelegados cd ON cd.refcountries = ".$idcountrie."
+				        AND cd.refequipos = ed.idequipo
+				        AND cd.reftemporadas = ".$idtemporada."
+				        INNER JOIN
+				    dbjugadorespre j ON j.idjugadorpre = cd.refjugadorespre
+				WHERE
+				    fe.idfusionequipo = ".$idfusion."
+				GROUP BY j.apellido , j.nombres , j.nrodocumento , j.fechanacimiento";
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	function traerFusionPorEquiposCountrie($idequipo, $idcountrie) {
 		$sql = "SELECT
 					ce.nombre AS countrypadre,
@@ -3401,7 +3437,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$pdf->SetFont('Arial','I',10);
 
-		$pdf->Cell(0,10,'Firma: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
+		$pdf->Cell(0,10,'Firma presidente y/o secretario: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
 		}
 
 
@@ -3463,7 +3499,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		   if (mysql_num_rows($resFusion)>0) {
 		      $numFusion += 1;
 		      while ($rowF = mysql_fetch_array($resFusion)) {
-		         array_push($arFusiones, array('num' => $numFusion, 'club'=> $rowF[0]));
+		         array_push($arFusiones, array('num' => $numFusion, 'club'=> $rowF[0], 'viejo'=> $row['viejo']));
 		      }
 
 		   }
@@ -3497,11 +3533,22 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 			$pdf->SetX(5);
 			$pdf->SetFont('Arial','',10);
 			$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
-			if (mysql_num_rows($resFusion)>0) {
-		      $pdf->Cell(60,5,utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+			if ($rowE['nuevo'] == 'Si') {
+		      if (mysql_num_rows($resFusion)>0) {
+		         $pdf->Cell(60,5,'* '.utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+		      } else {
+		         $pdf->Cell(60,5,'* '.utf8_decode($rowE['nombre']),1,0,'C',false);
+		      }
 		   } else {
-		      $pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+		      if (mysql_num_rows($resFusion)>0) {
+		         $pdf->Cell(60,5,utf8_decode($rowE['nombre']).' ('.$numFusion.')',1,0,'C',false);
+		      } else {
+		         $pdf->Cell(60,5,utf8_decode($rowE['nombre']),1,0,'C',false);
+		      }
 		   }
+
+
+
 			$pdf->Cell(60,5,utf8_decode($rowE['categoria']),1,0,'C',false);
 			$pdf->Cell(60,5,utf8_decode($rowE['division']),1,0,'C',false);
 

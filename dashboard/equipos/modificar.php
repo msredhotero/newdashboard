@@ -154,7 +154,7 @@ switch ($idEstado) {
     <link href="../../plugins/animate-css/animate.css" rel="stylesheet" />
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -240,7 +240,7 @@ switch ($idEstado) {
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-										<h3>Equipos Generados - ESTADO: <span class="label <?php echo $lblEstado; ?>"><?php echo $estado; ?></span></h3>
+										<h3>Equipos Generados</h3>
 										<p>Recuerde que el plantel del equipo se deberá cargar </p>
 										<div class="alert bg-indigo animated shake">
 											<strong>Importante!</strong> Toda la información será confirmada por la Asociación. Imprimir y firmar la lista de Equipos

@@ -543,6 +543,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				</div>
 				<div class="modal-body">
 					<h4>¿Esta seguro que desea Presentar los equipos que ya fueron eliminados, mantenidos y los nuevos?</h4>
+					<p>LA INFORMACIÓN A PRESENTAR ESTARÁ SUJETA A ANÁLISIS DE LA AIF</p>
 				</div>
 				<input type="hidden" value="confirmarEquipos" name="accion" id="accion" />
 				<input type="hidden" value="<?php echo $confirmo; ?>" name="idcabecera" id="idcabecera" />
@@ -1081,7 +1082,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				});
 			},
 			onChange() {
-				
+
 				paramsCategoria.set('idcategoria',$('#refcategorias').val());
 
 				axios.post('../../ajax/ajax.php', paramsCategoria)

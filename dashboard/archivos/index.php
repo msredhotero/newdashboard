@@ -24,13 +24,13 @@ $baseHTML = new BaseHTML();
 //*** SEGURIDAD ****/
 include ('../../includes/funcionesSeguridad.php');
 $serviciosSeguridad = new ServiciosSeguridad();
-$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../countries/');
+$serviciosSeguridad->seguridadRuta($_SESSION['refroll_aif'], '../archivos/');
 //*** FIN  ****/
 
 $fecha = date('Y-m-d');
 
 //$resProductos = $serviciosProductos->traerProductosLimite(6);
-$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Countries",$_SESSION['refroll_aif'],$_SESSION['email_aif']);
+$resMenu = $serviciosHTML->menu($_SESSION['nombre_aif'],"Archivos",$_SESSION['refroll_aif'],$_SESSION['email_aif']);
 
 $configuracion = $serviciosReferencias->traerConfiguracion();
 
@@ -118,7 +118,7 @@ $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif'
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
