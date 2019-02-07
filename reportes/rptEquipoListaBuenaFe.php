@@ -53,8 +53,6 @@ $resclub = $serviciosReferencias->traerCountriesPorId(mysql_result($resEquipoAux
 
 $nombreclub= mysql_result($resclub,0,'nombre');
 
-
-
 $pdf = new FPDF();
 
 
@@ -129,6 +127,31 @@ $pdf->SetAutoPageBreak(false,1);
 
    $arExcepciones = array();
 
+   function array_column(array $input, $columnKey, $indexKey = null) {
+        $array = array();
+        foreach ($input as $value) {
+            if ( !array_key_exists($columnKey, $value)) {
+                trigger_error("Key \"$columnKey\" does not exist in array");
+                return false;
+            }
+            if (is_null($indexKey)) {
+                $array[] = $value[$columnKey];
+            }
+            else {
+                if ( !array_key_exists($indexKey, $value)) {
+                    trigger_error("Key \"$indexKey\" does not exist in array");
+                    return false;
+                }
+                if ( ! is_scalar($value[$indexKey])) {
+                    trigger_error("Key \"$indexKey\" does not contain scalar value");
+                    return false;
+                }
+                $array[$value[$indexKey]] = $value[$columnKey];
+            }
+        }
+        return $array;
+    }
+
 while ($rowE = mysql_fetch_array($resDatos)) {
 	$i+=1;
 
@@ -159,6 +182,8 @@ while ($rowE = mysql_fetch_array($resDatos)) {
       $pdf->Cell(50,5,'CLUB',1,0,'C',true);
 
 	}
+
+
 
    /// veo si la habilitacion ya la tenia la temporada apsada //
    $habTemporadaPasada = $serviciosReferencias->verificaEdadCategoriaJugadorMenor($rowE['refjugadores'], $rowE['refcategorias'], $rowE['reftipojugadores']);
@@ -361,7 +386,7 @@ foreach ($arExcepciones as $valor) {
 
 		$i=0;
 
-		$pdf->SetFont('Arial','',11);
+		$pdf->SetFont('Arial','',10);
 		$pdf->Cell(5,5,'',1,0,'C',true);
       $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
    	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
@@ -375,10 +400,10 @@ foreach ($arExcepciones as $valor) {
 
 	$pdf->Ln();
 	$pdf->SetX(5);
-	$pdf->SetFont('Arial','',10);
+	$pdf->SetFont('Arial','',8);
 	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
 
-   $pdf->Cell(73,5,utf8_decode($valor['nombrecompleto']),1,0,'L',false);
+   $pdf->Cell(73,5,($valor['nombrecompleto']),1,0,'L',false);
 	$pdf->Cell(20,5,($valor['nrodocumento']),1,0,'C',false);
 	$pdf->Cell(20,5,utf8_decode($valor['tipojugador']),1,0,'L',false);
    $pdf->Cell(20,5,($valor['fechanacimiento']),1,0,'C',false);
