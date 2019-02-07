@@ -94,10 +94,10 @@ $pdf->SetAutoPageBreak(false,1);
 	$pdf->Ln();
 	$pdf->SetY(25);
 	$pdf->SetX(5);
-	$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.utf8_decode($nombre),1,0,'C',true);
+	$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.($nombre),1,0,'C',true);
 	$pdf->Ln();
    $pdf->SetX(5);
-	$pdf->Cell(200,5,'Categoria: '.utf8_decode(mysql_result($resEquipo,0,'categoria')).' - Division: '.utf8_decode(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+	$pdf->Cell(200,5,'Categoria: '.(mysql_result($resEquipo,0,'categoria')).' - Division: '.(mysql_result($resEquipo,0,'division')),1,0,'C',true);
 	$pdf->Ln();
 	$pdf->SetX(5);
 	$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
@@ -165,7 +165,7 @@ while ($rowE = mysql_fetch_array($resDatos)) {
 		$pdf->Ln();
 		$pdf->SetY(25);
 		$pdf->SetX(5);
-		$pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+		$pdf->Cell(200,5,($nombre),1,0,'C',true);
 		$pdf->SetFont('Arial','',10);
 		$pdf->Ln();
 		$pdf->SetX(5);
@@ -194,20 +194,20 @@ while ($rowE = mysql_fetch_array($resDatos)) {
       $excepto = false;
    }
    if ($excepto !== false) {
-      array_push($arExcepciones, array('nombrecompleto' => '** '.utf8_decode($rowE['nombrecompleto']),
+      array_push($arExcepciones, array('nombrecompleto' => '** '.($rowE['nombrecompleto']),
                                        'tipojugador' => $rowE['tipojugador'],
                                        'nrodocumento' => $rowE['nrodocumento'],
                                        'fechanacimiento' => $rowE['fechanacimiento'],
                                        'edad' => $rowE['edad'],
-                                       'countrie' => $rowE['countrie']));
+                                       'countrie' => substr( $rowE['countrie'],0,25)));
    } else {
       if ($rowE['habilitacionpendiente'] == 'Si') {
-         array_push($arExcepciones, array('nombrecompleto' => '* '.utf8_decode($rowE['nombrecompleto']),
+         array_push($arExcepciones, array('nombrecompleto' => '* '.($rowE['nombrecompleto']),
                                           'tipojugador' => $rowE['tipojugador'],
                                           'nrodocumento' => $rowE['nrodocumento'],
                                           'fechanacimiento' => $rowE['fechanacimiento'],
                                           'edad' => $rowE['edad'],
-                                          'countrie' => $rowE['countrie']));
+                                          'countrie' => substr( $rowE['countrie'],0,25)));
       } else {
 
          $cantPartidos += 1;
@@ -218,12 +218,12 @@ while ($rowE = mysql_fetch_array($resDatos)) {
       	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
 
          $pdf->SetFont('Arial','',9);
-         $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+         $pdf->Cell(73,5,($rowE['nombrecompleto']),1,0,'L',false);
       	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
-      	$pdf->Cell(20,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);
+      	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);
          $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
          $pdf->Cell(12,5,$rowE['edad'],1,0,'C',false);
-         $pdf->Cell(50,5,$rowE['countrie'],1,0,'L',false);
+         $pdf->Cell(50,5,substr( $rowE['countrie'],0,25) ,1,0,'L',false);
 
          $contadorY1 += 4;
       }
@@ -278,7 +278,7 @@ while ($rowE = mysql_fetch_array($resDatosNuevo)) {
 		$pdf->Ln();
 		$pdf->SetY(25);
 		$pdf->SetX(5);
-		$pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+		$pdf->Cell(200,5,($nombre),1,0,'C',true);
 		$pdf->SetFont('Arial','',10);
 		$pdf->Ln();
 		$pdf->SetX(5);
@@ -304,19 +304,19 @@ while ($rowE = mysql_fetch_array($resDatosNuevo)) {
 
 
    if ($rowE['habilitacionpendiente'] == 'Si') {
-      array_push($arExcepciones, array('nombrecompleto' => '* '.utf8_decode($rowE['nombrecompleto']),
+      array_push($arExcepciones, array('nombrecompleto' => '* '.($rowE['nombrecompleto']),
                                        'tipojugador' => $rowE['tipojugador'],
                                        'nrodocumento' => $rowE['nrodocumento'],
                                        'fechanacimiento' => $rowE['fechanacimiento'],
                                        'edad' => $rowE['edad'],
-                                       'countrie' => $rowE['countrie']));
+                                       'countrie' => substr( $rowE['countrie'],0,25)));
    } else {
-      $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+      $pdf->Cell(73,5,($rowE['nombrecompleto']),1,0,'L',false);
    	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
-   	$pdf->Cell(20,5,utf8_decode($rowE['tipojugador']),1,0,'L',false);
+   	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);
       $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
       $pdf->Cell(12,5,$rowE['edad'],1,0,'C',false);
-      $pdf->Cell(50,5,$rowE['countrie'],1,0,'L',false);
+      $pdf->Cell(50,5,substr( $rowE['countrie'],0,25) ,1,0,'L',false);
    }
 
 
@@ -379,7 +379,7 @@ foreach ($arExcepciones as $valor) {
 		$pdf->Ln();
 		$pdf->SetY(25);
 		$pdf->SetX(5);
-		$pdf->Cell(200,5,utf8_decode($nombre),1,0,'C',true);
+		$pdf->Cell(200,5,($nombre),1,0,'C',true);
 		$pdf->SetFont('Arial','',10);
 		$pdf->Ln();
 		$pdf->SetX(5);
@@ -405,10 +405,10 @@ foreach ($arExcepciones as $valor) {
 
    $pdf->Cell(73,5,($valor['nombrecompleto']),1,0,'L',false);
 	$pdf->Cell(20,5,($valor['nrodocumento']),1,0,'C',false);
-	$pdf->Cell(20,5,utf8_decode($valor['tipojugador']),1,0,'L',false);
+	$pdf->Cell(20,5,($valor['tipojugador']),1,0,'L',false);
    $pdf->Cell(20,5,($valor['fechanacimiento']),1,0,'C',false);
    $pdf->Cell(12,5,$valor['edad'],1,0,'C',false);
-   $pdf->Cell(50,5,$valor['countrie'],1,0,'L',false);
+   $pdf->Cell(50,5,substr( $valor['countrie'],0,25) ,1,0,'L',false);
 
 	$contadorY1 += 4;
 
@@ -425,10 +425,10 @@ $pdf->Ln();
 $pdf->Ln();
 $pdf->SetY(25);
 $pdf->SetX(5);
-$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.utf8_decode($nombre),1,0,'C',true);
+$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.($nombre),1,0,'C',true);
 $pdf->Ln();
 $pdf->SetX(5);
-$pdf->Cell(200,5,'Categoria: '.utf8_decode(mysql_result($resEquipo,0,'categoria')).' - Division: '.utf8_decode(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+$pdf->Cell(200,5,'Categoria: '.(mysql_result($resEquipo,0,'categoria')).' - Division: '.(mysql_result($resEquipo,0,'division')),1,0,'C',true);
 $pdf->Ln();
 $pdf->SetX(5);
 $pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
@@ -462,10 +462,10 @@ $pdf->Ln();
 $pdf->Ln();
 $pdf->SetY(25);
 $pdf->SetX(5);
-$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.utf8_decode($nombre),1,0,'C',true);
+$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.($nombre),1,0,'C',true);
 $pdf->Ln();
 $pdf->SetX(5);
-$pdf->Cell(200,5,'Categoria: '.utf8_decode(mysql_result($resEquipo,0,'categoria')).' - Division: '.utf8_decode(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+$pdf->Cell(200,5,'Categoria: '.(mysql_result($resEquipo,0,'categoria')).' - Division: '.(mysql_result($resEquipo,0,'division')),1,0,'C',true);
 $pdf->Ln();
 $pdf->SetX(5);
 $pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
