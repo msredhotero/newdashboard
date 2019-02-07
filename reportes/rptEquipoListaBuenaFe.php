@@ -403,7 +403,7 @@ foreach ($arExcepciones as $valor) {
 	$pdf->SetFont('Arial','',8);
 	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
 
-   $pdf->Cell(73,5,($valor['nombrecompleto']),1,0,'L',false);
+   $pdf->Cell(73,5,utf8_decode($valor['nombrecompleto']),1,0,'L',false);
 	$pdf->Cell(20,5,($valor['nrodocumento']),1,0,'C',false);
 	$pdf->Cell(20,5,($valor['tipojugador']),1,0,'L',false);
    $pdf->Cell(20,5,($valor['fechanacimiento']),1,0,'C',false);
