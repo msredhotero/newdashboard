@@ -760,7 +760,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
       default content
     -->
 	<h3 slot="header">Crear Equipo</h3>
-	<select class="form-control show-tick" id="refcategorias" name="refcategorias" require slot="categorias" @change="onChange()" v-model="key">
+	<select class="form-control show-tick" id="refcategorias" name="refcategorias" require slot="categorias" @change="onChange()">
 		<option v-for="itemC in lstCategorias" :value="itemC.idcategoria">{{ itemC.categoria }}</option>
 	</select>
 
@@ -1081,7 +1081,8 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				});
 			},
 			onChange() {
-				paramsCategoria.set('idcategoria',this.key);
+				
+				paramsCategoria.set('idcategoria',$('#refcategorias').val());
 
 				axios.post('../../ajax/ajax.php', paramsCategoria)
 				.then(res => {
