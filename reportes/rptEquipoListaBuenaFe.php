@@ -218,7 +218,7 @@ while ($rowE = mysql_fetch_array($resDatos)) {
       	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
 
          $pdf->SetFont('Arial','',9);
-         $pdf->Cell(73,5,($rowE['nombrecompleto']),1,0,'L',false);
+         $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
       	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
       	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);
          $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
@@ -311,7 +311,7 @@ while ($rowE = mysql_fetch_array($resDatosNuevo)) {
                                        'edad' => $rowE['edad'],
                                        'countrie' => substr( $rowE['countrie'],0,25)));
    } else {
-      $pdf->Cell(73,5,($rowE['nombrecompleto']),1,0,'L',false);
+      $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
    	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
    	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);
       $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
