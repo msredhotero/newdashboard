@@ -8,7 +8,7 @@ $(function () {
 
    setInterval(function() {
       traerTareas(club, altura);
-   },5000);﻿
+   },10000);﻿
 });
 
 function traerTareas(club, altura) {
