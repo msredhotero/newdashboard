@@ -133,7 +133,7 @@ class ServiciosNotificaciones {
                 inner join dbcountries cc ON cc.idcountrie = t.refcountries
                 inner join tbestadostareas est ON est.idestadotarea = t.refestados
                 where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,3,4,5)
-                order by fechacrea desc";
+                order by fechacrea desc, est.estado";
         $res = $this->query($sql,0);
         return $res;
     }

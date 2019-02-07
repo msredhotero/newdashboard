@@ -793,12 +793,14 @@ switch ($accion) {
 		$porcentaje = 0;
 		$cantidad = 0;
 		while ($row = mysql_fetch_array($res)) {
-			$cantidad += 1;
+
 			if ($row['idestadotarea'] == 1) {
 				$porcentaje = 0;
+            $cantidad += 1;
 			} else {
 				if ($row['idestadotarea'] == 2) {
 					$porcentaje = 20;
+               $cantidad += 1;
 				} else {
 					if ($row['idestadotarea'] == 3) {
 						$porcentaje = 100;
@@ -809,6 +811,7 @@ switch ($accion) {
 
 						} else {
 							$porcentaje = 0;
+                     $cantidad += 1;
 						}
 					}
 

@@ -176,7 +176,7 @@ if ($_SESSION['idroll_aif'] == 5) {
                         </div>
                         <div class="content">
                             <div class="text">CLUB</div>
-                            <div class="number"><?php echo $club; ?></div>
+                            <div class="number" style="font-size:1.6em;"><?php echo $club; ?></div>
                         </div>
                     </div>
                 </div>
