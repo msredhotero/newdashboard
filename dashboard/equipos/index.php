@@ -987,6 +987,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 				.then(res => {
 
 					if (res.data.error == '') {
+						this.$emit('recargarfusiones', this.activeEquiposMantenidos)
 						this.$swal("Ok!", res.data.mensaje, "success")
 						this.$emit('close')
 
