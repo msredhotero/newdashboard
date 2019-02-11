@@ -7,8 +7,6 @@
 
 date_default_timezone_set('America/Buenos_Aires');
 
-
-
 class ServiciosReferencias {
 
 
@@ -158,7 +156,6 @@ class ServiciosReferencias {
 
 	/* Fin */
 	/* /* Fin de la Tabla: dbdocumentacionjugadorimagenes*/
-
 
 	function GUID()
 	{
@@ -505,7 +502,6 @@ class ServiciosReferencias {
 
 	}
 
-
 	function traerDefinicionesPorTemporadaCategoria($idTemporada, $idCategoria) {
 	    $sql = "select
 	                max(dct.cantmaxjugadores) as cantmaxjugadores, max(dctj.edadmaxima) as edadmaxima, max(dctj.edadminima) as edadminima, max((dctj.edadmaxima + dctj.edadminima) /2) as promedio
@@ -792,9 +788,9 @@ class ServiciosReferencias {
 		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
 		where cou.idcountrie = ".$idCountrie." and e.activo = ".$baja."
 		order by 1";
-
-		$res = $this->query($sql,0);
-		return $res;
+		
+		$res = $this->query($sql,0); 
+		return $res; 
 	}
 
 	function traerEquiposPorEquipo($idEquipo) {
@@ -835,9 +831,9 @@ class ServiciosReferencias {
 	function existeConectorJugadorEquipo($reftemporadas, $refJugador, $refEquipo) {
 	    $sql = "select idconector from dbconectordelegados where refjugadores =".$refJugador." and refequipos = ".$refEquipo." and activo = 1 and reftemporadas = ".$reftemporadas;
 	    $res = $this->query($sql,0);
-
+	    
 	    if (mysql_num_rows($res)>0) {
-	        return 1;
+	        return 1;   
 	    }
 	    return 0;
 	}
@@ -851,7 +847,6 @@ class ServiciosReferencias {
 	    }
 	    return 0;
 	}
-
 	/****** VERIFICO LA EDAD ******/////
 	function verificarEdad($refjugador) {
 	    $sql = "select DATE_FORMAT(fechanacimiento, '%Y') as fechanacimiento from dbjugadores where idjugador =".$refjugador;
@@ -877,7 +872,6 @@ class ServiciosReferencias {
 
 	    return $edad;
 	}
-
 	/******   COMPRUEBO SI PUEDO JUGAR EN ESA CATEGORIA Y TIPO DE JUGADOR, POR LA EDAD     *************/
 	function verificaEdadCategoriaJugador($refjugador, $refcategoria, $tipoJugador) {
 	    //## falta chocar contra una temporada
@@ -1646,7 +1640,6 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 	}
 
 
-
 	function traerEquiposdelegadosPorCountrieFinalizadoPorEquipo($id, $idtemporada, $idequipo) {
 		$sql = "SELECT
 					ee.idequipo,
@@ -1867,7 +1860,6 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 		$res = $this->query($sql,0);
 		return $res;
 	}
-
 
 
 	/* Fin */
@@ -2806,6 +2798,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		$res = $this->query($sql,0);
 		return $res;
 	}
+
 
 	function traerFusionPorEquiposDelegadosAceptados($idequipodelegado) {
 		$sql = "SELECT

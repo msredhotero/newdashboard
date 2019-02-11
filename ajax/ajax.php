@@ -59,7 +59,6 @@ switch ($accion) {
    break;
 
 
-
 		case 'insertarDelegados':
 		insertarDelegados($serviciosReferencias);
 		break;
@@ -224,6 +223,21 @@ switch ($accion) {
 
 }
 /* Fin */
+
+    function formatearFechas($fecha, $simbolo) {
+    	if ($fecha != '') {
+    		$arFecha = explode($simbolo, $fecha);
+    		
+    		$nuevaFecha = 	$arFecha[2].$simbolo.$arFecha[1].$simbolo.$arFecha[0];
+    		
+    		if (checkdate($arFecha[1],$arFecha[0],$arFecha[2])) {
+    			return $nuevaFecha;
+    		} else {
+    			return '***';	
+    		}
+    	}
+    	return $fecha;
+    }
 
    function accederTarea($serviciosReferencias, $serviciosNotificaciones) {
       $id = $_POST['id'];
@@ -1352,7 +1366,6 @@ function modificarJugadorNuevo($serviciosReferencias, $serviciosFunciones, $serv
 	$resResultado = $serviciosReferencias->traerJugadoresprePorIdNuevo($id);
 
 	$modificar = "modificarJugadorespre";
-
 	$idTabla = "idjugadorpre";
 
 	/////////////////////// Opciones para la creacion del formulario  /////////////////////
@@ -1395,14 +1408,14 @@ function insertarJugadorespre($serviciosReferencias) {
 	$apellido = $_POST['apellido'];
 	$nombres = $_POST['nombres'];
 	$email = $_POST['email'];
-	$fechanacimiento = ($_POST['fechanacimiento']);
-	$fechaalta = ($_POST['fechaalta']);
+	$fechanacimiento = formatearFechas($_POST['fechanacimiento'], '-');
+	$fechaalta = formatearFechas($_POST['fechaalta'], '-');
 	$numeroserielote = $_POST['numeroserielote'];
 	$refcountries = $_POST['refcountries'];
 	$observaciones = $_POST['observaciones'];
 	$refusuarios = $_POST['refusuarios'];
 
-	if (($fechaalta == '') || ($fechanacimiento == '')) {
+	if (($fechaalta == '***') || ($fechanacimiento == '***')) {
 		echo 'Formato de fecha incorrecto';
 	} else {
 		if (($serviciosReferencias->existeJugador($nrodocumento) == 0) && ($serviciosReferencias->existeJugadorPre($nrodocumento) == 0)) {
@@ -1525,19 +1538,20 @@ function VtraerJugadoresClubPorCountrieActivos($serviciosReferencias) {
 	$res = $serviciosReferencias->traerJugadoresClubPorCountrieActivosPaginador($idclub, $pagina, $cantidad, $busqueda);
 	$ar = array();
 
-	while ($row = mysql_fetch_assoc($res)) {
+	while ($row = mysql_fetch_assoc($res)) { 
 		$arNuevo = array('apellido'=> utf8_encode($row['apellido']),
 						'nombres'=>utf8_encode($row['nombres']),
 						'nrodocumento'=>$row['nrodocumento'],
 						'idjugador'=>$row['idjugador'],
 						'fechabajacheck'=> ($row['fechabajacheck'] == '0' ? false : true),
 						'articulocheck'=> ($row['articulocheck'] == '0' ? false : true),
-						'numeroserielote' => $row['numeroserielote']
+						'numeroserielote' => $row['numeroserielote'],
+						'marcalote' => $row['marcalote']
 		);
+			
+		array_push($ar, $arNuevo); 
 
-		array_push($ar, $arNuevo);
-
-	}
+	} 
 
 	$resV['datos'] = $ar;
 

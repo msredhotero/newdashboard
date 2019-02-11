@@ -97,7 +97,6 @@ function menu($usuario,$titulo,$rol,$empresa) {
 		$cadmenu .= '</ul>';
 	}
 
-
 	$menu = utf8_encode($cadmenu);
 
 	return $menu;

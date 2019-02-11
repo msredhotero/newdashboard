@@ -191,7 +191,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
-	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+	<!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
 
 	<script src="https://unpkg.com/vue-swal"></script>
 
@@ -225,7 +226,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 				</div>
 			</div>
 		</div>
-		<p>Please wait...</p>
+		<p>Cargando...</p>
 	</div>
 </div>
 <!-- #END# Page Loader -->
@@ -307,8 +308,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 									<td>{{ jugador.nombres }}</td>
 									<td>{{ jugador.nrodocumento }}</td>
 									<td>
-										<div v-if="jugador.numeroserielote != ''">
-											<input class='form-control' type='text' readonly="readonly" name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/>
+										<div v-if="jugador.marcalote != ''">
+											<input class='form-control' type='text' disabled readonly="readonly" name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/>
 										</div>
 										<div v-else>
 											<input class='form-control' type='text' name='numeroserielote' id='numeroserielote' :value="jugador.numeroserielote" v-model="jugador.numeroserielote"/>
@@ -453,11 +454,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 									<i class="material-icons">more_vert</i>
 								</a>
-								<ul class="dropdown-menu pull-right">
-									<li><a href="javascript:void(0);" class=" waves-effect waves-block">Action</a></li>
-									<li><a href="javascript:void(0);" class=" waves-effect waves-block">Another action</a></li>
-									<li><a href="javascript:void(0);" class=" waves-effect waves-block">Something else here</a></li>
-								</ul>
+
 							</li>
 						</ul>
 					</div>
@@ -484,9 +481,9 @@ if ($_SESSION['refroll_aif'] != 1) {
 							</select>
 						</div>
 						<div class="button-demo">
-							<button type="button" class="btn btn-danger" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
+							<button type="button" class="btn bg-brown" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
 
-							<button type="button" class="btn btn-danger" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
+							<button type="button" class="btn bg-brown" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
 						</div>
 					</div>
 				</div>
