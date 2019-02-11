@@ -178,7 +178,7 @@ class BaseHTML {
                                             </ul>
                                         </li>
                                         <li class="footer">
-                                            <a href="javascript:void(0);">Ver Todas</a>
+                                            <a href="'.$altura.'../tareas/">Ver Todas</a>
                                         </li>
                                     </ul>
                                 </li>

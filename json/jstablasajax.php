@@ -3,15 +3,19 @@
 
 include ('../includes/funciones.php');
 include ('../includes/funcionesReferencias.php');
+include ('../includes/funcionesNotificaciones.php');
 
 $serviciosFunciones = new Servicios();
 $serviciosReferencias 	= new ServiciosReferencias();
+$serviciosNotificaciones	= new ServiciosNotificaciones();
 
 $tabla = $_GET['tabla'];
 $draw = $_GET['sEcho'];
 $start = $_GET['iDisplayStart'];
 $length = $_GET['iDisplayLength'];
 $busqueda = $_GET['sSearch'];
+
+$idclub = $_GET['club'];
 
 $referencia1 = 0;
 
@@ -35,14 +39,14 @@ function armarAcciones($id,$label='',$class,$icon) {
 
 switch ($tabla) {
 	case 'tareas':
-		$resAjax = $serviciosReferencias->traerUnidadesnegociosajax($length, $start, $busqueda);
-		$res = $serviciosReferencias->traerUnidadesnegocios();
+		$resAjax = $serviciosNotificaciones->traerTareasGeneralPorCountrieIncompletasajax($idclub,$length, $start, $busqueda);
+		$res = $serviciosNotificaciones->traerTareasGeneralPorCountrie($idclub);
 		$label = array('btnModificar');
-		$class = array('bg-amber');
-		$icon = array('create');
+		$class = array('bg-indigo');
+		$icon = array('link');
 		$indiceID = 0;
 		$empieza = 1;
-		$termina = 3;
+		$termina = 4;
 
 		break;
 	case 'tipostrabajos':

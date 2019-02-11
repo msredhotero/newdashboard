@@ -61,29 +61,55 @@ class ServiciosNotificaciones {
         return $res;
     }
 
-    function traerTareasGeneral() {
-        $sql = "SELECT idtarea,
-                    cc.nombre as countrie,
-                    tarea,
-                    est.estado,
-                    usuariocrea,
-                    fechacrea,
-                    usuariomodi,
-                    fechamodi,
-                    url,
-                    id1,
-                    id2,
-                    id3,
-                    refestados,
-                    refcountries,
-                    est.color,
-                    est.idestadotarea
-                FROM dbtareas t
-                inner join dbcountries cc ON cc.idcountrie = t.refcountries
-                inner join tbestadostareas est ON est.idestadotarea = t.refestados";
-        $res = $this->query($sql,0);
-        return $res;
-    }
+      function traerTareasGeneral() {
+         $sql = "SELECT idtarea,
+                     cc.nombre as countrie,
+                     tarea,
+                     est.estado,
+                     usuariocrea,
+                     fechacrea,
+                     usuariomodi,
+                     fechamodi,
+                     url,
+                     id1,
+                     id2,
+                     id3,
+                     refestados,
+                     refcountries,
+                     est.color,
+                     est.idestadotarea
+         FROM dbtareas t
+         inner join dbcountries cc ON cc.idcountrie = t.refcountries
+         inner join tbestadostareas est ON est.idestadotarea = t.refestados";
+         $res = $this->query($sql,0);
+         return $res;
+      }
+
+
+      function traerTareasPorId($id) {
+         $sql = "SELECT idtarea,
+                     cc.nombre as countrie,
+                     tarea,
+                     est.estado,
+                     usuariocrea,
+                     fechacrea,
+                     usuariomodi,
+                     fechamodi,
+                     url,
+                     id1,
+                     id2,
+                     id3,
+                     refestados,
+                     refcountries,
+                     est.color,
+                     est.idestadotarea
+         FROM dbtareas t
+         inner join dbcountries cc ON cc.idcountrie = t.refcountries
+         inner join tbestadostareas est ON est.idestadotarea = t.refestados
+         where t.idtarea = ".$id;
+         $res = $this->query($sql,0);
+         return $res;
+      }
 
 
     function traerTareasGeneralPorCountrie($idcountrie) {
@@ -113,25 +139,28 @@ class ServiciosNotificaciones {
 
 
     function traerTareasGeneralPorCountrieIncompletas($idcountrie) {
-        $sql = "SELECT idtarea,
+        $sql = "SELECT t.idtarea,
                     cc.nombre as countrie,
-                    tarea,
+                    t.tarea,
                     est.estado,
-                    usuariocrea,
-                    fechacrea,
-                    usuariomodi,
-                    fechamodi,
-                    url,
-                    id1,
-                    id2,
-                    id3,
-                    refestados,
-                    refcountries,
+                    t.usuariocrea,
+                    t.fechacrea,
+                    t.usuariomodi,
+                    t.fechamodi,
+                    t.url,
+                    t.id1,
+                    t.id2,
+                    t.id3,
+                    f.refestados,
+                    t.refcountries,
                     est.color,
                     est.idestadotarea
                 FROM dbtareas t
                 inner join dbcountries cc ON cc.idcountrie = t.refcountries
                 inner join tbestadostareas est ON est.idestadotarea = t.refestados
+                inner join dbfusionequipos f ON f.idfusionequipo = t.id1
+               inner join dbequiposdelegados ed ON ed.idequipodelegado = f.refequiposdelegados
+               inner join dbcountries cm ON cm.idcountrie = ed.refcountries
                 where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,3,4,5)
                 order by est.estado, fechacrea desc";
         $res = $this->query($sql,0);
@@ -145,7 +174,7 @@ class ServiciosNotificaciones {
 
 		$busqueda = str_replace("'","",$busqueda);
 		if ($busqueda != '') {
-			$where = "and t.tarea like '%".$busqueda."%' or est.estado like '%".$busqueda."%' or o.telefono like '%".$busqueda."%' or o.email like '%".$busqueda."%' or tip.tipotrabajo like '%".$busqueda."%' or mot.motivo like '%".$busqueda."%' or est.estado like '%".$busqueda."%'";
+			$where = "and t.tarea like '%".$busqueda."%' or est.estado like '%".$busqueda."%' or cm.nombre like '%".$busqueda."%' or t.fechacrea like '%".$busqueda."%'";
 		}
 
       $sql = "SELECT idtarea,
@@ -171,7 +200,7 @@ class ServiciosNotificaciones {
             inner join dbfusionequipos f ON f.idfusionequipo = t.id1
             inner join dbequiposdelegados ed ON ed.idequipodelegado = f.refequiposdelegados
             inner join dbcountries cm ON cm.idcountrie = ed.refcountries
-            where cc.idcountrie = ".$idcountrie." and est.idestadotarea in (1,2,3,4,5)
+            where cc.idcountrie = ".$idcountrie." ".$where."
             order by est.estado, fechacrea desc";
       $res = $this->query($sql,0);
       return $res;
@@ -182,7 +211,6 @@ class ServiciosNotificaciones {
       $sql = "SELECT idtarea,
                   t.tarea,
                   est.estado,
-
                   t.fechacrea,
                   t.usuariomodi,
                   t.fechamodi,

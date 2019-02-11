@@ -54,6 +54,10 @@ switch ($accion) {
       presentarDocumentacion($serviciosReferencias, $serviciosNotificaciones);
    break;
 
+   case 'accederTarea':
+      accederTarea($serviciosReferencias, $serviciosNotificaciones);
+   break;
+
 
 
 		case 'insertarDelegados':
@@ -220,6 +224,18 @@ switch ($accion) {
 
 }
 /* Fin */
+
+   function accederTarea($serviciosReferencias, $serviciosNotificaciones) {
+      $id = $_POST['id'];
+
+      $resTarea = $serviciosNotificaciones->traerTareasPorId($id);
+
+      if (mysql_num_rows($resTarea) > 0) {
+         echo mysql_result($resTarea,0,'url').mysql_result($resTarea,0,'id1');
+      } else {
+         echo 'javascript:void(0);';
+      }
+   }
 
    function presentarDocumentacion($serviciosReferencias, $serviciosNotificaciones) {
       $servidorCarpeta = 'aifzndesarrollo';
