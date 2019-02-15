@@ -788,9 +788,9 @@ class ServiciosReferencias {
 		inner join tbtipocontactos ti ON ti.idtipocontacto = con.reftipocontactos
 		where cou.idcountrie = ".$idCountrie." and e.activo = ".$baja."
 		order by 1";
-		
-		$res = $this->query($sql,0); 
-		return $res; 
+
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 	function traerEquiposPorEquipo($idEquipo) {
@@ -831,9 +831,9 @@ class ServiciosReferencias {
 	function existeConectorJugadorEquipo($reftemporadas, $refJugador, $refEquipo) {
 	    $sql = "select idconector from dbconectordelegados where refjugadores =".$refJugador." and refequipos = ".$refEquipo." and activo = 1 and reftemporadas = ".$reftemporadas;
 	    $res = $this->query($sql,0);
-	    
+
 	    if (mysql_num_rows($res)>0) {
-	        return 1;   
+	        return 1;
 	    }
 	    return 0;
 	}
@@ -1341,7 +1341,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 	function traerEstadosFusionesAceptadasPorCountrieEquipo($idcountrie, $idequipo) {
 
 		$sql = "select
-					coalesce(min(fe.refestados),1) as idestado
+					coalesce(min(fe.refestados),3) as idestado
 				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
 				where ed.refcountries = ".$idcountrie." and ed.idequipo = ".$idequipo;
@@ -3407,6 +3407,510 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	/* Fin */
 	/* /* Fin de la Tabla: tbmeses*/
 
+	
+	function enviarMailAdjuntoPlantel($idequipo,$referente,$asunto,$cuerpo, $referencia) {
+		require('../reportes/fpdf.php');
+
+		$refEquipos		=	$idequipo;
+
+
+
+		$resTemporadas = $this->traerUltimaTemporada();
+
+		if (mysql_num_rows($resTemporadas)>0) {
+		    $ultimaTemporada = mysql_result($resTemporadas,0,0);
+		} else {
+		    $ultimaTemporada = 0;
+		}
+
+		$reftemporadas = $ultimaTemporada;
+
+		/////////////////////////////  fin parametross  ///////////////////////////
+		$resEquipo = $this->traerEquiposdelegadosPorEquipoTemporada($refEquipos,$reftemporadas);
+		$resEquipoAux = $this->traerEquiposdelegadosPorEquipoTemporada($refEquipos,$reftemporadas);
+
+
+		$resDatos = $this->traerConectorActivosPorEquiposDelegado($refEquipos, $reftemporadas, $refusuarios='');
+
+		$resDatosNuevo = $this->traerConectorActivosPorEquiposDelegadoNuevo($refEquipos, $reftemporadas, $refusuarios='');
+
+		$excepciones = $this->generarPlantelTemporadaAnteriorExcepcionesTodos($reftemporadas, mysql_result($resEquipoAux,0,'refcountries'), $refEquipos);
+
+		$nombre 	= mysql_result($resEquipoAux,0,'nombre');
+		$categoria = mysql_result($resEquipoAux,0,'categoria');
+		$division = mysql_result($resEquipoAux,0,'division');
+
+		$resclub = $this->traerCountriesPorId(mysql_result($resEquipoAux,0,'refcountries'));
+
+		$nombreclub= mysql_result($resclub,0,'nombre');
+
+		$pdf = new FPDF();
+
+
+		function Footer($pdf)
+		{
+
+		$pdf->SetY(-10);
+
+		$pdf->SetFont('Arial','I',10);
+
+		$pdf->Cell(0,10,'Firma presidente y/o secretario: ______________________________________________  -  Pagina '.$pdf->PageNo()." - Fecha: ".date('Y-m-d'),0,0,'C');
+		}
+
+
+		$cantidadJugadores = 0;
+		#Establecemos los márgenes izquierda, arriba y derecha:
+		//$pdf->SetMargins(2, 2 , 2);
+
+		#Establecemos el margen inferior:
+		$pdf->SetAutoPageBreak(false,1);
+
+
+
+			$pdf->AddPage();
+			/***********************************    PRIMER CUADRANTE ******************************************/
+
+			$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+
+			/***********************************    FIN ******************************************/
+
+
+
+			//////////////////// Aca arrancan a cargarse los datos de los equipos  /////////////////////////
+
+
+			$pdf->SetFillColor(183,183,183);
+			$pdf->SetFont('Arial','B',12);
+			$pdf->Ln();
+			$pdf->Ln();
+			$pdf->SetY(25);
+			$pdf->SetX(5);
+			$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.($nombre),1,0,'C',true);
+			$pdf->Ln();
+		   $pdf->SetX(5);
+			$pdf->Cell(200,5,'Categoria: '.(mysql_result($resEquipo,0,'categoria')).' - Division: '.(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+			$pdf->Ln();
+			$pdf->SetX(5);
+			$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
+			$pdf->SetFont('Arial','',10);
+			$pdf->Ln();
+			$pdf->Ln();
+			$pdf->SetX(5);
+
+			$pdf->SetFont('Arial','',10);
+		   $pdf->Ln();
+			$pdf->SetX(5);
+
+			$pdf->SetFont('Arial','',11);
+			$pdf->Cell(5,5,'',1,0,'C',true);
+			$pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+			$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+			$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+		   $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+		   $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+		   $pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+			$cantPartidos = 0;
+			$i=0;
+
+			$contadorY1 = 44;
+			$contadorY2 = 44;
+
+		   $arExcepciones = array();
+
+		   function array_column(array $input, $columnKey, $indexKey = null) {
+		        $array = array();
+		        foreach ($input as $value) {
+		            if ( !array_key_exists($columnKey, $value)) {
+		                trigger_error("Key \"$columnKey\" does not exist in array");
+		                return false;
+		            }
+		            if (is_null($indexKey)) {
+		                $array[] = $value[$columnKey];
+		            }
+		            else {
+		                if ( !array_key_exists($indexKey, $value)) {
+		                    trigger_error("Key \"$indexKey\" does not exist in array");
+		                    return false;
+		                }
+		                if ( ! is_scalar($value[$indexKey])) {
+		                    trigger_error("Key \"$indexKey\" does not contain scalar value");
+		                    return false;
+		                }
+		                $array[$value[$indexKey]] = $value[$columnKey];
+		            }
+		        }
+		        return $array;
+		    }
+
+		while ($rowE = mysql_fetch_array($resDatos)) {
+			$i+=1;
+
+
+			if ($i > 32) {
+				Footer($pdf);
+				$pdf->AddPage();
+				$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+				$pdf->SetFont('Arial','B',10);
+				$pdf->Ln();
+				$pdf->Ln();
+				$pdf->SetY(25);
+				$pdf->SetX(5);
+				$pdf->Cell(200,5,($nombre),1,0,'C',true);
+				$pdf->SetFont('Arial','',10);
+				$pdf->Ln();
+				$pdf->SetX(5);
+
+				$i=0;
+
+				$pdf->SetFont('Arial','',11);
+				$pdf->Cell(5,5,'',1,0,'C',true);
+		      $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+		   	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+		   	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+		      $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+		      $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+		      $pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+			}
+
+
+
+		   /// veo si la habilitacion ya la tenia la temporada apsada //
+		   $habTemporadaPasada = $this->verificaEdadCategoriaJugadorMenor($rowE['refjugadores'], $rowE['refcategorias'], $rowE['reftipojugadores']);
+
+		   if (count($excepciones) > 0) {
+		      $excepto = array_search($rowE['nrodocumento'], array_column($excepciones, 'nrodocumento'));
+		   } else {
+		      $excepto = false;
+		   }
+		   if ($excepto !== false) {
+		      array_push($arExcepciones, array('nombrecompleto' => '** '.($rowE['nombrecompleto']),
+		                                       'tipojugador' => $rowE['tipojugador'],
+		                                       'nrodocumento' => $rowE['nrodocumento'],
+		                                       'fechanacimiento' => $rowE['fechanacimiento'],
+		                                       'edad' => $rowE['edad'],
+		                                       'countrie' => substr( $rowE['countrie'],0,25)));
+		   } else {
+		      if ($rowE['habilitacionpendiente'] == 'Si') {
+		         array_push($arExcepciones, array('nombrecompleto' => '* '.($rowE['nombrecompleto']),
+		                                          'tipojugador' => $rowE['tipojugador'],
+		                                          'nrodocumento' => $rowE['nrodocumento'],
+		                                          'fechanacimiento' => $rowE['fechanacimiento'],
+		                                          'edad' => $rowE['edad'],
+		                                          'countrie' => substr( $rowE['countrie'],0,25)));
+		      } else {
+
+		         $cantPartidos += 1;
+
+		         $pdf->Ln();
+		      	$pdf->SetX(5);
+		      	$pdf->SetFont('Arial','',10);
+		      	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+
+		         $pdf->SetFont('Arial','',9);
+		         $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+		      	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
+		      	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);
+		         $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
+		         $pdf->Cell(12,5,$rowE['edad'],1,0,'C',false);
+		         $pdf->Cell(50,5,substr( $rowE['countrie'],0,25) ,1,0,'L',false);
+
+		         $contadorY1 += 4;
+		      }
+		   }
+
+
+
+
+
+
+
+			//$pdf->SetY($contadorY1);
+
+
+		}
+
+
+		$pdf->Ln();
+
+		$pdf->SetX(5);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetFont('Arial','B',12);
+		$pdf->Cell(200,5,'Jugadores Nuevos',0,0,'C',false);
+		$pdf->Ln();
+		$pdf->Ln();
+
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$pdf->SetFont('Arial','',11);
+		$pdf->Cell(5,5,'',1,0,'C',true);
+		$pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+		$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+		$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+		$pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+		$pdf->Cell(12,5,'EDAD',1,0,'C',true);
+		$pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+
+		while ($rowE = mysql_fetch_array($resDatosNuevo)) {
+			$i+=1;
+			$cantPartidos += 1;
+
+			if ($i > 50) {
+				Footer($pdf);
+				$pdf->AddPage();
+				$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+				$pdf->SetFont('Arial','B',10);
+				$pdf->Ln();
+				$pdf->Ln();
+				$pdf->SetY(25);
+				$pdf->SetX(5);
+				$pdf->Cell(200,5,($nombre),1,0,'C',true);
+				$pdf->SetFont('Arial','',10);
+				$pdf->Ln();
+				$pdf->SetX(5);
+
+				$i=0;
+
+				$pdf->SetFont('Arial','',11);
+				$pdf->Cell(5,5,'',1,0,'C',true);
+		      $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+		   	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+		   	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+		      $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+		      $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+		      $pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+			}
+
+
+			$pdf->Ln();
+			$pdf->SetX(5);
+			$pdf->SetFont('Arial','',10);
+			$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+
+
+		   if ($rowE['habilitacionpendiente'] == 'Si') {
+		      array_push($arExcepciones, array('nombrecompleto' => '* '.($rowE['nombrecompleto']),
+		                                       'tipojugador' => $rowE['tipojugador'],
+		                                       'nrodocumento' => $rowE['nrodocumento'],
+		                                       'fechanacimiento' => $rowE['fechanacimiento'],
+		                                       'edad' => $rowE['edad'],
+		                                       'countrie' => substr( $rowE['countrie'],0,25)));
+		   } else {
+		      $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
+		   	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
+		   	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);
+		      $pdf->Cell(20,5,($rowE['fechanacimiento']),1,0,'C',false);
+		      $pdf->Cell(12,5,$rowE['edad'],1,0,'C',false);
+		      $pdf->Cell(50,5,substr( $rowE['countrie'],0,25) ,1,0,'L',false);
+		   }
+
+
+
+
+
+
+			$contadorY1 += 4;
+
+			//$pdf->SetY($contadorY1);
+
+
+		}
+
+
+		$pdf->Ln();
+
+
+
+		$pdf->SetX(5);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetFont('Arial','B',12);
+		$pdf->Cell(200,5,'Excepciones Jugadores',0,0,'C',false);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetFont('Arial','',9);
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,utf8_decode('* Jugadores con solicitud de excepción'),0,0,'L',false);
+		$pdf->Ln();
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,utf8_decode('** Jugadores con solicitud de excepción, generada desde la temporada pasada'),0,0,'L',false);
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$pdf->SetFont('Arial','',11);
+		$pdf->Cell(5,5,'',1,0,'C',true);
+		$pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+		$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+		$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+		$pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+		$pdf->Cell(12,5,'EDAD',1,0,'C',true);
+		$pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+		foreach ($arExcepciones as $valor) {
+			$i+=1;
+			$cantPartidos += 1;
+
+			if ($i > 50) {
+				Footer($pdf);
+				$pdf->AddPage();
+				$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+				$pdf->SetFont('Arial','B',10);
+				$pdf->Ln();
+				$pdf->Ln();
+				$pdf->SetY(25);
+				$pdf->SetX(5);
+				$pdf->Cell(200,5,($nombre),1,0,'C',true);
+				$pdf->SetFont('Arial','',10);
+				$pdf->Ln();
+				$pdf->SetX(5);
+
+				$i=0;
+
+				$pdf->SetFont('Arial','',10);
+				$pdf->Cell(5,5,'',1,0,'C',true);
+		      $pdf->Cell(73,5,'JUGADOR',1,0,'C',true);
+		   	$pdf->Cell(20,5,'NRO. DOC.',1,0,'C',true);
+		   	$pdf->Cell(20,5,'TIPO JUG.',1,0,'C',true);
+		      $pdf->Cell(20,5,'FEC. NAC.',1,0,'C',true);
+		      $pdf->Cell(12,5,'EDAD',1,0,'C',true);
+		      $pdf->Cell(50,5,'CLUB',1,0,'C',true);
+
+			}
+
+
+			$pdf->Ln();
+			$pdf->SetX(5);
+			$pdf->SetFont('Arial','',8);
+			$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+
+		   $pdf->Cell(73,5,utf8_decode($valor['nombrecompleto']),1,0,'L',false);
+			$pdf->Cell(20,5,($valor['nrodocumento']),1,0,'C',false);
+			$pdf->Cell(20,5,($valor['tipojugador']),1,0,'L',false);
+		   $pdf->Cell(20,5,($valor['fechanacimiento']),1,0,'C',false);
+		   $pdf->Cell(12,5,$valor['edad'],1,0,'C',false);
+		   $pdf->Cell(50,5,substr( $valor['countrie'],0,25) ,1,0,'L',false);
+
+			$contadorY1 += 4;
+
+			//$pdf->SetY($contadorY1);
+
+
+		}
+
+		Footer($pdf);
+		$pdf->AddPage();
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+		$pdf->SetFont('Arial','B',10);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetY(25);
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.($nombre),1,0,'C',true);
+		$pdf->Ln();
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,'Categoria: '.(mysql_result($resEquipo,0,'categoria')).' - Division: '.(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+		$pdf->Ln();
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$resGetAllFusiones = $this->traerFusionPorIdEquipos($refEquipos);
+
+		if (mysql_num_rows($resGetAllFusiones) > 0) {
+		   while ($rowFu = mysql_fetch_array($resGetAllFusiones)) {
+		      if ($rowFu['idestado'] == 3) {
+		         $countrie = $rowFu['countrie'];
+		         $pdf->Ln();
+		      	$pdf->SetX(5);
+
+		      	$pdf->SetFont('Arial','',10);
+		      	//$pdf->Cell(5,5,'',1,0,'C',true);
+		      	$pdf->Multicell(200, 5, utf8_decode('Por medio de la presente, '.$nombreclub.' acepta la solicitud de fusión presentada por '.$countrie.' para el equipo '.$nombre.' en la categoría '.$categoria.' y división '.$division.', obligándose a respetar la normativa prevista por el reglamento interno de torneos de la AIF.'), 0, 'L', false);
+		      }
+		   }
+		}
+
+
+		Footer($pdf);
+		$pdf->AddPage();
+		$pdf->Image('../imagenes/logoparainformes.png',2,2,40);
+		$pdf->SetFont('Arial','B',10);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetY(25);
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,'Lista de Buena Fe Temporada 2019 - Equipo: '.($nombre),1,0,'C',true);
+		$pdf->Ln();
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,'Categoria: '.(mysql_result($resEquipo,0,'categoria')).' - Division: '.(mysql_result($resEquipo,0,'division')),1,0,'C',true);
+		$pdf->Ln();
+		$pdf->SetX(5);
+		$pdf->Cell(200,5,'Fecha: '.date('d-m-Y').' - Hora: '.date('H:i:s'),1,0,'C',true);
+		$pdf->SetFont('Arial','',10);
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetX(5);
+
+		$pdf->SetFont('Arial','',10);
+		//$pdf->Cell(5,5,'',1,0,'C',true);
+		$pdf->Multicell(200, 5, utf8_decode('Certifico que los arriba Inscriptos, detallados como pertenecientes al country al cual represento, son Socios-Propietarios de Lotes del Country (titulares, cónyugues, ascendientes, descendientes o yernos únicamente), y/o jugadores que se enmarcan dentro del artículo 2 incisos "a", "b" y "d" de vuestro reglamento de torneos, estando estatutariamente habilitados para representar a la Institución en competencias deportivas. Manifiesto conocer y aceptar en todas sus partes el Reglamento de los Torneos y el Reglamento del Tribunal de Disciplina, comprometiéndose el Country al que represento, a cumplir y hacer cumplir los derechos y obligaciones obrantes en los mismos y a comunicar a la Asociación, en forma inmediata, cualquier modificación en la condición o categoría de los socios-propietarios y/o familiares inscriptos en la presente lista.'), 0, 'L', false);
+
+
+		Footer($pdf);
+
+
+
+		$nombreTurno = "LISTA-DE-BUENA-FE-".$nombre.'-'.$fecha.".pdf";
+
+		$pdf->Output($nombreTurno,'F');
+
+		require_once('AttachMailer.php');
+
+		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
+		$mi_archivo = $nombreTurno;
+		$mi_nombre = "AIF";
+		$mi_email = $referente;
+		$email_to = $referente;
+		$mi_titulo = "Este es un correo con archivo adjunto";
+		$mi_mensaje = "Esta es el cuerpo de mensaje.";
+
+		$ruta_completa = $ruta.$mi_archivo;
+
+		//$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "Lista de los equipos confirmados");
+		//$mailer->attachFile($ruta_completa);
+		//$mailer->send() ? "Enviado": "Problema al enviar";
+
+		$conf['to'] = $email_to;
+		$conf['from'] = $mi_email;
+		$conf['subject'] = 'Presenta Lista de Buena Fe';
+		$conf['content'] = 'Lista de Buena Fe Confirmada';
+
+		//$files[] = __FILE__; //  este script!
+		$files[$ruta_completa] = 'mime/type';
+
+		if ($this->mailto($conf, $files, true))
+		{
+			// ok
+			return 'ok - ';
+		}
+
+
+	}
+
 	function enviarMailAdjuntoEquipos($id, $email) {
 		require('../reportes/fpdf.php');
 
@@ -3725,13 +4229,27 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$ruta_completa = $ruta.$mi_archivo;
 
-		$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "Lista de los equipos confirmados");
-		$mailer->attachFile($ruta_completa);
-		$mailer->send() ? "Enviado": "Problema al enviar";
+		//$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "Lista de los equipos confirmados");
+		//$mailer->attachFile($ruta_completa);
+		//$mailer->send() ? "Enviado": "Problema al enviar";
 
-		$devuelve = $this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+		$conf['to'] = $email_to;
+		$conf['from'] = $mi_email;
+		$conf['subject'] = 'Presenta equipos';
+		$conf['content'] = 'Lista de los equipos confirmados';
 
+		//$files[] = __FILE__; //  este script!
+		$files[$ruta_completa] = 'mime/type';
 
+		if ($this->mailto($conf, $files, true))
+		{
+			// ok
+			return 'ok - ';
+		}
+
+		//$devuelve = $this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
+
+		//return $devuelve;
 	}
 
 	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
@@ -3743,7 +4261,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$bound="--".$uid."\r\n";
 		$last_bound="--".$uid."--\r\n";
 		$header = "From: ".$from_name." <".$from_mail.">\r\n";
-		$header .= "MIME-Version: 1.0\n";
+		$header .= "MIME-Version: 1.0"."\r\n";
 		$header .= "Content-Type: multipart/mixed; boundary=\"".$uid."\"\r\n";
 		$header .= "This is a multi-part message in MIME format.\r\n";
 		$header .= $bound;
@@ -3763,6 +4281,89 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 			return "ERROR en el envio";
 		}
 	}
+
+	function mailto($test = array(), $add = array(), $html = false)
+	{
+	    //
+	    $test = array_merge(array(
+	            'to' => null,
+	            'from' => null,
+	            'reply' => null,
+	            'subject' => null,
+	            'content' => null
+	    ), $test);
+
+	    // en sus marcas!
+	    $head = array(
+	            "to: $test[to]",
+	            'X-Mailer: PHP/'.phpversion(),
+	            'MIME-version: 1.0'
+	    );
+
+	    $hash = md5(uniqid('PHP'));
+	    $mime = $html? 'html': 'plain';
+	    $content = !$html?  // limpiamos??
+	            strip_tags($test['content']): $test['content'];
+
+	    if (isset($test['from']))
+	    { // origen..
+	        $head[] = "from: $test[from]";
+	    }
+	    if (isset($test['reply']))
+	    {// respuesta?
+	        $head[] = "reply-to: $test[reply]";
+	    }
+
+	    // header mixto...
+	    $head[] = 'content-type: multipart/mixed; boundary="mix-'.$hash.'"';
+
+	    // body mixto...
+	    $body[] = "--mix-$hash";
+	    $body[] = 'content-Type: multipart/alternative; boundary="alt-'.$hash.'"';
+
+	    $body[] = "--alt-$hash";
+	    $body[] = 'content-type: text/'.$mime.'; charset="iso-8859-1"';
+	    $body[] = 'content-transfer-encoding: 7bit';
+
+	    $body[] = null; // xS
+	    $body[] = $content;
+	    $body[] = null;
+
+	    $body[] = "--alt-$hash--";
+
+	    if (!empty($add) && is_array($add))
+	    {
+	        foreach ($add as $key => $val)
+	        { // adjuntamos...!
+	            $file = is_numeric($key)? $val: $key;
+	            $key = !is_numeric($key)? $val: null;
+
+	            if (is_file($file))
+	            {
+	                $name = is_file($file)? basename($file): urlencode($file);
+	                $mime = // establecemos tipo MIME... ?
+	                        preg_match('/^[a-z]+\/[a-z0-9\+-]+$/i', $key)?
+	                        $key: 'application/octet-stream';
+
+	                $body[]="--mix-$hash";
+	                $body[] = 'content-type: '.$mime.'; name="'.$name.'"';
+	                $body[] = 'content-transfer-encoding: base64';
+	                $body[] = 'content-disposition: attachment';
+
+	                $body[]= null;
+	                $body[]= // agregamos correctamente?
+	                        chunk_split(base64_encode(file_get_contents($file)));
+	                $body[]= null;
+	            }
+	        }
+	    }
+	    $body[] = "--mix-$hash--";
+
+	    if (mail($test['to'], $test['subject'], join("\n", $body), join("\n", $head)))
+	    { // ... ok!?
+	        return true;
+	    }
+	 }
 
 
 	function enviarEmail($destinatario,$asunto,$cuerpo, $referencia='') {

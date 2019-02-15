@@ -96,6 +96,8 @@ $idEstado = $serviciosReferencias->devolverIdEstado("dbcabeceraconfirmacion",$co
 
 $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif']);
 
+$resEquipos = $serviciosReferencias->traerEquiposdelegadosPorCountrieFinalizado($_SESSION['idclub_aif'],$ultimaTemporada);
+
 ?>
 
 <!DOCTYPE html>
@@ -246,6 +248,23 @@ $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif'
 											 <?php
 											 }
 										 	}
+
+ 											while ($rowE = mysql_fetch_array($resEquipos)) {
+ 												if (($rowE['refestados'] == 5) || ($rowE['refestados'] == 7)) {
+ 											 ?>
+ 											<tr>
+ 											 	<td>PDF</td>
+ 												<td>Lista de Buena Fe - (<?php echo 'Equipo: '.$rowE['nombre'].' - Categoria: '.$rowE['categoria'].' - Division: '.$rowE['division']; ?>)</td>
+ 												<td>
+ 													<button type="button" class="btn bg-teal btn-circle waves-effect waves-circle waves-float descargarListaBuenaFe" id="<?php echo $rowE['idequipo']; ?>">
+ 														<i class="material-icons">archive</i>
+ 													</button>
+ 												</td>
+ 											</tr>
+
+ 											 <?php
+										 	}
+										 	}
 											  ?>
 
 										</tbody>
@@ -306,6 +325,13 @@ $resDatos = $serviciosReferencias->traerFusionPorCountrie($_SESSION['idclub_aif'
 			usersid =  $(this).attr("id");
 			window.open("../../reportes/rptSolicitudDeFusion.php?id=" + usersid ,'_blank');
 		});
+
+		$("#example").on("click",'.descargarListaBuenaFe', function(){
+			usersid =  $(this).attr("id");
+			window.open("../../reportes/rptEquipoListaBuenaFe.php?idequipo=" + usersid ,'_blank');
+		});
+
+
 
 		$("#example").on("click",'.descargarEquipos', function(){
 			usersid =  $(this).attr("id");

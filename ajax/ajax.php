@@ -227,13 +227,13 @@ switch ($accion) {
     function formatearFechas($fecha, $simbolo) {
     	if ($fecha != '') {
     		$arFecha = explode($simbolo, $fecha);
-    		
+
     		$nuevaFecha = 	$arFecha[2].$simbolo.$arFecha[1].$simbolo.$arFecha[0];
-    		
+
     		if (checkdate($arFecha[1],$arFecha[0],$arFecha[2])) {
     			return $nuevaFecha;
     		} else {
-    			return '***';	
+    			return '***';
     		}
     	}
     	return $fecha;
@@ -1029,6 +1029,7 @@ switch ($accion) {
 		$id2 			= 0;
 		$id3 			= 0;
 
+      // confirma lista de equipos
       if ($idestado == 8) {
          // envio email a la asociacion con pdf adjunto
 
@@ -1041,6 +1042,7 @@ switch ($accion) {
          $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
       }
 
+      //confirma lista de buena fe
       if ($idestado == 5) {
 
          $resTemporadas = $serviciosReferencias->traerUltimaTemporada();
@@ -1061,7 +1063,7 @@ switch ($accion) {
          $asunto = 'Lista de Buena Fe - Equipo: '.mysql_result($resEquipo,0,'nombre');
          $referente = $serviciosReferencias->traerReferente($idcountrie);
 
-         $enviarEmail1 = $serviciosReferencias->enviarEmail($referente,$asunto,$cuerpo, $referencia='');
+         $enviarEmail1 = $serviciosReferencias->enviarMailAdjuntoPlantel($idequipo,$referente,$asunto,$cuerpo, $referencia='');
       }
 
 
@@ -1538,7 +1540,7 @@ function VtraerJugadoresClubPorCountrieActivos($serviciosReferencias) {
 	$res = $serviciosReferencias->traerJugadoresClubPorCountrieActivosPaginador($idclub, $pagina, $cantidad, $busqueda);
 	$ar = array();
 
-	while ($row = mysql_fetch_assoc($res)) { 
+	while ($row = mysql_fetch_assoc($res)) {
 		$arNuevo = array('apellido'=> utf8_encode($row['apellido']),
 						'nombres'=>utf8_encode($row['nombres']),
 						'nrodocumento'=>$row['nrodocumento'],
@@ -1548,10 +1550,10 @@ function VtraerJugadoresClubPorCountrieActivos($serviciosReferencias) {
 						'numeroserielote' => $row['numeroserielote'],
 						'marcalote' => $row['marcalote']
 		);
-			
-		array_push($ar, $arNuevo); 
 
-	} 
+		array_push($ar, $arNuevo);
+
+	}
 
 	$resV['datos'] = $ar;
 
