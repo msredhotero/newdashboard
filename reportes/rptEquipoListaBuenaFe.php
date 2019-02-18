@@ -266,8 +266,7 @@ $pdf->Cell(50,5,'CLUB',1,0,'C',true);
 
 
 while ($rowE = mysql_fetch_array($resDatosNuevo)) {
-	$i+=1;
-	$cantPartidos += 1;
+
 
 	if ($i > 50) {
 		Footer($pdf);
@@ -297,20 +296,23 @@ while ($rowE = mysql_fetch_array($resDatosNuevo)) {
 	}
 
 
-	$pdf->Ln();
-	$pdf->SetX(5);
-	$pdf->SetFont('Arial','',10);
-	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
+
 
 
    if ($rowE['habilitacionpendiente'] == 'Si') {
-      array_push($arExcepciones, array('nombrecompleto' => '* '.($rowE['nombrecompleto']),
+      array_push($arExcepciones, array('nombrecompleto' => '* '.utf8_decode($rowE['nombrecompleto']),
                                        'tipojugador' => $rowE['tipojugador'],
                                        'nrodocumento' => $rowE['nrodocumento'],
                                        'fechanacimiento' => $rowE['fechanacimiento'],
                                        'edad' => $rowE['edad'],
-                                       'countrie' => substr( $rowE['countrie'],0,25)));
+                                       'countrie' => substr($rowE['countrie'],0,25) ));
    } else {
+      $i+=1;
+   	$cantPartidos += 1;
+      $pdf->Ln();
+   	$pdf->SetX(5);
+   	$pdf->SetFont('Arial','',10);
+   	$pdf->Cell(5,5,$cantPartidos,1,0,'C',false);
       $pdf->Cell(73,5,utf8_decode($rowE['nombrecompleto']),1,0,'L',false);
    	$pdf->Cell(20,5,($rowE['nrodocumento']),1,0,'C',false);
    	$pdf->Cell(20,5,($rowE['tipojugador']),1,0,'L',false);

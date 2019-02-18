@@ -195,7 +195,67 @@ if ($_SESSION['idroll_aif'] == 5) {
                 </div>
 				<?php } ?>
 				<?php if ($_SESSION['idroll_aif'] == 5) { ?>
-					<div class="row">
+				<div class="row">
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 bg-blue hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">face</i>
+							</div>
+							<div class="content">
+								<div class="text">PERFIL</div>
+								<div class="number">CARGADO</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 bg-blue hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">account_box</i>
+							</div>
+							<div class="content">
+								<div class="text">DOCUMENTO</div>
+								<div class="number">CARGADO</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 bg-blue hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">chrome_reader_mode</i>
+							</div>
+							<div class="content">
+								<div class="text">ESCRITURA</div>
+								<div class="number">CARGADO</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 bg-blue hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">attach_money</i>
+							</div>
+							<div class="content">
+								<div class="text">EXPENSAS</div>
+								<div class="number">CARGADO</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 bg-blue hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">description</i>
+							</div>
+							<div class="content">
+								<div class="text">PARTIDA</div>
+								<div class="number">CARGADO</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
 
 
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

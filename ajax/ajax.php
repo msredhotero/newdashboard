@@ -318,6 +318,8 @@ switch ($accion) {
 
       $resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idjugador,$iddocumentacion);
 
+      $imagen = '';
+
       if (mysql_num_rows($resFoto) > 0) {
          /* produccion
          $imagen = 'https://www.saupureinconsulting.com.ar/aifzn/'.mysql_result($resFoto,0,'archivo').'/'.mysql_result($resFoto,0,'imagen');
@@ -329,7 +331,7 @@ switch ($accion) {
          $resV['error'] = false;
       } else {
          $imagen = '../../imagenes/sin_img.jpg';
-         $resV['datos'] = array('imagen' => $imagen, 'estado' => 'Imagen No Cargada', 'idFoto' => 0, 'type' => '');
+         $resV['datos'] = array('imagen' => $imagen, 'estado' => 'No Cargo Ninguna Imagen', 'idFoto' => 0, 'type' => '');
          $resV['error'] = false;
       }
 

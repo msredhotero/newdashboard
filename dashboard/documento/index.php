@@ -269,7 +269,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 								<div class="col-xs-6 col-md-6 col-lg-6">
 									<h4>Estado: <span id="estado" class="label <?php echo $spanFoto; ?>"></span></h4>
 
-									<div class="button-demo hidden">
+									<div class="button-demo">
 										<button type="button" class="btn bg-orange waves-effect btnPresentar" id="btnPresentar">
                                  <i class="material-icons">save</i>
                                  <span>PRESENTAR</span>

@@ -135,10 +135,20 @@ class ServiciosReferencias {
 		                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
 		            from dbdocumentacionjugadorimagenes dj
 		            inner join tbestados e ON e.idestado = dj.refestados
-		        where (dj.idjugador =".$idJugador." or dj.refjugadorespre = ".$idJugadorPre.") and dj.refdocumentaciones = ".$idDocumentacion;
+		        where (dj.idjugador =".$idJugador." or dj.refjugadorespre = ".$idJugadorPre.") and dj.refjugadorespre <> 0 and dj.refdocumentaciones = ".$idDocumentacion;
 
 		$res = $this->query($sql,0);
 		return $res;
+	}
+
+	function determinaSocioNuevoViejo($email) {
+		// socio Nuevo
+		// tabla jugadorespre que esten dados de alta en dbusuarios y esten activos
+		// que la fecha de alta sea del año corriente o aunque sea del mes de diciembre del año anterior
+		
+
+		// socio viejo
+		// tabla dbjugadores que esten dados de alta en dbusuarios y esten activos
 	}
 
 
@@ -3407,7 +3417,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	/* Fin */
 	/* /* Fin de la Tabla: tbmeses*/
 
-	
+
 	function enviarMailAdjuntoPlantel($idequipo,$referente,$asunto,$cuerpo, $referencia) {
 		require('../reportes/fpdf.php');
 
