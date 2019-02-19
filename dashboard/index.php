@@ -346,18 +346,44 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 								</div>
 								<div class="row">
+									<div class="button-demo">
 									<?php
 									if (($arDocumentaciones['idEstadoFoto'] == 1) && ($arDocumentaciones['idEstadoDocFrente'] == 1) && ($arDocumentaciones['idEstadoDocDorsal'] == 1)) {
 									?>
-									<div class="button-demo">
+
 										<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
 											<i class="material-icons">assignment_turned_in</i>
 											<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
 										</button>
-									</div>
+
 									<?php
 									}
 									?>
+
+									<?php
+		            				if (($idEstadoFoto != 3) && ($idEstadoNroDoc != 3) && ($idEstadoNroDocDorso != 3)) {
+		            			?>
+										<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
+											<i class="material-icons">assignment_turned_in</i>
+											<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
+										</button>
+		            			<?php
+		            				}
+		            			}
+		            			?>
+
+		            			<?php
+		            				if (($idEstadoFoto == 3) && ($idEstadoNroDoc == 3) && ($idEstadoNroDocDorso == 3)) {
+		            			?>
+										<button type="button" class="btn bg-brown waves-effect" id="generarFicha">
+											<i class="material-icons">assignment_turned_in</i>
+											<span>Generar Ficha Jugador</span>
+										</button>
+
+		            			<?php
+		            				}
+		            			?>
+									</div>
 								</div>
 								<div class="row">
 									<?php echo $frm; ?>
@@ -419,6 +445,10 @@ if ($_SESSION['idroll_aif'] == 5) {
 			if ($_SESSION['idroll_aif'] == 5) {
 				if ($determinaTipoSocio['valor'] == 1) {
 			?>
+			$('#generarFicha').click(function() {
+				window.open("../reportes/rptAltaSocio.php?id=<?php echo mysql_result($resResultado,0,0); ?>" ,'_blank');
+			});
+			
 			function presentardocumentacion(id) {
 				$.ajax({
 					data:  {id: id,
