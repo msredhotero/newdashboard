@@ -91,11 +91,33 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;
 }
 
-$resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
+
+$determinaTipoSocio = $serviciosReferencias->determinaSocioNuevoViejo($_SESSION['email_aif']);
+
+if ($determinaTipoSocio['valor'] == 2) {
+	$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
+	$idJug = mysql_result($resResultado,0,0);
+
+	$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idJug, $idDocumentacion);
+
+} else {
+	if ($determinaTipoSocio['valor'] == 1) {
+		// idjugadorpre
+		$idJug = mysql_result($determinaTipoSocio['datos'],0,0);
+
+		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0, $idDocumentacion,$idJug);
+
+	} else {
+		$noId = 0;
+	}
+}
+
+//die(var_dump($idJug));
+
 
 	$permite = 0;
 // traer documento frente
-		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(mysql_result($resResultado,0,0), $idDocumentacion);
+
 		if (mysql_num_rows($resFoto) > 0) {
 			$estadoFoto = mysql_result($resFoto, 0,'estado');
 			$idEstadoFoto = mysql_result($resFoto, 0,'refestados');
@@ -162,7 +184,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -430,8 +452,9 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 	function traerImagen() {
 		$.ajax({
-			data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
+			data:  {idjugador: <?php echo $idJug; ?>,
 					iddocumentacion: <?php echo $idDocumentacion; ?>,
+					tipo: <?php echo $determinaTipoSocio['valor']; ?>,
 					accion: 'traerImgenJugadorPorJugadorDocumentacion'},
 			url:   '../../ajax/ajax.php',
 			type:  'post',
@@ -463,8 +486,9 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 		},
 		init: function() {
 			this.on("sending", function(file, xhr, formData){
-               formData.append("idjugador", '<?php echo mysql_result($resResultado,0,'idjugador'); ?>');
+               formData.append("idjugador", '<?php echo $idJug; ?>');
 					formData.append("iddocumentacion", '<?php echo $idDocumentacion; ?>');
+					formData.append("tipo", '<?php echo $determinaTipoSocio['valor']; ?>');
          });
 			this.on('success', function( file, resp ){
 				traerImagen();
@@ -480,8 +504,9 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 	var myDropzone = new Dropzone("#archivos", {
 		params: {
-          idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
-          iddocumentacion: <?php echo $idDocumentacion; ?>
+          idjugador: <?php echo $idJug; ?>,
+          iddocumentacion: <?php echo $idDocumentacion; ?>,
+			 tipo: <?php echo $determinaTipoSocio['valor']; ?>
       },
 		url: 'subir.php'
 	});
@@ -503,7 +528,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 		function presentar() {
 			$.ajax({
-				data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
+				data:  {idjugador: <?php echo $idJug; ?>,
 						iddocumentacion: <?php echo $idDocumentacion; ?>,
 						id: $('#idFoto').val(),
 						accion: 'presentarDocumentacion'},

@@ -1754,7 +1754,14 @@ class Servicios {
 		$sql	=	"show columns from ".$tabla;
 		$res 	=	$this->query($sql,0);
 
-		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","idusuario");
+		if ($tabla == 'dbjugadorespre') {
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","idusuario",'refusuarios','refestados');
+		} else {
+			$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","idusuario");
+		}
+
+
+
 
 		$camposEscondido = "";
 		$lblObligatorio = '';

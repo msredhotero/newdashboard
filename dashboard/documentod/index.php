@@ -91,11 +91,29 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;
 }
 
-$resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
+$determinaTipoSocio = $serviciosReferencias->determinaSocioNuevoViejo($_SESSION['email_aif']);
+
+if ($determinaTipoSocio['valor'] == 2) {
+	$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
+	$idJug = mysql_result($resResultado,0,0);
+
+	$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idJug, $idDocumentacion);
+
+} else {
+	if ($determinaTipoSocio['valor'] == 1) {
+		// idjugadorpre
+		$idJug = mysql_result($determinaTipoSocio['datos'],0,0);
+
+		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0, $idDocumentacion,$idJug);
+
+	} else {
+		$noId = 0;
+	}
+}
 
 	$permite = 0;
 // traer documento frente
-		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(mysql_result($resResultado,0,0), $idDocumentacion);
+
 		if (mysql_num_rows($resFoto) > 0) {
 			$estadoFoto = mysql_result($resFoto, 0,'estado');
 			$idEstadoFoto = mysql_result($resFoto, 0,'refestados');
@@ -162,7 +180,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 	<link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
 	<!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
 	<!-- axios -->
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -422,64 +440,66 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 <script>
 
-	function traerImagen() {
-		$.ajax({
-			data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
-					iddocumentacion: <?php echo $idDocumentacion; ?>,
-					accion: 'traerImgenJugadorPorJugadorDocumentacion'},
-			url:   '../../ajax/ajax.php',
-			type:  'post',
-			beforeSend: function () {
+function traerImagen() {
+	$.ajax({
+		data:  {idjugador: <?php echo $idJug; ?>,
+				iddocumentacion: <?php echo $idDocumentacion; ?>,
+				tipo: <?php echo $determinaTipoSocio['valor']; ?>,
+				accion: 'traerImgenJugadorPorJugadorDocumentacion'},
+		url:   '../../ajax/ajax.php',
+		type:  'post',
+		beforeSend: function () {
 
-			},
-			success:  function (response) {
+		},
+		success:  function (response) {
 
-				$(".thumbnail img").attr("src",response.datos.imagen);
-				$('#estado').html(response.datos.estado);
-				$('#idFoto').val(response.datos.idFoto);
+			$(".thumbnail img").attr("src",response.datos.imagen);
+			$('#estado').html(response.datos.estado);
+			$('#idFoto').val(response.datos.idFoto);
 
-			}
+		}
+	});
+}
+
+traerImagen();
+
+
+
+
+Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
+
+Dropzone.options.frmFileUpload = {
+	maxFilesize: 12,
+	acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+	accept: function(file, done) {
+		done();
+	},
+	init: function() {
+		this.on("sending", function(file, xhr, formData){
+				formData.append("idjugador", '<?php echo $idJug; ?>');
+				formData.append("iddocumentacion", '<?php echo $idDocumentacion; ?>');
+				formData.append("tipo", '<?php echo $determinaTipoSocio['valor']; ?>');
+		});
+		this.on('success', function( file, resp ){
+			traerImagen();
+			swal("Correcto!", resp.replace("1", ""), "success");
+			$('.btnPresentar').show();
+		});
+
+		this.on('error', function( file, resp ){
+			swal("Error!", resp.replace("1", ""), "warning");
 		});
 	}
+};
 
-	traerImagen();
-
-
-
-
-	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
-
-	Dropzone.options.frmFileUpload = {
-		maxFilesize: 12,
-		addRemoveLinks: true,
-		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
-		accept: function(file, done) {
-			done();
-		},
-		init: function() {
-			this.on("sending", function(file, xhr, formData){
-               formData.append("idjugador", '<?php echo mysql_result($resResultado,0,'idjugador'); ?>');
-					formData.append("iddocumentacion", '<?php echo $idDocumentacion; ?>');
-         });
-			this.on('success', function( file, resp ){
-				traerImagen();
-				swal("Correcto!", resp.replace("1", ""), "success");
-				$('.btnPresentar').show();
-			});
-
-			this.on('error', function( file, resp ){
-				swal("Error!", resp.replace("1", ""), "warning");
-			});
-		}
-	};
-
-	var myDropzone = new Dropzone("#archivos", {
-		params: {
-          idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
-          iddocumentacion: <?php echo $idDocumentacion; ?>
-      },
-		url: 'subir.php'
-	});
+var myDropzone = new Dropzone("#archivos", {
+	params: {
+		 idjugador: <?php echo $idJug; ?>,
+		 iddocumentacion: <?php echo $idDocumentacion; ?>,
+		 tipo: <?php echo $determinaTipoSocio['valor']; ?>
+	},
+	url: 'subir.php'
+});
 
 	$(document).ready(function(){
 
@@ -499,7 +519,7 @@ $resResultado = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_a
 
 		function presentar() {
 			$.ajax({
-				data:  {idjugador: <?php echo mysql_result($resResultado,0,'idjugador'); ?>,
+				data:  {idjugador: <?php echo $idJug; ?>,
 						iddocumentacion: <?php echo $idDocumentacion; ?>,
 						id: $('#idFoto').val(),
 						accion: 'presentarDocumentacion'},

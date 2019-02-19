@@ -58,6 +58,10 @@ switch ($accion) {
       accederTarea($serviciosReferencias, $serviciosNotificaciones);
    break;
 
+   case 'presentardocumentacionCompleta':
+	  presentardocumentacionCompleta($serviciosReferencias);
+	break;
+
 
 		case 'insertarDelegados':
 		insertarDelegados($serviciosReferencias);
@@ -224,6 +228,14 @@ switch ($accion) {
 }
 /* Fin */
 
+   function presentardocumentacionCompleta($serviciosReferencias) {
+      $id = $_POST['id'];
+
+      $res = $serviciosReferencias->presentardocumentacionFase1($id);
+
+      echo $res;
+   }
+
     function formatearFechas($fecha, $simbolo) {
     	if ($fecha != '') {
     		$arFecha = explode($simbolo, $fecha);
@@ -312,11 +324,17 @@ switch ($accion) {
 
       $idjugador = $_POST['idjugador'];
       $iddocumentacion = $_POST['iddocumentacion'];
+      $tipo = $_POST['tipo'];
 
       $resV['datos'] = '';
       $resV['error'] = false;
 
-      $resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idjugador,$iddocumentacion);
+      if ($tipo == 2) {
+         $resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idjugador,$iddocumentacion);
+      } else {
+         $resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,$iddocumentacion,$idjugador);
+      }
+
 
       $imagen = '';
 

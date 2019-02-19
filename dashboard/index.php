@@ -67,29 +67,66 @@ if ($_SESSION['idroll_aif'] == 4) {
 }
 
 if ($_SESSION['idroll_aif'] == 5) {
-	$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
+	// determino si es un socio nuevo o vejo
+	$determinaTipoSocio = $serviciosReferencias->determinaSocioNuevoViejo($_SESSION['email_aif']);
 
-	$tabla 			= "dbjugadores";
+	if ($determinaTipoSocio['valor'] == 2) {
+		// socio viejo
+		$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
 
-	$lblCambio	 	= array("reftipodocumentos","nrodocumento","fechanacimiento","fechaalta","fechabaja","refcountries");
-	$lblreemplazo	= array("Tipo Documento","Nro Documento","Fecha Nacimiento","Fecha Alta","Fecha Baja","Countries");
+		$tabla 			= "dbjugadores";
+
+		$lblCambio	 	= array("reftipodocumentos","nrodocumento","fechanacimiento","fechaalta","fechabaja","refcountries");
+		$lblreemplazo	= array("Tipo Documento","Nro Documento","Fecha Nacimiento","Fecha Alta","Fecha Baja","Countries");
 
 
-	$resTipoDoc 	= $serviciosReferencias->traerTipodocumentosPorId(mysql_result($resJugador,0,'reftipodocumentos'));
-	$cadRef 	= $serviciosFunciones->devolverSelectBox($resTipoDoc,array(1),'');
+		$resTipoDoc 	= $serviciosReferencias->traerTipodocumentosPorId(mysql_result($resJugador,0,'reftipodocumentos'));
+		$cadRef 	= $serviciosFunciones->devolverSelectBox($resTipoDoc,array(1),'');
 
-	$resCountries 	= $serviciosReferencias->traerCountriesPorId(mysql_result($resJugador,0,'refcountries'));
-	$cadRef2 	= $serviciosFunciones->devolverSelectBox($resCountries,array(6),'');
+		$resCountries 	= $serviciosReferencias->traerCountriesPorId(mysql_result($resJugador,0,'refcountries'));
+		$cadRef2 	= $serviciosFunciones->devolverSelectBox($resCountries,array(6),'');
 
-	$refdescripcion = array(0 => $cadRef,1 => $cadRef2);
-	$refCampo 	=  array("reftipodocumentos","refcountries");
+		$refdescripcion = array(0 => $cadRef,1 => $cadRef2);
+		$refCampo 	=  array("reftipodocumentos","refcountries");
 
-	$idTabla = 'idjugador';
+		$idTabla = 'idjugador';
 
-	$id = mysql_result($resJugador,0,'idjugador');
+		$id = mysql_result($resJugador,0,'idjugador');
 
-	$frm 	= $serviciosFunciones->camposTablaVer($id, $idTabla,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+		$frm 	= $serviciosFunciones->camposTablaVer($id, $idTabla,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+	} else {
+
+		if ($determinaTipoSocio['valor'] == 1) {
+			// idjugadorpre
+			$idSocioNuevo = mysql_result($determinaTipoSocio['datos'],0,0);
+			// socio nuevo
+			$resJugador = $serviciosReferencias->traerJugadoresprePorIdNuevo($idSocioNuevo);
+
+			$tabla 			= "dbjugadorespre";
+
+			$lblCambio	 	= array("reftipodocumentos","nrodocumento","fechanacimiento","fechaalta","fechabaja","refcountries","numeroserielote");
+			$lblreemplazo	= array("Tipo Documento","Nro Documento","Fecha Nacimiento","Fecha Alta","Fecha Baja","Countries",'Nro. Serie Lote');
+
+
+			$resTipoDoc 	= $serviciosReferencias->traerTipodocumentosPorId(mysql_result($resJugador,0,'reftipodocumentos'));
+			$cadRef 	= $serviciosFunciones->devolverSelectBox($resTipoDoc,array(1),'');
+
+			$resCountries 	= $serviciosReferencias->traerCountriesPorId(mysql_result($resJugador,0,'refcountries'));
+			$cadRef2 	= $serviciosFunciones->devolverSelectBox($resCountries,array(6),'');
+
+			$refdescripcion = array(0 => $cadRef,1 => $cadRef2);
+			$refCampo 	=  array("reftipodocumentos","refcountries");
+
+			$idTabla = 'idjugadorpre';
+
+			$frm 	= $serviciosFunciones->camposTablaVer($idSocioNuevo, $idTabla,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
+			$arDocumentaciones = $serviciosReferencias->devolverEstadoDocumentaciones($idSocioNuevo,$determinaTipoSocio['valor']);
+		}
+	}
 }
+
+
 
 ///////////////////////////              fin                   ////////////////////////
 
@@ -197,24 +234,35 @@ if ($_SESSION['idroll_aif'] == 5) {
 				<?php if ($_SESSION['idroll_aif'] == 5) { ?>
 				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 bg-blue hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoFoto']; ?> hover-zoom-effect">
 							<div class="icon">
 								<i class="material-icons">face</i>
 							</div>
 							<div class="content">
 								<div class="text">PERFIL</div>
-								<div class="number">CARGADO</div>
+								<div class="number"><?php echo strtoupper( $arDocumentaciones['estadoFoto']); ?></div>
 							</div>
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 bg-blue hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoDocFrente']; ?> hover-zoom-effect">
 							<div class="icon">
 								<i class="material-icons">account_box</i>
 							</div>
 							<div class="content">
-								<div class="text">DOCUMENTO</div>
-								<div class="number">CARGADO</div>
+								<div class="text">DOC. FRENTE</div>
+								<div class="number"><?php echo strtoupper( $arDocumentaciones['estadoDocFrente']); ?></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoDocDorsal']; ?> hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">account_box</i>
+							</div>
+							<div class="content">
+								<div class="text">DOC. DORSAL</div>
+								<div class="number"><?php echo strtoupper( $arDocumentaciones['estadoDocDorsal']); ?></div>
 							</div>
 						</div>
 					</div>
@@ -229,6 +277,9 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 						</div>
 					</div>
+
+				</div>
+				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 						<div class="info-box-3 bg-blue hover-zoom-effect">
 							<div class="icon">
@@ -240,8 +291,6 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 						<div class="info-box-3 bg-blue hover-zoom-effect">
 							<div class="icon">
@@ -249,6 +298,17 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">PARTIDA</div>
+								<div class="number">CARGADO</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box-3 bg-blue hover-zoom-effect">
+							<div class="icon">
+								<i class="material-icons">local_hospital</i>
+							</div>
+							<div class="content">
+								<div class="text">EST. MEDICO</div>
 								<div class="number">CARGADO</div>
 							</div>
 						</div>
@@ -277,7 +337,28 @@ if ($_SESSION['idroll_aif'] == 5) {
 						</div>
 						<div class="body table-responsive">
 							<form class="form" id="formCountry">
+								<div class="row">
+									<div class="alert alert-success" role="alert">
+										<strong><span class="glyphicon glyphicon-info-sign"></span> PASO 1</strong> <br>PROCEDA A CARGAR SU FOTO PERSONAL. LA MISMA DEBE TENER UN FONDO LISO. PUEDE OPTAR POR TOMARSE UNA FOTO CON SU SMARTPHONE O SUBIR UNA EXISTENTE. (RECOMENDACIÓN ADICIONAL, SUBIR LA FOTO VISTIENDO LA CAMISETA DEL COUNTRY).<br>
+										SUBA UNA FOTO DE SU DNI TARJETA DE AMBOS LADOS. PROCURE QUE TODOS LOS DATOS SEAN LEGIBLES Y QUE LA CAMARA ESTE LO MAS CERCA POSIBLE DENTRO DE LOS LIMITES DEL DNI. SAQUE LA FOTO CON EL CELULAR EN HORIZONTAL.<br>
+										PARA SUBIR LA FOTO DEBE HACER CLICK EN MENU "ARCHIVOS".
+									</div>
 
+								</div>
+								<div class="row">
+									<?php
+									if (($arDocumentaciones['idEstadoFoto'] == 1) && ($arDocumentaciones['idEstadoDocFrente'] == 1) && ($arDocumentaciones['idEstadoDocDorsal'] == 1)) {
+									?>
+									<div class="button-demo">
+										<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
+											<i class="material-icons">assignment_turned_in</i>
+											<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
+										</button>
+									</div>
+									<?php
+									}
+									?>
+								</div>
 								<div class="row">
 									<?php echo $frm; ?>
 								</div>
@@ -294,6 +375,27 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 
     </section>
+
+	 <!-- Modal -->
+		<div class="modal fade" id="myModal3" tabindex="1" style="z-index:500000;" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      <form class="form-inline formulario" role="form">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">Estado Documentación</h4>
+		      </div>
+		      <div class="modal-body" id="resultadoPresentacion">
+
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <input type="hidden" name="refcountries" id="refcountries" value="0"/>
+		      </div>
+		      </form>
+		    </div>
+		  </div>
+		</div>
 
 
 
@@ -313,6 +415,38 @@ if ($_SESSION['idroll_aif'] == 5) {
 
     <script>
         $(document).ready(function(){
+			<?php
+			if ($_SESSION['idroll_aif'] == 5) {
+				if ($determinaTipoSocio['valor'] == 1) {
+			?>
+			function presentardocumentacion(id) {
+				$.ajax({
+					data:  {id: id,
+							accion: 'presentardocumentacionCompleta'},
+					url:   '../ajax/ajax.php',
+					type:  'post',
+					beforeSend: function () {
+
+					},
+					success:  function (response) {
+							$('#resultadoPresentacion').html(response);
+							//url = "index.php";
+							//$(location).attr('href',url);
+
+					}
+				});
+			}
+
+			$('#presentarfase1').click(function() {
+				presentardocumentacion(<?php echo $idSocioNuevo; ?>);
+			});
+
+			<?php
+				}
+			}
+			?>
+
+
             $('#menuPerfil').click(function() {
                 $('#modalPerfil').modal();
             });

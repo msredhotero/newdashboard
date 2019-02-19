@@ -9,6 +9,188 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosReferencias {
 
+	function presentardocumentacionFase1($id) {
+
+		$resJugador = $this->traerJugadoresprePorId($id);
+
+		$emailReferente = $this->traerReferente(mysql_result($resJugador, 0, 'nrodocumento'));
+
+		$sql = "select refestados,refdocumentaciones from dbdocumentacionjugadorimagenes where refjugadorespre = ".$id." and refdocumentaciones in (1,2,99)";
+		$resDocumentaciones = $this->query($sql,0);
+
+		$cantidad = 0;
+
+		if (mysql_num_rows($resDocumentaciones) == 3) {
+			while ($row = mysql_fetch_array($resDocumentaciones)) {
+				if (($row['refestados'] == 1) || ($row['refestados'] == 4)) {
+					$this->modificarEstadoDocumentacionjugadorimagenesPorJugadorDocumentacion($id,$row['refdocumentaciones'], 2);
+				}
+			}
+
+
+			//** creo la notificacion **//
+			$mensaje = 'Se presento una documentacion';
+			$idpagina = 1;
+			$autor = mysql_result($resJugador, 0, 'apellido').' '.mysql_result($resJugador, 0, 'nombres');
+			$destinatario = $emailReferente;
+			$id1 = $id;
+			$id2 = 0;
+			$id3 = 0;
+			$icono = 'glyphicon glyphicon-eye-open';
+			$estilo = 'alert alert-success';
+			$fecha = date('Y-m-d H:i:s');
+			$url = "altasocios/modificar.php?id=".$id;
+
+			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
+			//** fin notificaion      **//
+
+			//$this->enviarEmail($emailReferente,$mensaje,$url, $referencia='');
+
+			echo 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.';
+		} else {
+			echo 'Falta cargar datos para poder presentar la documentacion';
+		}
+
+	}
+
+	function insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) {
+		$sql = "insert into dbnotificaciones(idnotificacion,mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,leido)
+		values ('','".($mensaje)."',".$idpagina.",'".($autor)."','".($destinatario)."',".$id1.",".$id2.",".$id3.",'".($icono)."','".($estilo)."','".($fecha)."','".($url)."',0)";
+		$res = $this->query($sql,1);
+		return $res;
+	}
+
+	function devolverEstadoDocumentaciones($id, $tipo) {
+		$foto1 = '';
+		$foto2 = '';
+		$foto3 = '';
+
+		// traer foto
+		if ($tipo == 2) {
+			$resFoto = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,1);
+			$resFotoDocumento = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,2);
+			$resFotoDocumentoDorso = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,99);
+		} else {
+			$resFoto = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,1,$id);
+			$resFotoDocumento = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,2,$id);
+			$resFotoDocumentoDorso = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,99,$id);
+		}
+
+		if (mysql_num_rows($resFoto) > 0) {
+			$estadoFoto = mysql_result($resFoto, 0,'estado');
+			$idEstadoFoto = mysql_result($resFoto, 0,'refestados');
+			$foto1 = mysql_result($resFoto, 0,'imagen');
+		} else {
+			$estadoFoto = 'Sin carga';
+			$idEstadoFoto = 0;
+			$foto1 = '';
+		}
+
+		$spanFoto = '';
+
+		switch ($idEstadoFoto) {
+			case 0:
+				$spanFoto = 'bg-light-blue';
+				break;
+			case 1:
+				$spanFoto = 'bg-blue';
+				break;
+			case 2:
+				$spanFoto = 'bg-amber';
+				break;
+			case 3:
+				$spanFoto = 'bg-green';
+				break;
+			case 4:
+				$spanFoto = 'bg-red';
+				break;
+		}
+
+
+
+		// traer imagen
+
+
+		if (mysql_num_rows($resFotoDocumento) > 0) {
+			$estadoNroDoc = mysql_result($resFotoDocumento, 0,'estado');
+			$idEstadoNroDoc = mysql_result($resFotoDocumento, 0,'refestados');
+			$foto2 = mysql_result($resFotoDocumento, 0,'imagen');
+		} else {
+			$estadoNroDoc = 'Sin carga';
+			$idEstadoNroDoc = 0;
+			$foto2= '';
+		}
+
+
+		$spanNroDoc = '';
+		switch ($idEstadoNroDoc) {
+			case 0:
+				$spanNroDoc = 'bg-light-blue';
+				break;
+			case 1:
+				$spanNroDoc = 'bg-blue';
+				break;
+			case 2:
+				$spanNroDoc = 'bg-amber';
+				break;
+			case 3:
+				$spanNroDoc = 'bg-green';
+				break;
+			case 4:
+				$spanNroDoc = 'bg-red';
+				break;
+		}
+
+
+
+		if (mysql_num_rows($resFotoDocumentoDorso) > 0) {
+			$estadoNroDocDorso = mysql_result($resFotoDocumentoDorso, 0,'estado');
+			$idEstadoNroDocDorso = mysql_result($resFotoDocumentoDorso, 0,'refestados');
+			$foto3 = mysql_result($resFotoDocumentoDorso, 0,'imagen');
+		} else {
+			$estadoNroDocDorso = 'Sin carga';
+			$idEstadoNroDocDorso = 0;
+			$foto3 = '';
+		}
+
+
+		$spanNroDocDorso = '';
+		switch ($idEstadoNroDocDorso) {
+			case 0:
+				$spanNroDocDorso = 'bg-light-blue';
+				break;
+			case 1:
+				$spanNroDocDorso = 'bg-blue';
+				break;
+			case 2:
+				$spanNroDocDorso = 'bg-amber';
+				break;
+			case 3:
+				$spanNroDocDorso = 'bg-green';
+				break;
+			case 4:
+				$spanNroDocDorso = 'bg-red';
+				break;
+		}
+
+		$ar = array('imagenFoto' => $foto1,
+						'estadoFoto' => $estadoFoto,
+						'idEstadoFoto' => $idEstadoFoto,
+						'colorEstadoFoto' => $spanFoto,
+						'imagenDocFrente' => $foto2,
+						'estadoDocFrente' => $estadoNroDoc,
+						'idEstadoDocFrente' => $idEstadoNroDoc,
+						'colorEstadoDocFrente' => $spanNroDoc,
+						'imagenDocDorsal' => $foto3,
+						'estadoDocDorsal' => $estadoNroDocDorso,
+						'idEstadoDocDorsal' => $idEstadoNroDocDorso,
+						'colorEstadoDocDorsal' => $spanNroDocDorso);
+
+		/*******-------------------------------------------------------*/
+
+		return $ar;
+	}
+
 
 	function borrarArchivoJugadores($id,$directorio) {
 
@@ -142,13 +324,55 @@ class ServiciosReferencias {
 	}
 
 	function determinaSocioNuevoViejo($email) {
+		$resTemporadas = $this->traerUltimaTemporada();
+
+		if (mysql_num_rows($resTemporadas)>0) {
+		    $ultimaTemporada = mysql_result($resTemporadas,0,1);
+		} else {
+		    $ultimaTemporada = 0;
+		}
+
+		$estadoSocio = 0;
 		// socio Nuevo
 		// tabla jugadorespre que esten dados de alta en dbusuarios y esten activos
 		// que la fecha de alta sea del año corriente o aunque sea del mes de diciembre del año anterior
-		
+		$sql = "SELECT
+					    jp.idjugadorpre, u.idusuario, jp.nrodocumento, c.nombre as club
+					FROM
+					    dbjugadorespre jp
+					        INNER JOIN
+					    dbusuarios u ON u.idusuario = jp.idusuario
+					        AND u.activo = 1
+					        inner join
+						dbcountries c ON c.idcountrie = jp.refcountries
+					where	year(jp.fechaalta) = 2018 and u.email = '".$email."'";
+
+		$resJugadorPre = $this->query($sql,0);
 
 		// socio viejo
 		// tabla dbjugadores que esten dados de alta en dbusuarios y esten activos
+		$sql = "SELECT
+					    j.idjugador, u.idusuario, j.nrodocumento, c.nombre as club
+					FROM
+					    dbjugadores j
+					        INNER JOIN
+					    dbusuarios u ON j.email = u.email COLLATE utf8_spanish_ci
+					        AND u.activo = 1
+					        inner join
+						dbcountries c ON c.idcountrie = j.refcountries
+					where	u.email = '".$email."'";
+
+		$resJugador = $this->query($sql,0);
+
+		if (mysql_num_rows($resJugadorPre) > 0) {
+			return array('valor' => 1, 'datos'=>$resJugadorPre);
+		} else {
+			if (mysql_num_rows($resJugadorPre) > 0) {
+				return array('valor' => 2, 'datos'=>$resJugador);
+			} else {
+				return array('valor' => 0, 'datos'=>null);
+			}
+		}
 	}
 
 
