@@ -33,29 +33,45 @@ if (!isset($_SESSION['usua_aif']))
 
 	 $noentrar = '../../imagenes/index.php';
 
-	 $resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($_POST['idjugador'], $_POST['iddocumentacion']);
+	 $tipoJugador = $_POST['tipo'];
 
-	 if (mysql_num_rows($resFoto) > 0) {
-		 // borro carpeta y archivo
-		 $resEliminarArchivo = $serviciosReferencias->eliminarFotoJugadoresID($_POST['iddocumentacion'], $_POST['idjugador']);
+	 if ($tipoJugador == 2) {
+ 		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($_POST['idjugador'], $_POST['iddocumentacion']);
+ 	} else {
+ 		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0, $_POST['iddocumentacion'],$_POST['idjugador']);
+ 	}
 
-		 // lo borro id de la tabla
-		 $resEliminar = $serviciosReferencias->eliminarDocumentacionjugadorimagenes(mysql_result($resFoto,0,0));
 
-	 }
+ 	if (mysql_num_rows($resFoto) > 0) {
+ 		if ($tipoJugador == 2) {
+ 			// borro carpeta y archivo
+ 			$resEliminarArchivo = $serviciosReferencias->eliminarFotoJugadoresID($_POST['iddocumentacion'], $_POST['idjugador']);
+ 		} else {
+ 			// borro carpeta y archivo
+ 			$resEliminarArchivo = $serviciosReferencias->eliminarFotoJugadoresID($_POST['iddocumentacion'],0, $_POST['idjugador']);
+ 		}
+
+
+ 		// lo borro id de la tabla
+ 		$resEliminar = $serviciosReferencias->eliminarDocumentacionjugadorimagenes(mysql_result($resFoto,0,0));
+
+ 	}
 
 
 
 	 $imagen = $serviciosReferencias->sanear_string(basename($archivo['name']));
 	 $type = $archivo["type"];
 
-	 $resDocumentacionImagen = $serviciosReferencias->insertarDocumentacionjugadorimagenes($_POST['iddocumentacion'],0,$imagen,$type,1,$_POST['idjugador']);
-
+	 if ($tipoJugador == 2) {
+ 		$resDocumentacionImagen = $serviciosReferencias->insertarDocumentacionjugadorimagenes($_POST['iddocumentacion'],0,$imagen,$type,1,$_POST['idjugador']);
+ 	} else {
+ 		$resDocumentacionImagen = $serviciosReferencias->insertarDocumentacionjugadorimagenes($_POST['iddocumentacion'],$_POST['idjugador'],$imagen,$type,1,0);
+ 	}
 	 $iddocumentacionjugadorimagen = $resDocumentacionImagen;
 
 
 	 // desarrollo
-	 $dir_destino = './../../../'.$servidorCarpeta.'/data/'.$iddocumentacionjugadorimagen.'/';
+	 $dir_destino = '../../../../'.$servidorCarpeta.'/data/'.$iddocumentacionjugadorimagen.'/';
 
 	 // produccion
 	 //$dir_destino = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.mysql_result($resFoto,0,'iddocumentacionjugadorimagen').'/';
@@ -63,7 +79,7 @@ if (!isset($_SESSION['usua_aif']))
 	 $imagen_subida = $dir_destino.$name;
 
 	 // desarrollo
-	 $nuevo_noentrar = './../../../'.$servidorCarpeta.'/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
+	 $nuevo_noentrar = '../../../../'.$servidorCarpeta.'/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
 
 	 // produccion
 	 // $nuevo_noentrar = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.$_SESSION['idclub_aif'].'/'.'index.php';

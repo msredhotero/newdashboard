@@ -44,6 +44,7 @@ $insertar = "insertarDelegados";
 //$tituloWeb = "Gestión: Talleres";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
+$idSocioNuevo = 0;
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 if ($_SESSION['idroll_aif'] == 4) {
@@ -122,6 +123,10 @@ if ($_SESSION['idroll_aif'] == 5) {
 			$frm 	= $serviciosFunciones->camposTablaVer($idSocioNuevo, $idTabla,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
 			$arDocumentaciones = $serviciosReferencias->devolverEstadoDocumentaciones($idSocioNuevo,$determinaTipoSocio['valor']);
+
+			$arDocumentacionesFase2 = $serviciosReferencias->devolverEstadoDocumentacionesFase2($idSocioNuevo,$determinaTipoSocio['valor']);
+
+			//die(var_dump($arDocumentacionesFase2));
 		}
 	}
 }
@@ -148,7 +153,7 @@ if ($_SESSION['idroll_aif'] == 5) {
     <?php echo $baseHTML->cargarArchivosCSS('../'); ?>
 
     <!-- VUE JS -->
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../js/vue.min.js"></script>
 
     <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -266,42 +271,53 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 						</div>
 					</div>
+
+				</div>
+				<?php
+					if (($arDocumentaciones['idEstadoFoto'] == 3) && ($arDocumentaciones['idEstadoDocFrente'] == 3) && ($arDocumentaciones['idEstadoDocDorsal'] == 3)) {
+				?>
+				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 bg-blue hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoEscritura']; ?> hover-zoom-effect">
 							<div class="icon">
 								<i class="material-icons">chrome_reader_mode</i>
 							</div>
 							<div class="content">
 								<div class="text">ESCRITURA</div>
-								<div class="number">CARGADO</div>
+								<div class="number"><?php echo strtoupper( $arDocumentacionesFase2['estadoEscritura']); ?></div>
 							</div>
 						</div>
 					</div>
 
-				</div>
-				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 bg-blue hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoExpensa']; ?> hover-zoom-effect">
 							<div class="icon">
 								<i class="material-icons">attach_money</i>
 							</div>
 							<div class="content">
 								<div class="text">EXPENSAS</div>
-								<div class="number">CARGADO</div>
+								<div class="number"><?php echo strtoupper( $arDocumentacionesFase2['estadoExpensa']); ?></div>
 							</div>
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 bg-blue hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoPartida']; ?> hover-zoom-effect">
 							<div class="icon">
 								<i class="material-icons">description</i>
 							</div>
 							<div class="content">
 								<div class="text">PARTIDA</div>
-								<div class="number">CARGADO</div>
+								<div class="number"><?php echo strtoupper( $arDocumentacionesFase2['estadoPartida']); ?></div>
 							</div>
 						</div>
 					</div>
+
+
+				</div>
+
+				<?php } ?>
+				<?php if ($determinaTipoSocio['valor'] == 2) { ?>
+				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 						<div class="info-box-3 bg-blue hover-zoom-effect">
 							<div class="icon">
@@ -313,8 +329,8 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 						</div>
 					</div>
-
 				</div>
+				<?php } ?>
 				<div class="row">
 
 
@@ -338,53 +354,96 @@ if ($_SESSION['idroll_aif'] == 5) {
 						<div class="body table-responsive">
 							<form class="form" id="formCountry">
 								<div class="row">
-									<div class="alert alert-success" role="alert">
-										<strong><span class="glyphicon glyphicon-info-sign"></span> PASO 1</strong> <br>PROCEDA A CARGAR SU FOTO PERSONAL. LA MISMA DEBE TENER UN FONDO LISO. PUEDE OPTAR POR TOMARSE UNA FOTO CON SU SMARTPHONE O SUBIR UNA EXISTENTE. (RECOMENDACIÓN ADICIONAL, SUBIR LA FOTO VISTIENDO LA CAMISETA DEL COUNTRY).<br>
-										SUBA UNA FOTO DE SU DNI TARJETA DE AMBOS LADOS. PROCURE QUE TODOS LOS DATOS SEAN LEGIBLES Y QUE LA CAMARA ESTE LO MAS CERCA POSIBLE DENTRO DE LOS LIMITES DEL DNI. SAQUE LA FOTO CON EL CELULAR EN HORIZONTAL.<br>
-										PARA SUBIR LA FOTO DEBE HACER CLICK EN MENU "ARCHIVOS".
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+										<div class="alert alert-success" role="alert">
+											<strong><span class="glyphicon glyphicon-info-sign"></span> PASO 1</strong> <br>PROCEDA A CARGAR SU FOTO PERSONAL. LA MISMA DEBE TENER UN FONDO LISO. PUEDE OPTAR POR TOMARSE UNA FOTO CON SU SMARTPHONE O SUBIR UNA EXISTENTE. (RECOMENDACIÓN ADICIONAL, SUBIR LA FOTO VISTIENDO LA CAMISETA DEL COUNTRY).<br>
+											SUBA UNA FOTO DE SU DNI TARJETA DE AMBOS LADOS. PROCURE QUE TODOS LOS DATOS SEAN LEGIBLES Y QUE LA CAMARA ESTE LO MAS CERCA POSIBLE DENTRO DE LOS LIMITES DEL DNI. SAQUE LA FOTO CON EL CELULAR EN HORIZONTAL.<br>
+											PARA SUBIR LA FOTO DEBE HACER CLICK EN MENU "ARCHIVOS".
+										</div>
+										<div class="row">
+											<div class="button-demo">
+											<?php
+											if (($arDocumentaciones['idEstadoFoto'] == 1) && ($arDocumentaciones['idEstadoDocFrente'] == 1) && ($arDocumentaciones['idEstadoDocDorsal'] == 1)) {
+											?>
+
+												<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
+													<i class="material-icons">assignment_turned_in</i>
+													<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
+												</button>
+
+											<?php
+										} else {
+											?>
+
+											<?php
+				            				if (($arDocumentaciones['idEstadoFoto']  == 4) || ($arDocumentaciones['idEstadoDocFrente'] == 4) || ($arDocumentaciones['idEstadoDocDorsal'] == 4)) {
+				            			?>
+												<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
+													<i class="material-icons">assignment_turned_in</i>
+													<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
+												</button>
+				            			<?php
+				            				}
+											}
+				            			?>
+
+				            			<?php
+				            				if (($arDocumentaciones['idEstadoFoto'] == 3) && ($arDocumentaciones['idEstadoDocFrente'] == 3) && ($arDocumentaciones['idEstadoDocDorsal'] == 3)) {
+				            			?>
+												<button type="button" class="btn bg-brown waves-effect" id="generarFicha">
+													<i class="material-icons">assignment_turned_in</i>
+													<span>Generar Ficha Jugador</span>
+												</button>
+
+				            			<?php
+				            				}
+				            			?>
+											</div>
+										</div>
 									</div>
 
-								</div>
-								<div class="row">
-									<div class="button-demo">
-									<?php
-									if (($arDocumentaciones['idEstadoFoto'] == 1) && ($arDocumentaciones['idEstadoDocFrente'] == 1) && ($arDocumentaciones['idEstadoDocDorsal'] == 1)) {
-									?>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+										<div class="alert alert-success" role="alert">
+											<strong><span class="glyphicon glyphicon-info-sign"></span> PASO 2</strong> <br>DEBERA PRESENTAR LA SIGUIENTE DOCUMENTACION. ESCRITURA, EXPENSA Y EN EL CASO QUE CORRESPONDA PARTIDA DE NACIMIENTO/LIBRETA DE MATRIMONIO (ESTAS TRES EN FORMA ONLINE Y SEGUIDAMENTE SE DETALLAN LOS ESPACIOS PARA CARGAR LA MISMA) SE RECOMIENDA LA UTILIZACION DE LA APP CAMSCANNER PARA REALIZAR ESTOS PASOS.
+										</div>
+										<div class="row">
+											<div class="button-demo">
+											<?php
+				            				if (($arDocumentaciones['idEstadoFoto'] == '3') && ($arDocumentaciones['idEstadoDocFrente'] == '3') && ($arDocumentaciones['idEstadoDocDorsal'] == '3')) {
 
-										<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
-											<i class="material-icons">assignment_turned_in</i>
-											<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
-										</button>
+													if (($arDocumentacionesFase2['idEstadoEscritura'] == '1') || ($arDocumentacionesFase2['idEstadoExpensa'] == '1') || ($arDocumentacionesFase2['idEstadoPartida'] == '1')) {
+				            			?>
 
-									<?php
-									}
-									?>
+												<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase2">
+													<i class="material-icons">assignment_turned_in</i>
+													<span>PRESENTAR DOCUMENTACION EXTRA</span>
+												</button>
 
-									<?php
-		            				if (($idEstadoFoto != 3) && ($idEstadoNroDoc != 3) && ($idEstadoNroDocDorso != 3)) {
-		            			?>
-										<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
-											<i class="material-icons">assignment_turned_in</i>
-											<span>PRESENTAR DOCUMENTACION PRINCIPAL</span>
-										</button>
-		            			<?php
-		            				}
-		            			}
-		            			?>
+											<?php
+											} else {
+											?>
 
-		            			<?php
-		            				if (($idEstadoFoto == 3) && ($idEstadoNroDoc == 3) && ($idEstadoNroDocDorso == 3)) {
-		            			?>
-										<button type="button" class="btn bg-brown waves-effect" id="generarFicha">
-											<i class="material-icons">assignment_turned_in</i>
-											<span>Generar Ficha Jugador</span>
-										</button>
+											<?php
+				            				if (($arDocumentacionesFase2['idEstadoEscritura']  == '4') || ($arDocumentacionesFase2['idEstadoExpensa'] == '4') || ($arDocumentacionesFase2['idEstadoPartida'] == '4')) {
+				            			?>
+												<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase2">
+													<i class="material-icons">assignment_turned_in</i>
+													<span>PRESENTAR DOCUMENTACION EXTRA</span>
+												</button>
+				            			<?php
+					            				}
+												}
+											}
+				            			?>
 
-		            			<?php
-		            				}
-		            			?>
+
+											</div>
+										</div>
 									</div>
+
+
 								</div>
+
 								<div class="row">
 									<?php echo $frm; ?>
 								</div>
@@ -446,9 +505,9 @@ if ($_SESSION['idroll_aif'] == 5) {
 				if ($determinaTipoSocio['valor'] == 1) {
 			?>
 			$('#generarFicha').click(function() {
-				window.open("../reportes/rptAltaSocio.php?id=<?php echo mysql_result($resResultado,0,0); ?>" ,'_blank');
+				window.open("../reportes/rptAltaSocio.php?id=<?php echo $idSocioNuevo; ?>" ,'_blank');
 			});
-			
+
 			function presentardocumentacion(id) {
 				$.ajax({
 					data:  {id: id,
@@ -459,7 +518,11 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 					},
 					success:  function (response) {
-							$('#resultadoPresentacion').html(response);
+							$('#resultadoPresentacion').html(response.mensaje);
+
+							if (response.error == 0) {
+								$('#presentarfase1').hide();
+							}
 							//url = "index.php";
 							//$(location).attr('href',url);
 
@@ -467,8 +530,33 @@ if ($_SESSION['idroll_aif'] == 5) {
 				});
 			}
 
+			function presentardocumentacionAparte(id) {
+				$.ajax({
+					data:  {id: id,
+							accion: 'presentardocumentacionAparte'},
+					url:   '../ajax/ajax.php',
+					type:  'post',
+					beforeSend: function () {
+
+					},
+					success:  function (response) {
+						$('#resultadoPresentacion').html(response.mensaje);
+						url = "index.php";
+						if (response.error == 0) {
+							setInterval(function() {
+						      $(location).attr('href',url);
+						   },5000);﻿
+						}
+					}
+				});
+			}
+
 			$('#presentarfase1').click(function() {
 				presentardocumentacion(<?php echo $idSocioNuevo; ?>);
+			});
+
+			$('#presentarfase2').click(function() {
+				presentardocumentacionAparte(<?php echo $idSocioNuevo; ?>);
 			});
 
 			<?php

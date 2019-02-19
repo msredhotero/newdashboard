@@ -62,6 +62,10 @@ switch ($accion) {
 	  presentardocumentacionCompleta($serviciosReferencias);
 	break;
 
+   case 'presentardocumentacionAparte':
+	  presentardocumentacionAparte($serviciosReferencias);
+	break;
+
 
 		case 'insertarDelegados':
 		insertarDelegados($serviciosReferencias);
@@ -233,7 +237,17 @@ switch ($accion) {
 
       $res = $serviciosReferencias->presentardocumentacionFase1($id);
 
-      echo $res;
+      header('Content-type: application/json');
+		echo json_encode($res);
+   }
+
+   function presentardocumentacionAparte($serviciosReferencias) {
+      $id = $_POST['id'];
+
+      $res = $serviciosReferencias->presentardocumentacionAparte($id);
+
+      header('Content-type: application/json');
+		echo json_encode($res);
    }
 
     function formatearFechas($fecha, $simbolo) {

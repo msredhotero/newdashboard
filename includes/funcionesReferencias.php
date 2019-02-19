@@ -13,7 +13,7 @@ class ServiciosReferencias {
 
 		$resJugador = $this->traerJugadoresprePorId($id);
 
-		$emailReferente = $this->traerReferente(mysql_result($resJugador, 0, 'nrodocumento'));
+		$emailReferente = $this->traerReferentePorNrodocumentopre(mysql_result($resJugador, 0, 'nrodocumento'));
 
 		$sql = "select refestados,refdocumentaciones from dbdocumentacionjugadorimagenes where refjugadorespre = ".$id." and refdocumentaciones in (1,2,99)";
 		$resDocumentaciones = $this->query($sql,0);
@@ -44,12 +44,62 @@ class ServiciosReferencias {
 			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
 			//** fin notificaion      **//
 
-			//$this->enviarEmail($emailReferente,$mensaje,$url, $referencia='');
+			$this->enviarEmail($emailReferente,$mensaje,$autor, $referencia='');
 
-			echo 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.';
+			return array('error'=>0, 'mensaje' => 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.');
+
+			//echo 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.';
 		} else {
-			echo 'Falta cargar datos para poder presentar la documentacion';
+			return array('error'=>1, 'mensaje' => 'Falta cargar datos para poder presentar la documentacion.');
+			//echo 'Falta cargar datos para poder presentar la documentacion';
 		}
+
+	}
+
+	function presentardocumentacionAparte($id) {
+		$resJugador = $this->traerJugadoresprePorId($id);
+
+		$emailReferente = $this->traerReferentePorNrodocumentopre(mysql_result($resJugador, 0, 'nrodocumento'));
+
+		$sql = "select refestados,refdocumentaciones from dbdocumentacionjugadorimagenes where refjugadorespre = ".$id." and refdocumentaciones in (4,6,9)";
+		$resDocumentaciones = $this->query($sql,0);
+
+		$cantidad = 0;
+
+		while ($row = mysql_fetch_array($resDocumentaciones)) {
+			if ($row['refestados'] == 1) {
+				$this->modificarEstadoDocumentacionjugadorimagenesPorJugadorDocumentacion($id,$row['refdocumentaciones'], 2);
+				$cantidad += 1;
+			}
+		}
+
+
+		if ($cantidad > 0) {
+			//** creo la notificacion **//
+			$mensaje = 'Se presento la documentación extra';
+			$idpagina = 1;
+			$autor = mysql_result($resJugador, 0, 'apellido').' '.mysql_result($resJugador, 0, 'nombres');
+			$destinatario = $emailReferente;
+			$id1 = $id;
+			$id2 = 0;
+			$id3 = 0;
+			$icono = 'glyphicon glyphicon-eye-open';
+			$estilo = 'alert alert-success';
+			$fecha = date('Y-m-d H:i:s');
+			$url = "altasocios/modificar.php?id=".$id;
+
+			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
+			//** fin notificaion      **//
+
+			$this->enviarEmail($emailReferente,$mensaje,$autor, $referencia='');
+
+			return array('error'=>0, 'mensaje' => 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.');
+
+		} else {
+			return array('error'=>1, 'mensaje' => 'Ya Presento toda la la documentación Extra o posee documentacion Rechazada.');
+			//echo 'Ya Presento toda la la documentación Extra o posee documentacion Rechazada';
+		}
+
 
 	}
 
@@ -189,6 +239,265 @@ class ServiciosReferencias {
 		/*******-------------------------------------------------------*/
 
 		return $ar;
+	}
+
+
+	function devolverEstadoDocumentacionesFase2($id, $tipo) {
+		$foto1 = '';
+		$foto2 = '';
+		$foto3 = '';
+
+		// traer foto
+		if ($tipo == 2) {
+			$resEscritura = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,4);
+			$resExpensa = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,6);
+			$resPartida = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,9);
+		} else {
+			$resEscritura = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,4,$id);
+			$resExpensa = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,6,$id);
+			$resPartida = $this->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,9,$id);
+		}
+
+		if (mysql_num_rows($resEscritura) > 0) {
+			$estadoEscritura = mysql_result($resEscritura, 0,'estado');
+			$idEstadoEscritura = mysql_result($resEscritura, 0,'refestados');
+			$escritura1 = mysql_result($resEscritura, 0,'imagen');
+		} else {
+			$estadoEscritura = 'Sin carga';
+			$idEstadoEscritura = 0;
+			$escritura1 = '';
+		}
+
+		$spanEscritura = '';
+
+		switch ($idEstadoEscritura) {
+			case 0:
+				$spanEscritura = 'bg-light-blue';
+				break;
+			case 1:
+				$spanEscritura = 'bg-blue';
+				break;
+			case 2:
+				$spanEscritura = 'bg-amber';
+				break;
+			case 3:
+				$spanEscritura = 'bg-green';
+				break;
+			case 4:
+				$spanEscritura = 'bg-red';
+				break;
+		}
+
+
+
+		// traer imagen
+
+
+		if (mysql_num_rows($resExpensa) > 0) {
+			$estadoExpensa = mysql_result($resExpensa, 0,'estado');
+			$idEstadoExpensa = mysql_result($resExpensa, 0,'refestados');
+			$expensa2 = mysql_result($resExpensa, 0,'imagen');
+		} else {
+			$estadoExpensa = 'Sin carga';
+			$idEstadoExpensa = 0;
+			$expensa2= '';
+		}
+
+
+		$spanExpensa = '';
+		switch ($idEstadoExpensa) {
+			case 0:
+				$spanExpensa = 'bg-light-blue';
+				break;
+			case 1:
+				$spanExpensa = 'bg-blue';
+				break;
+			case 2:
+				$spanExpensa = 'bg-amber';
+				break;
+			case 3:
+				$spanExpensa = 'bg-green';
+				break;
+			case 4:
+				$spanExpensa = 'bg-red';
+				break;
+		}
+
+
+
+		if (mysql_num_rows($resPartida) > 0) {
+			$estadoPartida = mysql_result($resPartida, 0,'estado');
+			$idEstadoPartida = mysql_result($resPartida, 0,'refestados');
+			$partida3 = mysql_result($resPartida, 0,'imagen');
+		} else {
+			$estadoPartida = 'Sin carga';
+			$idEstadoPartida = 0;
+			$partida3 = '';
+		}
+
+
+		$spanPartida = '';
+		switch ($idEstadoPartida) {
+			case 0:
+				$spanPartida = 'bg-light-blue';
+				break;
+			case 1:
+				$spanPartida = 'bg-blue';
+				break;
+			case 2:
+				$spanPartida = 'bg-amber';
+				break;
+			case 3:
+				$spanPartida = 'bg-green';
+				break;
+			case 4:
+				$spanPartida = 'bg-red';
+				break;
+		}
+
+		$ar = array('imagenEscritura' => $escritura1,
+						'estadoEscritura' => $estadoEscritura,
+						'idEstadoEscritura' => $idEstadoEscritura,
+						'colorEstadoEscritura' => $spanEscritura,
+						'imagenExpensa' => $expensa2,
+						'estadoExpensa' => $estadoExpensa,
+						'idEstadoExpensa' => $idEstadoExpensa,
+						'colorEstadoExpensa' => $spanExpensa,
+						'imagenPartida' => $partida3,
+						'estadoPartida' => $estadoPartida,
+						'idEstadoPartida' => $idEstadoPartida,
+						'colorEstadoPartida' => $spanPartida);
+
+		/*******-------------------------------------------------------*/
+
+		return $ar;
+	}
+
+
+function devolverImagen($name, $type, $nombrenuevo) {
+
+    //if( $_FILES[$archivo]['name'] != null && $_FILES[$archivo]['size'] > 0 ){
+    // Nivel de errores
+      error_reporting(E_ALL);
+      $altura = 500;
+      // Constantes
+      # Altura de el thumbnail en píxeles
+      //define("ALTURA", 100);
+      # Nombre del archivo temporal del thumbnail
+      //define("NAMETHUMB", "/tmp/thumbtemp"); //Esto en servidores Linux, en Windows podría ser:
+      //define("NAMETHUMB", "c:/windows/temp/thumbtemp"); //y te olvidas de los problemas de permisos
+      $NAMETHUMB = "";
+      # Servidor de base de datos
+      //define("DBHOST", "localhost");
+      # nombre de la base de datos
+      //define("DBNAME", "portalinmobiliario");
+      # Usuario de base de datos
+      //define("DBUSER", "root");
+      # Password de base de datos
+      //define("DBPASSWORD", "");
+      // Mime types permitidos
+      $mimetypes = array("image/jpeg", "image/pjpeg", "image/gif", "image/png","image/jpg");
+      // Variables de la foto
+      $name = $name;
+      $type = $type;
+      $tmp_name = $name;
+      //$size = $_FILES[$archivo]["size"];
+      // Verificamos si el archivo es una imagen válida
+      if(!in_array($type, $mimetypes))
+        die("El archivo que subiste no es una imagen válida");
+      // Creando el thumbnail
+    if ($nombrenuevo == 'imagenTemp2') {
+        //die($type);
+    }
+      switch($type) {
+        case $mimetypes[0]:
+        case $mimetypes[1]:
+        case $mimetypes[4]:
+          $img = imagecreatefromjpeg($tmp_name);
+          $NAMETHUMB .= $nombrenuevo.".jpg";
+          //die($img);
+          break;
+        case $mimetypes[2]:
+          $img = imagecreatefromgif($tmp_name);
+          $NAMETHUMB .= $nombrenuevo.".gif";
+          break;
+        case $mimetypes[3]:
+          $img = imagecreatefrompng($tmp_name);
+          $NAMETHUMB .= $nombrenuevo.".png";
+          break;
+      }
+
+      if ($img) {
+      $datos = getimagesize($tmp_name);
+
+      $ratio = ($datos[1]/$altura);
+      $ancho = round($datos[0]/$ratio);
+      $thumb = imagecreatetruecolor($ancho, $altura);
+      imagecopyresized($thumb, $img, 0, 0, 0, 0, $ancho, $altura, $datos[0], $datos[1]);
+      switch($type) {
+        case $mimetypes[0]:
+        case $mimetypes[1]:
+        case $mimetypes[4]:
+          imagejpeg($thumb, $NAMETHUMB);
+              break;
+        case $mimetypes[2]:
+          imagegif($thumb, $NAMETHUMB);
+          break;
+        case $mimetypes[3]:
+          imagepng($thumb, $NAMETHUMB);
+          break;
+      }
+
+      //die();
+
+
+      // Extrae los contenidos de las fotos
+      # contenido de la foto original
+
+
+      $fp = fopen($tmp_name, "rb");
+      $tfoto = fread($fp, filesize($tmp_name));
+      $tfoto = addslashes($tfoto);
+      fclose($fp);
+
+
+      # contenido del thumbnail
+
+
+      $fp = fopen($NAMETHUMB, "rb");
+      $tthumb = fread($fp, filesize($NAMETHUMB));
+      $tthumb = addslashes($tthumb);
+      fclose($fp);
+
+
+      // Borra archivos temporales si es que existen
+      //@unlink($tmp_name);
+      //@unlink(NAMETHUMB);
+    /*
+    } else {
+        $tfoto = '';
+        $type = '';
+    }
+    */
+    $tfoto = utf8_decode($tfoto);
+    //return array('tfoto' => $tfoto, 'type' => $NAMETHUMB);
+    return $NAMETHUMB;
+
+    } else {
+        return 'No se pudo cargar correctamente la imagen';
+    }
+}
+
+
+	function traerJugadoresprePorIdCompleto($id) {
+		$sql = "select j.idjugadorpre,j.reftipodocumentos,j.nrodocumento,j.apellido,j.nombres,j.email,j.fechanacimiento,j.fechaalta,j.refcountries,j.observaciones,j.refusuarios,j.numeroserielote , cc.nombre as country, td.tipodocumento
+		        from dbjugadorespre j
+		        inner join dbcountries cc on cc.idcountrie = j.refcountries
+		        inner join tbtipodocumentos td on td.idtipodocumento = j.reftipodocumentos
+		        where idjugadorpre =".$id;
+
+		$res = $this->query($sql,0);
+		return $res;
 	}
 
 
@@ -345,7 +654,7 @@ class ServiciosReferencias {
 					        AND u.activo = 1
 					        inner join
 						dbcountries c ON c.idcountrie = jp.refcountries
-					where	year(jp.fechaalta) = 2018 and u.email = '".$email."'";
+					where	year(jp.fechaalta) in (2018,2019) and u.email = '".$email."'";
 
 		$resJugadorPre = $this->query($sql,0);
 
@@ -684,6 +993,27 @@ class ServiciosReferencias {
 					join        dbcountries c
 					on          j.refcountries = c.idcountrie
 					left
+					join        dbusuarios u
+					on          u.idusuario = c.refusuarios
+				where       j.nrodocumento = ".$nrodocumento;
+
+		$res = $this->query($sql,0);
+
+		if (mysql_num_rows($res)>0) {
+			return mysql_result($res,0,0);
+		}
+
+		return 'aif@intercountryfutbol.com.ar';
+	}
+
+	function traerReferentePorNrodocumentopre($nrodocumento) {
+		$sql = "select
+						coalesce(u.email,'') as email
+					from        dbjugadorespre j
+					inner
+					join        dbcountries c
+					on          j.refcountries = c.idcountrie
+					inner
 					join        dbusuarios u
 					on          u.idusuario = c.refusuarios
 				where       j.nrodocumento = ".$nrodocumento;

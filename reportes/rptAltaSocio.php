@@ -22,43 +22,45 @@ require('fpdf.php');
 
 ////***** Parametros ****////////////////////////////////
 $id		=	$_GET['id'];
+
+$servidorCarpeta = 'aifzndesarrollo';
 /////////////////////////////  fin parametross  ///////////////////////////
 
 
 $resSocio = $serviciosReferencias->traerJugadoresprePorIdCompleto($id);
 
-$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,1);
-$urlImg1 = "../data/".mysql_result($resFoto,0,0)."/".mysql_result($resFoto,0,'imagen');
+$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,1,$id);
+$urlImg1 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFoto,0,0)."/".mysql_result($resFoto,0,'imagen');
 $urlImgType1 = mysql_result($resFoto,0,'type');
 
-$resFotoDocumento = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,2);
-$urlImg2 = "../data/".mysql_result($resFotoDocumento,0,0)."/".mysql_result($resFotoDocumento,0,'imagen');
+$resFotoDocumento = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,2,$id);
+$urlImg2 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumento,0,0)."/".mysql_result($resFotoDocumento,0,'imagen');
 $urlImgType2 = mysql_result($resFotoDocumento,0,'type');
 
-$resFotoDocumentoDorso = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,99);
-$urlImg3 = "../data/".mysql_result($resFotoDocumentoDorso,0,0)."/".mysql_result($resFotoDocumentoDorso,0,'imagen');
+$resFotoDocumentoDorso = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,99,$id);
+$urlImg3 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumentoDorso,0,0)."/".mysql_result($resFotoDocumentoDorso,0,'imagen');
 $urlImgType3 = mysql_result($resFotoDocumentoDorso,0,'type');
 
 $pdf = new FPDF();
 
-#Establecemos los márgenes izquierda, arriba y derecha: 
-$pdf->SetMargins(2, 2 , 2); 
+#Establecemos los márgenes izquierda, arriba y derecha:
+$pdf->SetMargins(2, 2 , 2);
 
-#Establecemos el margen inferior: 
-$pdf->SetAutoPageBreak(true,1); 
+#Establecemos el margen inferior:
+$pdf->SetAutoPageBreak(true,1);
 
 
-	
+
 	$pdf->AddPage('L','A4','mm');
 	/***********************************    PRIMER CUADRANTE ******************************************/
-	
-	
+
+
 
 	/***********************************    FIN ******************************************/
 
 	//////////////////// Aca arrancan a cargarse los datos de los equipos  /////////////////////////
 
-	
+
 	$pdf->SetFillColor(183,183,183);
 	$pdf->SetFont('Arial','U',18);
 
@@ -66,7 +68,7 @@ $pdf->SetAutoPageBreak(true,1);
 	$pdf->Cell(50,5,mysql_result($resSocio,0,'nrodocumento'),0,0,'L',false);
 
 	$pdf->Image('../imagenes/logoparainformes.png',5,10,40);
-	
+
 	$pdf->SetFont('Arial','',14);
 	$pdf->SetXY(60,15);
 	$pdf->Cell(120,5,'ASOCIACION INTERCOUNTRY DE FUTBOL ZONA NORTE',0,0,'C',false);
@@ -107,15 +109,15 @@ $pdf->SetAutoPageBreak(true,1);
 	$pdf->Ln();
 	$pdf->SetX(5);
 	$pdf->Cell(180,5,'FECHA DE ALTA: '.mysql_result($resSocio,0,'fechaalta'),0,0,'L',false);
-    
+
     $res1 = $serviciosReferencias->devolverImagen(($urlImg1), $urlImgType1,'imagenTemp');
-    
+
     if ($res1 == 'No se pudo cargar correctamente la imagen') {
         $pdf->Image($urlImg1,210,10,40,54);
     } else {
-        $pdf->Image($res1,210,10,40,54);    
+        $pdf->Image($res1,210,10,40,54);
     }
-	
+
 
 	$res2 = $serviciosReferencias->devolverImagen(($urlImg2), $urlImgType2,'imagenTemp2');
 
@@ -165,4 +167,3 @@ $pdf->Output($nombreTurno,'D');
 
 
 ?>
-
