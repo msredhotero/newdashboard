@@ -376,6 +376,7 @@ switch ($accion) {
       $email				=	$_POST['email'];
       $password			=	$_POST['pass'];
       $id					=	$_POST['id'];
+      $tipo					=	$_POST['tipo'];
 
       $existeEmail = $serviciosUsuarios->existeUsuario($email);
 
@@ -388,7 +389,7 @@ switch ($accion) {
 
       } else {
            //doy de alta en usuarios alagente
-           $res = $serviciosUsuarios->registrarSocio($email, $password, $id);
+           $res = $serviciosUsuarios->registrarSocio($email, $password, $id, $tipo);
            if ((integer)$res > 0) {
              $resV['datos'] = array('mensaje' => 'Le enviamos un email a su correo para que active su cuenta.');
              $resV['error'] = false;
@@ -406,23 +407,25 @@ switch ($accion) {
    function buscarSocio($serviciosUsuarios, $serviciosReferencias) {
       $nrodocumento = $_POST['nrodocumento'];
 
+      // primero verifico que el jugador no sea Nuevo
+      $existeJugadorPre = $serviciosReferencias->existeJugadorPreTemporada($nrodocumento);
+
       $existeJugador = $serviciosReferencias->existeJugador($nrodocumento);
 
       $resV['datos'] = '';
       $resV['error'] = false;
 
-      if ($existeJugador == 1) {
-
-         $resJugador = $serviciosReferencias->traerJugadoresPorNroDocumento($nrodocumento);
+      if ($existeJugadorPre == 1) {
+         $resJugador = $serviciosReferencias->traerJugadoresprePorNroDocumento($nrodocumento);
          if (mysql_num_rows($resJugador) > 0) {
             $email = mysql_result($resJugador,0,'email');
          } else {
-            $email = 'aaaa';
+            $email = 'debe completar email';
          }
          $existePreRegistro = $serviciosUsuarios->existeUsuarioPreRegistrado($email);
 
          if ($existePreRegistro == '') {
-             $resV['datos'] = array('apellido' => mysql_result($resJugador,0,'apellido'), 'nombre' => mysql_result($resJugador,0,'nombres'), 'idjugador' => mysql_result($resJugador,0,'idjugador'));
+             $resV['datos'] = array('apellido' => mysql_result($resJugador,0,'apellido'), 'nombre' => mysql_result($resJugador,0,'nombres'), 'idjugador' => mysql_result($resJugador,0,'idjugadorpre'), 'tipo'=> 1, 'mensaje' => 'Nuevo Socio');
              $resV['error'] = false;
          } else {
              if ($existePreRegistro == 'Si') {
@@ -434,12 +437,39 @@ switch ($accion) {
              }
          }
 
-
       } else {
-         $resV['datos'] = array('mensaje' => 'No se encontraron datos del Socio.');
-         $resV['error'] = true;
+         if ($existeJugador == 1) {
 
+            $resJugador = $serviciosReferencias->traerJugadoresPorNroDocumento($nrodocumento);
+            if (mysql_num_rows($resJugador) > 0) {
+               $email = mysql_result($resJugador,0,'email');
+            } else {
+               $email = 'aaaa';
+            }
+            $existePreRegistro = $serviciosUsuarios->existeUsuarioPreRegistrado($email);
+
+            if ($existePreRegistro == '') {
+                $resV['datos'] = array('apellido' => mysql_result($resJugador,0,'apellido'), 'nombre' => mysql_result($resJugador,0,'nombres'), 'idjugador' => mysql_result($resJugador,0,'idjugador'), 'tipo'=> 2, 'mensaje' => 'Socio Activo');
+                $resV['error'] = false;
+            } else {
+                if ($existePreRegistro == 'Si') {
+                  $resV['datos'] = array('mensaje' => 'Usuario ya activo');
+                  $resV['error'] = true;
+                } else {
+                   $resV['datos'] = array('mensaje' => 'El usuario debe activar su cuenta!!!');
+                   $resV['error'] = true;
+                }
+            }
+
+
+         } else {
+            $resV['datos'] = array('mensaje' => 'No se encontraron datos del Socio.');
+            $resV['error'] = true;
+
+         }
       }
+
+
 
       header('Content-type: application/json');
 		echo json_encode($resV);

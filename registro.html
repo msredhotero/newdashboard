@@ -128,6 +128,7 @@
                         </div>
                      </div>
                      <input type="hidden" name="idjugador" id="idjugador" value="0"/>
+                     <input type="hidden" name="tipo" id="tipo" value="0"/>
                </form>
             </div>
         </div>
@@ -208,6 +209,8 @@
                    type:  'post',
                    beforeSend: function () {
                      $("#load").show();
+                     $('#idjugador').val(0);
+                     $('#tipo').val(0);
                    },
                    success:  function (data) {
 
@@ -219,11 +222,12 @@
                         $('.datosJugador').hide();
                      } else {
                         colorName = 'alert-success';
-                        showNotification(colorName, 'Socio Activo', placementFrom, placementAlign, animateEnter, animateExit);
+                        showNotification(colorName, data.datos.mensaje, placementFrom, placementAlign, animateEnter, animateExit);
 
                         $('#apellido').val(data.datos.apellido);
                         $('#nombre').val(data.datos.nombre);
                         $('#idjugador').val(data.datos.idjugador);
+                        $('#tipo').val(data.datos.tipo);
 
                         $('.contDatos').show();
                         $('.contRegistrarme').show();
@@ -251,6 +255,7 @@
                     data:  {email:		$("#email").val(),
                             pass:		$("#pass").val(),
                             id:		$("#idjugador").val(),
+                            tipo: $('#tipo').val(),
                             accion:		'registrarSocio'},
                     url:   'ajax/ajax.php',
                     type:  'post',
@@ -259,7 +264,7 @@
                     },
                     success:  function (response) {
 
-                            if ((response == '')) {
+                            if ((response.error === false)) {
 
                                 swal({
                                     title: "Respuesta",

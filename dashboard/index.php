@@ -126,7 +126,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 			$arDocumentacionesFase2 = $serviciosReferencias->devolverEstadoDocumentacionesFase2($idSocioNuevo,$determinaTipoSocio['valor']);
 
-			//die(var_dump($arDocumentacionesFase2));
+			//die(var_dump($arDocumentaciones));
 		}
 	}
 }
@@ -183,7 +183,7 @@ if ($_SESSION['idroll_aif'] == 5) {
                     </div>
                 </div>
             </div>
-            <p>Please wait...</p>
+            <p>Cargando...</p>
         </div>
     </div>
     <!-- #END# Page Loader -->
@@ -245,7 +245,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">PERFIL</div>
-								<div class="number"><?php echo strtoupper( $arDocumentaciones['estadoFoto']); ?></div>
+								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentaciones['estadoFoto'])); ?></div>
 							</div>
 						</div>
 					</div>
@@ -256,7 +256,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">DOC. FRENTE</div>
-								<div class="number"><?php echo strtoupper( $arDocumentaciones['estadoDocFrente']); ?></div>
+								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentaciones['estadoDocFrente'])); ?></div>
 							</div>
 						</div>
 					</div>
@@ -267,7 +267,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">DOC. DORSAL</div>
-								<div class="number"><?php echo strtoupper( $arDocumentaciones['estadoDocDorsal']); ?></div>
+								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentaciones['estadoDocDorsal'])); ?></div>
 							</div>
 						</div>
 					</div>
@@ -284,7 +284,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">ESCRITURA</div>
-								<div class="number"><?php echo strtoupper( $arDocumentacionesFase2['estadoEscritura']); ?></div>
+								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentacionesFase2['estadoEscritura'])); ?></div>
 							</div>
 						</div>
 					</div>
@@ -296,7 +296,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">EXPENSAS</div>
-								<div class="number"><?php echo strtoupper( $arDocumentacionesFase2['estadoExpensa']); ?></div>
+								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentacionesFase2['estadoExpensa'])); ?></div>
 							</div>
 						</div>
 					</div>
@@ -307,7 +307,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 							</div>
 							<div class="content">
 								<div class="text">PARTIDA</div>
-								<div class="number"><?php echo strtoupper( $arDocumentacionesFase2['estadoPartida']); ?></div>
+								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentacionesFase2['estadoPartida'])); ?></div>
 							</div>
 						</div>
 					</div>
@@ -376,7 +376,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 											?>
 
 											<?php
-				            				if (($arDocumentaciones['idEstadoFoto']  == 4) || ($arDocumentaciones['idEstadoDocFrente'] == 4) || ($arDocumentaciones['idEstadoDocDorsal'] == 4)) {
+				            				if (($arDocumentaciones['idEstadoFoto']  == 1) || ($arDocumentaciones['idEstadoDocFrente'] == 1) || ($arDocumentaciones['idEstadoDocDorsal'] == 1)) {
 				            			?>
 												<button data-toggle="modal" data-target="#myModal3" type="button" class="btn bg-orange waves-effect" id="presentarfase1">
 													<i class="material-icons">assignment_turned_in</i>
@@ -519,9 +519,12 @@ if ($_SESSION['idroll_aif'] == 5) {
 					},
 					success:  function (response) {
 							$('#resultadoPresentacion').html(response.mensaje);
-
+							url = "index.php";
 							if (response.error == 0) {
 								$('#presentarfase1').hide();
+								setInterval(function() {
+							      $(location).attr('href',url);
+							   },5000);﻿
 							}
 							//url = "index.php";
 							//$(location).attr('href',url);

@@ -277,9 +277,20 @@ function traerJugadoresPorId($id) {
    return $res;
 }
 
-function registrarSocio($email, $password,$idjugador) {
+function traerJugadoresprePorIdNuevo($id) {
+   $sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
+   $res = $this->query($sql,0);
+   return $res;
+}
 
-   $resJugador = $this->traerJugadoresPorId($idjugador);
+function registrarSocio($email, $password,$idjugador, $tipo) {
+
+   if ($tipo == 1) {
+      $resJugador = $this->traerJugadoresprePorIdNuevo($idjugador);
+   } else {
+      $resJugador = $this->traerJugadoresPorId($idjugador);
+   }
+
 
 	$token = $this->GUID();
 	$cuerpo = '';
@@ -329,13 +340,29 @@ function registrarSocio($email, $password,$idjugador) {
 	} else {
 		$this->insertarActivacionusuarios($res,$token,'','');
 
-      // creo la relacion socio y usuarios por el email
-      $resModJug = $this->modificarJugadorEmail($idjugador, $email);
+      if ($tipo == 1) {
+         $resModJug = $this->actualizarUsuarioUusarioPre($idjugador, $email, $res);
+      } else {
+         // creo la relacion socio y usuarios por el email
+         $resModJug = $this->modificarJugadorEmail($idjugador, $email);
+      }
+
 
 
 		$this->enviarEmail($email,'Alta de Usuario',utf8_decode($cuerpo));
 
 		return $res;
+	}
+}
+
+function actualizarUsuarioUusarioPre($id, $email, $idUsuario) {
+	$sql = "UPDATE dbjugadorespre SET idusuario = ".$idUsuario.", email = '".$email."' where idjugadorpre =".$id;
+
+	$res = $this->query($sql,0);
+	if ($res == false) {
+		return 'Error al modificar datos';
+	} else {
+		return '';
 	}
 }
 

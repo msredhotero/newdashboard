@@ -622,11 +622,20 @@ function devolverImagen($name, $type, $nombrenuevo) {
 
 
 	function traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idJugador, $idDocumentacion, $idJugadorPre=0) {
-		$sql = "select
-		                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
-		            from dbdocumentacionjugadorimagenes dj
-		            inner join tbestados e ON e.idestado = dj.refestados
-		        where (dj.idjugador =".$idJugador." or dj.refjugadorespre = ".$idJugadorPre.") and dj.refjugadorespre <> 0 and dj.refdocumentaciones = ".$idDocumentacion;
+		if ($idJugadorPre == 0) {
+			$sql = "select
+			                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
+			            from dbdocumentacionjugadorimagenes dj
+			            inner join tbestados e ON e.idestado = dj.refestados
+			        where (dj.idjugador =".$idJugador.") and dj.refdocumentaciones = ".$idDocumentacion;
+		} else {
+			$sql = "select
+			                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
+			            from dbdocumentacionjugadorimagenes dj
+			            inner join tbestados e ON e.idestado = dj.refestados
+			        where (dj.refjugadorespre = ".$idJugadorPre.") and dj.refdocumentaciones = ".$idDocumentacion;
+		}
+
 
 		$res = $this->query($sql,0);
 		return $res;
@@ -3063,6 +3072,14 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		return $res;
 	}
 
+
+	function traerJugadoresprePorNroDocumento($nroDocumento) {
+		$sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,refcountries,observaciones,refusuarios from dbjugadorespre where nrodocumento =".$nroDocumento;
+
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	function traerJugadoresPorEmail($email) {
 		$sql = "select
 					j.idjugador,
@@ -3095,6 +3112,16 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 
 	function existeJugadorPre($nroDocumento) {
 		$sql = "select idjugadorpre from dbjugadorespre where nrodocumento = ".$nroDocumento;
+		$res = $this->query($sql,0);
+
+		if (mysql_num_rows($res)>0) {
+			return 1;
+		}
+		return 0;
+	}
+
+	function existeJugadorPreTemporada($nroDocumento) {
+		$sql = "select idjugadorpre from dbjugadorespre where year(fechaalta) in (2019,2018) and nrodocumento = ".$nroDocumento;
 		$res = $this->query($sql,0);
 
 		if (mysql_num_rows($res)>0) {
