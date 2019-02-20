@@ -244,7 +244,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 								<i class="material-icons">face</i>
 							</div>
 							<div class="content">
-								<div class="text">PERFIL</div>
+								<div class="text">FOTO</div>
 								<div class="number"><?php echo strtoupper( str_replace('Finalizado','entregado', $arDocumentaciones['estadoFoto'])); ?></div>
 							</div>
 						</div>
