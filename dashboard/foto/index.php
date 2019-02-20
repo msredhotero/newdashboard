@@ -480,7 +480,7 @@ if ($determinaTipoSocio['valor'] == 2) {
 	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
 
 	Dropzone.options.frmFileUpload = {
-		maxFilesize: 12,
+		maxFilesize: 25,
 		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
 		accept: function(file, done) {
 			done();

@@ -94,9 +94,12 @@ if (!isset($_SESSION['usua_aif']))
 
 
 	if (move_uploaded_file($templocation, $imagen_subida)) {
-		$image = new \Gumlet\ImageResize($imagen_subida);
-		$image->scale(50);
-		$image->save($imagen_subida);
+		$pos = strpos( strtolower($type), 'pdf');
+	    if ($pos === false) {
+		    $image = new \Gumlet\ImageResize($imagen_subida);
+		    $image->scale(50);
+		    $image->save($imagen_subida);
+	    }
 
 		echo "Archivo guardado correctamente";
 	} else {
