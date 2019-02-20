@@ -239,7 +239,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 				<?php if ($_SESSION['idroll_aif'] == 5) { ?>
 				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoFoto']; ?> hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoFoto']; ?> hover-zoom-effect btnFoto">
 							<div class="icon">
 								<i class="material-icons">face</i>
 							</div>
@@ -504,6 +504,12 @@ if ($_SESSION['idroll_aif'] == 5) {
 			if ($_SESSION['idroll_aif'] == 5) {
 				if ($determinaTipoSocio['valor'] == 1) {
 			?>
+
+			$('#btnFoto').click(function() {
+				url = "foto/index.php";
+				$(location).attr('href',url);
+			});
+
 			$('#generarFicha').click(function() {
 				window.open("../reportes/rptAltaSocio.php?id=<?php echo $idSocioNuevo; ?>" ,'_blank');
 			});
