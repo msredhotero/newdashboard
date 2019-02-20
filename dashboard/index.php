@@ -505,7 +505,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 				if ($determinaTipoSocio['valor'] == 1) {
 			?>
 
-			$('#btnFoto').click(function() {
+			$('.btnFoto').click(function() {
 				url = "foto/index.php";
 				$(location).attr('href',url);
 			});
