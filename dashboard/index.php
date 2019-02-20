@@ -250,7 +250,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoDocFrente']; ?> hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoDocFrente']; ?> hover-zoom-effect btnDocumentoF">
 							<div class="icon">
 								<i class="material-icons">account_box</i>
 							</div>
@@ -261,7 +261,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoDocDorsal']; ?> hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentaciones['colorEstadoDocDorsal']; ?> hover-zoom-effect btnDocumentoD">
 							<div class="icon">
 								<i class="material-icons">account_box</i>
 							</div>
@@ -278,7 +278,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 				?>
 				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoEscritura']; ?> hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoEscritura']; ?> hover-zoom-effect btnEscritura">
 							<div class="icon">
 								<i class="material-icons">chrome_reader_mode</i>
 							</div>
@@ -290,7 +290,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 					</div>
 
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoExpensa']; ?> hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoExpensa']; ?> hover-zoom-effect btnExpensa">
 							<div class="icon">
 								<i class="material-icons">attach_money</i>
 							</div>
@@ -301,7 +301,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoPartida']; ?> hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arDocumentacionesFase2['colorEstadoPartida']; ?> hover-zoom-effect btnPartida">
 							<div class="icon">
 								<i class="material-icons">description</i>
 							</div>
@@ -507,6 +507,31 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 			$('.btnFoto').click(function() {
 				url = "foto/index.php";
+				$(location).attr('href',url);
+			});
+
+			$('.btnDocumentoF').click(function() {
+				url = "documento/index.php";
+				$(location).attr('href',url);
+			});
+
+			$('.btnDocumentoD').click(function() {
+				url = "documentod/index.php";
+				$(location).attr('href',url);
+			});
+
+			$('.btnEscritura').click(function() {
+				url = "escritura/index.php";
+				$(location).attr('href',url);
+			});
+
+			$('.btnExpensa').click(function() {
+				url = "expensas/index.php";
+				$(location).attr('href',url);
+			});
+
+			$('.btnPartida').click(function() {
+				url = "partida/index.php";
 				$(location).attr('href',url);
 			});
 
