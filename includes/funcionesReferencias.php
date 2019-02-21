@@ -9,6 +9,24 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosReferencias {
 
+   function traerEstadoEstudioMedico($id) {
+      $sql = "SELECT
+                   idjugadordocumentacion
+               FROM
+                   dbjugadoresdocumentacion
+               WHERE
+                   refjugadores = ".$id."
+                       AND refdocumentaciones = 5
+                       and valor = 1";
+
+      $res = $this->query($sql,0);
+
+      if (mysql_num_rows($res) > 0) {
+         return array('estadoEstudioMedico'=> 'ENTREGADO', 'colorEstudioMedico' => 'bg-green');
+      }
+      return array('estadoEstudioMedico'=> 'NO ENTREGADO', 'colorEstudioMedico' => 'bg-red');
+   }
+
 	function presentardocumentacionFase1($id) {
 
 		$resJugador = $this->traerJugadoresprePorId($id);
@@ -623,6 +641,7 @@ function devolverImagen($name, $type, $nombrenuevo) {
 
 	function traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idJugador, $idDocumentacion, $idJugadorPre=0) {
 		if ($idJugadorPre == 0) {
+         //die(var_dump($idJugadorPre));
 			$sql = "select
 			                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
 			            from dbdocumentacionjugadorimagenes dj
@@ -685,7 +704,7 @@ function devolverImagen($name, $type, $nombrenuevo) {
 		if (mysql_num_rows($resJugadorPre) > 0) {
 			return array('valor' => 1, 'datos'=>$resJugadorPre);
 		} else {
-			if (mysql_num_rows($resJugadorPre) > 0) {
+			if (mysql_num_rows($resJugador) > 0) {
 				return array('valor' => 2, 'datos'=>$resJugador);
 			} else {
 				return array('valor' => 0, 'datos'=>null);

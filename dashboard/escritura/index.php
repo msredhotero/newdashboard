@@ -95,7 +95,7 @@ $determinaTipoSocio = $serviciosReferencias->determinaSocioNuevoViejo($_SESSION[
 
 if ($determinaTipoSocio['valor'] == 2) {
 	$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
-	$idJug = mysql_result($resResultado,0,0);
+	$idJug = mysql_result($resJugador,0,0);
 
 	$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($idJug, $idDocumentacion);
 
@@ -277,7 +277,7 @@ if ($determinaTipoSocio['valor'] == 2) {
 								</div>
 								<div class="col-xs-6 col-md-6 col-lg-6">
 									<h4>Estado: <span id="estado" class="label <?php echo $spanFoto; ?>"></span></h4>
-									<?php if ($determinaTipoSocio['valor'] == 2) { ?>
+									<?php if ($determinaTipoSocio['valor'] == 3) { ?>
 									<div class="button-demo hidden">
 										<h4>Usted no debe presentar esta documentacion!</h4>
 										<button type="button" class="btn bg-orange waves-effect btnPresentar" id="btnPresentar">

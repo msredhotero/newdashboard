@@ -67,10 +67,12 @@ if ($_SESSION['idroll_aif'] == 4) {
 	$frmPerfil 	= $serviciosFunciones->camposTabla($insertar ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 }
 
+
 if ($_SESSION['idroll_aif'] == 5) {
 	// determino si es un socio nuevo o vejo
 	$determinaTipoSocio = $serviciosReferencias->determinaSocioNuevoViejo($_SESSION['email_aif']);
 
+	//die(var_dump($determinaTipoSocio['valor']));
 	if ($determinaTipoSocio['valor'] == 2) {
 		// socio viejo
 		$resJugador = $serviciosReferencias->traerJugadoresPorEmail($_SESSION['email_aif']);
@@ -95,6 +97,16 @@ if ($_SESSION['idroll_aif'] == 5) {
 		$id = mysql_result($resJugador,0,'idjugador');
 
 		$frm 	= $serviciosFunciones->camposTablaVer($id, $idTabla,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+
+		//ESTUDIO MEDICO
+		$arEstudio = $serviciosReferencias->traerEstadoEstudioMedico($id);
+
+		$arDocumentaciones = $serviciosReferencias->devolverEstadoDocumentaciones($id,$determinaTipoSocio['valor']);
+
+		$idSocioNuevo = $id;
+		//die(var_dump($arDocumentaciones));
+
+		$arDocumentacionesFase2 = $serviciosReferencias->devolverEstadoDocumentacionesFase2($id,$determinaTipoSocio['valor']);
 	} else {
 
 		if ($determinaTipoSocio['valor'] == 1) {
@@ -319,13 +331,13 @@ if ($_SESSION['idroll_aif'] == 5) {
 				<?php if ($determinaTipoSocio['valor'] == 2) { ?>
 				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-						<div class="info-box-3 bg-blue hover-zoom-effect">
+						<div class="info-box-3 <?php echo $arEstudio['colorEstudioMedico']; ?> hover-zoom-effect">
 							<div class="icon">
 								<i class="material-icons">local_hospital</i>
 							</div>
 							<div class="content">
 								<div class="text">EST. MEDICO</div>
-								<div class="number">CARGADO</div>
+								<div class="number"><?php echo $arEstudio['estadoEstudioMedico']; ?></div>
 							</div>
 						</div>
 					</div>
@@ -502,7 +514,7 @@ if ($_SESSION['idroll_aif'] == 5) {
         $(document).ready(function(){
 			<?php
 			if ($_SESSION['idroll_aif'] == 5) {
-				if ($determinaTipoSocio['valor'] == 1) {
+				//if ($determinaTipoSocio['valor'] == 1) {
 			?>
 
 			$('.btnFoto').click(function() {
@@ -594,7 +606,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 			});
 
 			<?php
-				}
+				//}
 			}
 			?>
 
