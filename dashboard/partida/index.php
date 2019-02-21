@@ -278,7 +278,8 @@ if ($determinaTipoSocio['valor'] == 2) {
 								<div class="col-xs-6 col-md-6 col-lg-6">
 									<h4>Estado: <span id="estado" class="label <?php echo $spanFoto; ?>"></span></h4>
 									<?php if ($determinaTipoSocio['valor'] == 2) { ?>
-									<div class="button-demo">
+									<h4>Usted no debe presentar esta documentacion!</h4>
+									<div class="button-demo hidden">
 										<button type="button" class="btn bg-orange waves-effect btnPresentar" id="btnPresentar">
                                  <i class="material-icons">save</i>
                                  <span>PRESENTAR</span>
@@ -303,7 +304,7 @@ if ($determinaTipoSocio['valor'] == 2) {
 
 		</div>
 
-
+		<?php if ($determinaTipoSocio['valor'] == 1) { ?>
 		<div class="row clearfix subirImagen">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="card">
@@ -345,6 +346,7 @@ if ($determinaTipoSocio['valor'] == 2) {
 				</div>
 			</div>
 		</div>
+		<?php } ?>
 	</div>
 
 
