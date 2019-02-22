@@ -799,7 +799,7 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 	$(document).ready(function(){
 		$('.vistaPrevia').click(function() {
-			window.open("../reportes/rptEquiposCountriesDelegadosPreview.php?idcountrie=<?php echo $_SESSION['idclub_aif']; ?>" ,'_blank');
+			window.open("../../reportes/rptEquiposCountriesDelegadosPreview.php?idcountrie=<?php echo $_SESSION['idclub_aif']; ?>" ,'_blank');
 		});
 
 		function traerDivision(idcategoria) {
