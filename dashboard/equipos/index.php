@@ -498,6 +498,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 										<i class="material-icons">assignment_turned_in</i>
 										<span>PRESENTAR</span>
 									</button>
+									<button class="btn bg-brown waves-effect vistaPrevia">
+										<i class="material-icons">print</i>
+										<span>VISTA PREVIA</span>
+									</button>
 
 
 								</div>
@@ -794,6 +798,10 @@ $verificarFusion = $serviciosReferencias->traerEstadosFusionesAceptadasPorCountr
 
 
 	$(document).ready(function(){
+		$('.vistaPrevia').click(function() {
+			window.open("../reportes/rptEquiposCountriesDelegadosPreview.php?idcountrie=<?php echo $_SESSION['idclub_aif']; ?>" ,'_blank');
+		});
+
 		function traerDivision(idcategoria) {
 			$.ajax({
 				data: {
