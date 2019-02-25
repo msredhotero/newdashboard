@@ -554,6 +554,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 			function presentardocumentacion(id) {
 				$.ajax({
 					data:  {id: id,
+							tipo: <?php echo $determinaTipoSocio['valor']; ?>,
 							accion: 'presentardocumentacionCompleta'},
 					url:   '../ajax/ajax.php',
 					type:  'post',
@@ -579,6 +580,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 			function presentardocumentacionAparte(id) {
 				$.ajax({
 					data:  {id: id,
+							tipo: <?php echo $determinaTipoSocio['valor']; ?>,
 							accion: 'presentardocumentacionAparte'},
 					url:   '../ajax/ajax.php',
 					type:  'post',

@@ -234,8 +234,14 @@ switch ($accion) {
 
    function presentardocumentacionCompleta($serviciosReferencias) {
       $id = $_POST['id'];
+      $tipo = $_POST['tipo'];
 
-      $res = $serviciosReferencias->presentardocumentacionFase1($id);
+      if ($tipo == 1) {
+         $res = $serviciosReferencias->presentardocumentacionFase1($id);
+      } else {
+         $res = $serviciosReferencias->presentardocumentacionFase1Viejo($id);
+      }
+
 
       header('Content-type: application/json');
 		echo json_encode($res);
@@ -243,8 +249,15 @@ switch ($accion) {
 
    function presentardocumentacionAparte($serviciosReferencias) {
       $id = $_POST['id'];
+      $tipo = $_POST['tipo'];
 
-      $res = $serviciosReferencias->presentardocumentacionAparte($id);
+      if ($tipo == 1) {
+         $res = $serviciosReferencias->presentardocumentacionAparte($id);
+      } else {
+         $res = $serviciosReferencias->presentardocumentacionAparteViejo($id);
+      }
+
+
 
       header('Content-type: application/json');
 		echo json_encode($res);
@@ -362,7 +375,12 @@ switch ($accion) {
          $resV['datos'] = array('imagen' => $imagen, 'estado' => mysql_result($resFoto,0,'estado'), 'idFoto' => mysql_result($resFoto,0,0), 'type' => mysql_result($resFoto,0,'type'));
          $resV['error'] = false;
       } else {
-         $imagen = '../../imagenes/sin_img.jpg';
+         if (($iddocumentacion == 4) || ($iddocumentacion == 9)) {
+            $imagen = '';
+         } else {
+            $imagen = '../../imagenes/sin_img.jpg';
+         }
+
          $resV['datos'] = array('imagen' => $imagen, 'estado' => 'No Cargo Ninguna Imagen', 'idFoto' => 0, 'type' => '');
          $resV['error'] = false;
       }

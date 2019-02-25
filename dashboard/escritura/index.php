@@ -304,7 +304,7 @@ if ($determinaTipoSocio['valor'] == 2) {
 
 		</div>
 
-		<?php if ($determinaTipoSocio['valor'] == 1) { ?>
+
 		<div class="row clearfix subirImagen">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="card">
@@ -346,7 +346,7 @@ if ($determinaTipoSocio['valor'] == 2) {
 				</div>
 			</div>
 		</div>
-		<?php } ?>
+
 	</div>
 
 

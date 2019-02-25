@@ -121,6 +121,102 @@ class ServiciosReferencias {
 
 	}
 
+
+
+   function presentardocumentacionFase1Viejo($id) {
+
+		$resJugador = $this->traerJugadoresPorId($id);
+
+		$emailReferente = $this->traerReferentePorNrodocumento(mysql_result($resJugador, 0, 'nrodocumento'));
+
+		$sql = "select refestados,refdocumentaciones, iddocumentacionjugadorimagen from dbdocumentacionjugadorimagenes where idjugador = ".$id." and refdocumentaciones in (1,2,99)";
+		$resDocumentaciones = $this->query($sql,0);
+
+		$cantidad = 0;
+
+		if (mysql_num_rows($resDocumentaciones) == 3) {
+			while ($row = mysql_fetch_array($resDocumentaciones)) {
+				if (($row['refestados'] == 1) || ($row['refestados'] == 4)) {
+					$this->modificarEstadoDocumentacionjugadorimagenesPorId($row['iddocumentacionjugadorimagen'], 2);
+				}
+			}
+
+
+			//** creo la notificacion **//
+			$mensaje = 'Se presento una documentacion';
+			$idpagina = 1;
+			$autor = mysql_result($resJugador, 0, 'apellido').' '.mysql_result($resJugador, 0, 'nombres');
+			$destinatario = $emailReferente;
+			$id1 = $id;
+			$id2 = 0;
+			$id3 = 0;
+			$icono = 'glyphicon glyphicon-eye-open';
+			$estilo = 'alert alert-success';
+			$fecha = date('Y-m-d H:i:s');
+			$url = "altasocios/modificar.php?id=".$id;
+
+			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
+			//** fin notificaion      **//
+
+			$this->enviarEmail($emailReferente,$mensaje,$autor, $referencia='');
+
+			return array('error'=>0, 'mensaje' => 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.');
+
+			//echo 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.';
+		} else {
+			return array('error'=>1, 'mensaje' => 'Falta cargar datos para poder presentar la documentacion.');
+			//echo 'Falta cargar datos para poder presentar la documentacion';
+		}
+
+	}
+
+	function presentardocumentacionAparteViejo($id) {
+		$resJugador = $this->traerJugadoresPorId($id);
+
+		$emailReferente = $this->traerReferentePorNrodocumento(mysql_result($resJugador, 0, 'nrodocumento'));
+
+		$sql = "select refestados,refdocumentaciones, iddocumentacionjugadorimagen from dbdocumentacionjugadorimagenes where idjugador = ".$id." and refdocumentaciones in (4,6,9)";
+		$resDocumentaciones = $this->query($sql,0);
+
+		$cantidad = 0;
+
+		while ($row = mysql_fetch_array($resDocumentaciones)) {
+			if ($row['refestados'] == 1) {
+				$this->modificarEstadoDocumentacionjugadorimagenesPorId($row['iddocumentacionjugadorimagen'], 2);
+				$cantidad += 1;
+			}
+		}
+
+
+		if ($cantidad > 0) {
+			//** creo la notificacion **//
+			$mensaje = 'Se presento la documentación extra';
+			$idpagina = 1;
+			$autor = mysql_result($resJugador, 0, 'apellido').' '.mysql_result($resJugador, 0, 'nombres');
+			$destinatario = $emailReferente;
+			$id1 = $id;
+			$id2 = 0;
+			$id3 = 0;
+			$icono = 'glyphicon glyphicon-eye-open';
+			$estilo = 'alert alert-success';
+			$fecha = date('Y-m-d H:i:s');
+			$url = "altasocios/modificar.php?id=".$id;
+
+			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
+			//** fin notificaion      **//
+
+			$this->enviarEmail($emailReferente,$mensaje,$autor, $referencia='');
+
+			return array('error'=>0, 'mensaje' => 'La documentacion fue enviada correctamente para su posterior revision, cualquier notificacion sera enviada por email.');
+
+		} else {
+			return array('error'=>1, 'mensaje' => 'Ya Presento toda la la documentación Extra o posee documentacion Rechazada.');
+			//echo 'Ya Presento toda la la documentación Extra o posee documentacion Rechazada';
+		}
+
+
+	}
+
 	function insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url) {
 		$sql = "insert into dbnotificaciones(idnotificacion,mensaje,idpagina,autor,destinatario,id1,id2,id3,icono,estilo,fecha,url,leido)
 		values ('','".($mensaje)."',".$idpagina.",'".($autor)."','".($destinatario)."',".$id1.",".$id2.",".$id3.",'".($icono)."','".($estilo)."','".($fecha)."','".($url)."',0)";
