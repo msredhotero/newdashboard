@@ -1122,6 +1122,7 @@ switch ($accion) {
 
          // envio email a la asociacion con pdf adjunto
          $resEmail= $serviciosReferencias->enviarMailAdjuntoEquipos($idcountrie,$_SESSION['email_aif']);
+		 $resV['mensaje'] = $resEmail;
       }
 
       //confirma lista de buena fe
@@ -1145,13 +1146,13 @@ switch ($accion) {
          $asunto = 'Lista de Buena Fe - Equipo: '.mysql_result($resEquipo,0,'nombre');
          $referente = $serviciosReferencias->traerReferente($idcountrie);
 
-         $enviarEmail1 = $serviciosReferencias->enviarMailAdjuntoPlantel($idequipo,$referente,$asunto,$cuerpo, $referencia='');
+         $enviarEmail1 = $serviciosReferencias->enviarMailAdjuntoPlantel($idequipo, $referente,$asunto,$cuerpo, $referencia='');
       }
 
 
 
 		$resV['error'] = false;
-		$resV['mensaje'] = 'Se Finalizo con Exito la carga de Equipos!';
+		$resV['mensaje'] .= 'Se Finalizo con Exito la carga de Equipos!';
 
 		header('Content-type: application/json');
 		echo json_encode($resV);

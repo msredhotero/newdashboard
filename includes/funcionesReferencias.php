@@ -614,7 +614,6 @@ function devolverImagen($name, $type, $nombrenuevo) {
 		return $res;
 	}
 
-
 	function borrarArchivoJugadores($id,$directorio) {
 
 		$sql    =   "delete from dbdocumentacionjugadorimagenes where iddocumentacionjugadorimagen =".$id;
@@ -807,7 +806,6 @@ function devolverImagen($name, $type, $nombrenuevo) {
 			}
 		}
 	}
-
 
 	function traerDocumentacionjugadorimagenesPorJugadorDocumentacionID($idJugador, $idDocumentacion, $idJugadorPre=0) {
 		$sql = "select
@@ -1150,7 +1148,6 @@ function devolverImagen($name, $type, $nombrenuevo) {
 
 		return 'aif@intercountryfutbol.com.ar';
 	}
-
 
 
 	function traerEncargadoPorCountries($idcountrie) {
@@ -3245,7 +3242,6 @@ function insertarConectorDelegado($reftemporadas, $refusuarios, $refjugadores,$r
 		return 0;
 	}
 
-
 function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios) {
 	$sql = "insert into dbjugadorespre(idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,numeroserielote,refcountries,observaciones,refusuarios, refestados)
 	values ('',".$reftipodocumentos.",".$nrodocumento.",'".strtoupper($apellido)."','".strtoupper($nombres)."','".($email)."','".($fechanacimiento)."','".($fechaalta)."','".($numeroserielote)."',".$refcountries.",'".($observaciones)."',".$refusuarios.",1)";
@@ -4580,7 +4576,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 
 
-		$nombreTurno = "LISTA-DE-BUENA-FE-".$nombre.'-'.$fecha.".pdf";
+		$nombreTurno = "LISTADEBUENAFE.pdf";
 
 		$pdf->Output($nombreTurno,'F');
 
@@ -4592,7 +4588,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mi_email = $referente;
 		$email_to = $referente;
 		$mi_titulo = "Este es un correo con archivo adjunto";
-		$mi_mensaje = "Esta es el cuerpo de mensaje.";
+		$mi_mensaje = $cuerpo;
 
 		$ruta_completa = $ruta.$mi_archivo;
 
@@ -4603,10 +4599,10 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$conf['to'] = $email_to;
 		$conf['from'] = $mi_email;
 		$conf['subject'] = 'Presenta Lista de Buena Fe';
-		$conf['content'] = 'Lista de Buena Fe Confirmada';
+		$conf['content'] = $cuerpo;
 
 		//$files[] = __FILE__; //  este script!
-		$files[$ruta_completa] = 'mime/type';
+		$files['LISTADEBUENAFE.pdf'] = 'mime/type';
 
 		if ($this->mailto($conf, $files, true))
 		{
@@ -4849,7 +4845,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$pdf->Ln();
 		$pdf->Ln();
 		$pdf->SetFont('Arial','B',12);
-		$pdf->Cell(200,5,'FUSIONES',0,0,'C',false);
+		$pdf->Cell(200,5,'FUSIONES SOLICITADAS',0,0,'C',false);
 		$pdf->Ln();
 		$pdf->Ln();
 
@@ -4921,7 +4917,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		$nombreTurno = "EQUIPOSCLUB.pdf";
 
-		$pdf->Output($nombreTurno,'F');
+		$pdf->Output('../ajax/'.$nombreTurno,'F');
 
 		require_once('AttachMailer.php');
 
@@ -4934,6 +4930,8 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$mi_mensaje = "Esta es el cuerpo de mensaje.";
 
 		$ruta_completa = $ruta.$mi_archivo;
+		
+		//echo $ruta_completa;
 
 		//$mailer = new AttachMailer($mi_email, $email_to, "Presenta equipos", "Lista de los equipos confirmados");
 		//$mailer->attachFile($ruta_completa);
@@ -4945,7 +4943,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		$conf['content'] = 'Lista de los equipos confirmados';
 
 		//$files[] = __FILE__; //  este script!
-		$files[$ruta_completa] = 'mime/type';
+		$files['EQUIPOSCLUB.pdf'] = 'mime/type';
 
 		if ($this->mailto($conf, $files, true))
 		{
@@ -4956,36 +4954,6 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 		//$devuelve = $this->mail_attachment($mi_archivo, $ruta, $email_to, $mi_email, $mi_nombre, $mi_titulo, $mi_mensaje);
 
 		//return $devuelve;
-	}
-
-	function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $subject, $message) {
-
-		$ruta_completa = $path.$filename;
-
-		$content = chunk_split(base64_encode(file_get_contents($ruta_completa)));
-		$uid= md5(uniqid(time()));
-		$bound="--".$uid."\r\n";
-		$last_bound="--".$uid."--\r\n";
-		$header = "From: ".$from_name." <".$from_mail.">\r\n";
-		$header .= "MIME-Version: 1.0"."\r\n";
-		$header .= "Content-Type: multipart/mixed; boundary=\"".$uid."\"\r\n";
-		$header .= "This is a multi-part message in MIME format.\r\n";
-		$header .= $bound;
-		$header .= "Content-type:text/plain; charset=utf-8\r\n";
-		$header .= "Content-Transfer-Encoding: 7bit\r\n";
-		$header .= $message."\r\n";
-		$header .= $bound;
-		$header .= "Content-Type: application/pdf; name=\"".$ruta_completa."\"\r\n";
-		$header .= "Content-Transfer-Encoding: base64\r\n";
-		$header .= "Content-Disposition: attachment; filename=\"".$filename."\"\r\n";
-		$header .= $content."\r\n";
-		$header .= $last_bound;
-
-		if (mail($mailto, $subject, "", $header)) {
-			return "Correo enviado";
-		} else {
-			return "ERROR en el envio";
-		}
 	}
 
 	function mailto($test = array(), $add = array(), $html = false)

@@ -367,7 +367,6 @@ function actualizarUsuarioUusarioPre($id, $email, $idUsuario) {
 }
 
 
-
 /* PARA Activacionusuarios */
 
 function insertarActivacionusuarios($refusuarios,$token,$vigenciadesde,$vigenciahasta) {
