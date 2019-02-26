@@ -153,7 +153,7 @@ class ServiciosReferencias {
 			$icono = 'glyphicon glyphicon-eye-open';
 			$estilo = 'alert alert-success';
 			$fecha = date('Y-m-d H:i:s');
-			$url = "altasocios/modificar.php?id=".$id;
+			$url = "jugadores/documentaciones.php?id=".$id;
 
 			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
 			//** fin notificaion      **//
@@ -200,7 +200,7 @@ class ServiciosReferencias {
 			$icono = 'glyphicon glyphicon-eye-open';
 			$estilo = 'alert alert-success';
 			$fecha = date('Y-m-d H:i:s');
-			$url = "altasocios/modificar.php?id=".$id;
+			$url = "jugadores/documentaciones.php?id=".$id;
 
 			$res = $this->insertarNotificaciones($mensaje,$idpagina,$autor,$destinatario,$id1,$id2,$id3,$icono,$estilo,$fecha,$url);
 			//** fin notificaion      **//
