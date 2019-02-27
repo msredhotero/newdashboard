@@ -777,7 +777,7 @@ function devolverImagen($name, $type, $nombrenuevo) {
 					        AND u.activo = 1
 					        inner join
 						dbcountries c ON c.idcountrie = jp.refcountries
-					where	year(jp.fechaalta) in (2018,2019) and u.email = '".$email."'";
+					where	year(jp.fechaalta) in (2019) and u.email = '".$email."'";
 
 		$resJugadorPre = $this->query($sql,0);
 

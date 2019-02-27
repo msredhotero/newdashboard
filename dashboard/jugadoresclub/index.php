@@ -900,7 +900,7 @@ if ($_SESSION['refroll_aif'] != 1) {
     paramsNotificacion.append('accion','VenviarMensaje');
 	paramsNotificacion.append('mensaje','');
 	paramsNotificacion.append('premensaje','Jugadores Por Club: ');
-	paramsNotificacion.append('url','jugadoresclub/id.php?id=' + <?php echo $refClub; ?>);
+	paramsNotificacion.append('url','jugadoresclub/index.php?id=' + <?php echo $refClub; ?>);
 
 	const paramsGetjugadores = new URLSearchParams();
 	paramsGetjugadores.append('accion','VtraerJugadoresClubPorCountrieActivos');

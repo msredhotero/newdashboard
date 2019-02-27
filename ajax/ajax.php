@@ -123,7 +123,7 @@ switch ($accion) {
 			break;
 
 		case 'VenviarMensaje':
-			VenviarMensaje($serviciosNotificaciones);
+			VenviarMensaje($serviciosNotificaciones,$serviciosReferencias);
 			break;
 
 		case 'modificarJugadorNuevo':
@@ -1792,12 +1792,13 @@ function guardarJugadorClubSimple($serviciosReferencias) {
 		echo $res;
 	}
 
-	function VenviarMensaje($serviciosNotificaciones) {
+	function VenviarMensaje($serviciosNotificaciones,$serviciosReferencias) {
+      session_start();
 		$mensaje = trim($_POST['mensaje']);
 		$premensaje = trim($_POST['premensaje']);
 		$idpagina = 53; //ver el id cuando lo genera en cada base de datos
 		$autor = '';
-		$destinatario = 'msredhotero@msn.com';
+		$destinatario = $serviciosReferencias->traerReferente($_SESSION['idclub_aif']);
 		$id1 = 0;
 		$id2 = 0;
 		$id3 = 0;
