@@ -30,8 +30,8 @@ require('fpdf.php');
 $generalTotalJugadores = 0;
 $generalTotalJugadoresHabilitados = 0;
 
-if ($_SESSION['idroll_predio'] == 4) {
-	$refClub = $_SESSION['club_predio'];
+if ($_SESSION['idroll_aif'] == 4) {
+	$refClub = $_SESSION['idclub_aif'];
 } else {
 	$refClub = $_GET['refcountries'];
 }

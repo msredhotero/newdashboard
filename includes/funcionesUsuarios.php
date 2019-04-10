@@ -283,12 +283,37 @@ function traerJugadoresprePorIdNuevo($id) {
    return $res;
 }
 
+function traerJugadoresPorNroDocumento($nrodocumento) {
+   $sql = "select idjugador,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,fechabaja,refcountries,observaciones from dbjugadores where nrodocumento =".$nrodocumento;
+
+   $res = $this->query($sql,0);
+   return $res;
+}
+
+function traerJugadoresprePorIdNuevo($id) {
+   $sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
+   $res = $this->query($sql,0);
+   return $res;
+}
+
+function traerJugadoresprePorNroDocumento($nrodocumento) {
+   $sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where nrodocumento =".$nrodocumento;
+   $res = $this->query($sql,0);
+   return $res;
+}
+
 function registrarSocio($email, $password,$idjugador, $tipo) {
+
+   $nrodocumento = 0;
 
    if ($tipo == 1) {
       $resJugador = $this->traerJugadoresprePorIdNuevo($idjugador);
+      $nrodocumento = mysql_result($resJugador,0,'nrodocumento');
+      $resJugadorAux = $this->traerJugadoresPorNroDocumento($nrodocumento);
    } else {
       $resJugador = $this->traerJugadoresPorId($idjugador);
+      $nrodocumento = mysql_result($resJugador,0,'nrodocumento');
+      $resJugadorAux = $this->traerJugadoresprePorNroDocumento($nrodocumento);
    }
 
 
@@ -342,9 +367,15 @@ function registrarSocio($email, $password,$idjugador, $tipo) {
 
       if ($tipo == 1) {
          $resModJug = $this->actualizarUsuarioUusarioPre($idjugador, $email, $res);
+         if (mysql_num_rows($resJugadorAux)>0) {
+            $this->modificarJugadorEmail( mysql_result($resJugadorAux,0,0), $email);
+         }
       } else {
          // creo la relacion socio y usuarios por el email
          $resModJug = $this->modificarJugadorEmail($idjugador, $email);
+         if (mysql_num_rows($resJugadorAux)>0) {
+            $this->actualizarUsuarioUusarioPre( mysql_result($resJugadorAux,0,0), $email, $res);
+         }
       }
 
 
