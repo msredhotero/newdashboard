@@ -649,7 +649,38 @@ function devolverImagen($name, $type, $nombrenuevo) {
 
 	/* PARA Documentacionjugadorimagenes */
 
+
 	function insertarDocumentacionjugadorimagenes($refdocumentaciones,$refjugadorespre,$imagen,$type,$refestados, $idjugador) {
+
+      // en caso de que sea un jugador viejo
+      if ($refjugadorespre == 0 ) {
+         $resJugador    = $this->traerJugadoresPorId($idjugador);
+
+         if (mysql_num_rows($resJugador)>0) {
+            $resJugadorPre = $this->traerJugadoresprePorNroDocumento(mysql_result($resJugador,0,'nrodocumento'));
+
+            if (mysql_num_rows($resJugadorPre)>0) {
+               $refjugadorespre = mysql_result($resJugadorPre,0,0);
+            }
+         }
+      } else {
+
+         // en caso de que sea un jugador nuevo
+         if ($idjugador == 0 ) {
+            $resJugador    = $this->traerJugadoresprePorId($refjugadorespre);
+
+            if (mysql_num_rows($resJugador)>0) {
+               $resJugadorPre = $this->traerJugadoresPorNroDocumento(mysql_result($resJugador,0,'nrodocumento'));
+
+               if (mysql_num_rows($resJugadorPre)>0) {
+                  $idjugador = mysql_result($resJugadorPre,0,0);
+               }
+            }
+         }
+      }
+
+
+
 		$sql = "insert into dbdocumentacionjugadorimagenes(iddocumentacionjugadorimagen,refdocumentaciones,refjugadorespre,imagen,type,refestados, idjugador)
 		values ('',".$refdocumentaciones.",".$refjugadorespre.",'".($imagen)."','".($type)."',".$refestados.",".$idjugador.")";
 
@@ -3602,35 +3633,39 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 
 	function traerJugadoresDeUnaFusion($idfusion, $idtemporada, $idcountrie) {
 		$sql = "SELECT
-				    j.apellido, j.nombres, j.nrodocumento, j.fechanacimiento
-				FROM
-				    dbfusionequipos fe
-				        INNER JOIN
-				    dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
-				        INNER JOIN
-				    dbconectordelegados cd ON cd.refcountries = ".$idcountrie."
-				        AND cd.refequipos = ed.idequipo
-				        AND cd.reftemporadas = ".$idtemporada."
-				        INNER JOIN
-				    dbjugadores j ON j.idjugador = cd.refjugadores
-				WHERE
-				    fe.idfusionequipo = ".$idfusion."
-				GROUP BY j.apellido , j.nombres , j.nrodocumento , j.fechanacimiento
-				UNION ALL SELECT
-				    j.apellido, j.nombres, j.nrodocumento, j.fechanacimiento
-				FROM
-				    dbfusionequipos fe
-				        INNER JOIN
-				    dbequiposdelegados ed ON ed.idequipodelegado = fe.refequiposdelegados
-				        INNER JOIN
-				    dbconectordelegados cd ON cd.refcountries = ".$idcountrie."
-				        AND cd.refequipos = ed.idequipo
-				        AND cd.reftemporadas = ".$idtemporada."
-				        INNER JOIN
-				    dbjugadorespre j ON j.idjugadorpre = cd.refjugadorespre
-				WHERE
-				    fe.idfusionequipo = ".$idfusion."
-				GROUP BY j.apellido , j.nombres , j.nrodocumento , j.fechanacimiento";
+                j.apellido, j.nombres, j.nrodocumento, j.fechanacimiento
+            FROM
+                dbjugadores j
+                    INNER JOIN
+                dbconectordelegados cd ON j.idjugador = cd.refjugadores
+                    INNER JOIN
+                dbequiposdelegados ed ON ed.idequipo = cd.refequipos
+                    INNER JOIN
+                dbfusionequipos fe ON ed.idequipodelegado = fe.refequiposdelegados
+                    AND j.refcountries = fe.refcountries
+            WHERE
+                j.refcountries = ".$idcountrie."
+                    AND cd.reftemporadas = ".$idtemporada."
+                    AND fe.idfusionequipo = ".$idfusion."
+            GROUP BY j.apellido , j.nombres , j.nrodocumento , j.fechanacimiento
+            union all
+
+            SELECT
+                j.apellido, j.nombres, j.nrodocumento, j.fechanacimiento
+            FROM
+                dbjugadorespre j
+                    INNER JOIN
+                dbconectordelegados cd ON j.idjugadorpre = cd.refjugadorespre
+                    INNER JOIN
+                dbequiposdelegados ed ON ed.idequipo = cd.refequipos
+                    INNER JOIN
+                dbfusionequipos fe ON ed.idequipodelegado = fe.refequiposdelegados
+                    AND j.refcountries = fe.refcountries
+            WHERE
+                j.refcountries = ".$idcountrie."
+                    AND cd.reftemporadas = ".$idtemporada."
+                    AND fe.idfusionequipo = ".$idfusion."
+            GROUP BY j.apellido , j.nombres , j.nrodocumento , j.fechanacimiento";
 
 		$res = $this->query($sql,0);
 		return $res;
