@@ -14,11 +14,15 @@ include ('../includes/funciones.php');
 include ('../includes/funcionesReferencias.php');
 include ('../includes/base.php');
 
+include ('../includes/funcionesArbitros.php');
+
 $serviciosUsuario = new ServiciosUsuarios();
 $serviciosHTML = new ServiciosHTML();
 $serviciosFunciones = new Servicios();
 $serviciosReferencias 	= new ServiciosReferencias();
 $baseHTML = new BaseHTML();
+
+$serviciosArbitros 	= new ServiciosArbitros();
 
 $fecha = date('Y-m-d');
 
@@ -47,6 +51,11 @@ $insertar = "insertarDelegados";
 $idSocioNuevo = 0;
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
+if ($_SESSION['idroll_aif'] == 3) {
+	$resPartidos = $serviciosArbitros->traerPartidosPorArbitrosFechas($_SESSION['idarbitro_aif']);
+
+}
+
 if ($_SESSION['idroll_aif'] == 4) {
 	$club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
 
@@ -222,6 +231,58 @@ if ($_SESSION['idroll_aif'] == 5) {
 
         <div class="container-fluid">
             <div class="row clearfix">
+					<?php if ($_SESSION['idroll_aif'] == 3) { ?>
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="card ">
+								<div class="header bg-blue">
+									<h2>
+										Partidos a cargar
+									</h2>
+									<ul class="header-dropdown m-r--5">
+										<li class="dropdown">
+											<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+												<i class="material-icons">more_vert</i>
+											</a>
+											<ul class="dropdown-menu pull-right">
+												<li><a href="javascript:void(0);" @click="showModal = true">Realizar Consulta</a></li>
+											</ul>
+										</li>
+									</ul>
+								</div>
+								<div class="body table-responsive">
+									<div class="row">
+										<div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+											<div class="form-line emailInput">
+			                            <input type="number" class="form-control" name="idfixture" id="idfixture" placeholder="Partido" required autofocus>
+
+			                        </div>
+										</div>
+										<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6">
+											<div class="form-line emailInput" align="left">
+												 <button type="button" class="btn btn-info waves-effect">
+	                                     <i class="material-icons">search</i>
+	                                     <span>BUSCAR</span>
+	                                 </button>
+			                        </div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<div class="button-demo">
+												<?php
+												while ($row = mysql_fetch_array($resPartidos)) {
+													echo '<a href="estadisticas/index.php?id='.$row['idfixture'].'"><button type="button" class="btn btn-lg bg-green waves-effect">N°: '.$row['idfixture'].' | Fecha Juego: '.$row['fechajuego'].' | Fecha: '.$row['fecha'].' | Partido: '.$row['partido'].' | Categoria: '.$row['categoria'].' | Division: '.$row['division'].'</button></a>';
+												}
+
+												?>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					<?php } ?>
 					<?php if ($_SESSION['idroll_aif'] == 4) { ?>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green hover-expand-effect">

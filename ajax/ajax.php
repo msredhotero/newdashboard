@@ -5,6 +5,7 @@ include ('../includes/funciones.php');
 include ('../includes/funcionesHTML.php');
 include ('../includes/funcionesReferencias.php');
 include ('../includes/funcionesNotificaciones.php');
+include ('../includes/funcionesArbitros.php');
 
 
 $serviciosUsuarios  		= new ServiciosUsuarios();
@@ -12,6 +13,7 @@ $serviciosFunciones 		= new Servicios();
 $serviciosHTML				= new ServiciosHTML();
 $serviciosReferencias		= new ServiciosReferencias();
 $serviciosNotificaciones	= new ServiciosNotificaciones();
+$serviciosArbitros	= new ServiciosArbitros();
 
 
 $accion = $_POST['accion'];
@@ -227,10 +229,58 @@ switch ($accion) {
       generarPlantelTemporadaAnteriorExcepciones($serviciosReferencias);
       break;
 
+      case 'traerArchivoPlanillaPorArbitroFixture':
+         traerArchivoPlanillaPorArbitroFixture($serviciosArbitros);
+      break;
+
 /* Fin */
 
 }
 /* Fin */
+
+   function traerArchivoPlanillaPorArbitroFixture($serviciosArbitros) {
+      $servidorCarpeta = 'aifzndesarrollo';
+
+      $idfixture = $_POST['idfixture'];
+      $idarbitro = $_POST['idarbitro'];
+
+      $resV['datos'] = '';
+      $resV['error'] = false;
+
+      $resFoto = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture,$idarbitro);
+
+      $imagen = '';
+
+      if (mysql_num_rows($resFoto) > 0) {
+         /* produccion
+         $imagen = 'https://www.saupureinconsulting.com.ar/aifzn/'.mysql_result($resFoto,0,'archivo').'/'.mysql_result($resFoto,0,'imagen');
+         */
+
+         //desarrollo
+         if (mysql_result($resFoto,0,'type') == '') {
+            $imagen = '../../imagenes/sin_img.jpg';
+
+
+            $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
+            $resV['error'] = false;
+         } else {
+            $imagen = '../../../../'.$servidorCarpeta.'/'.$idarbitro.'/'.$idfixture.'/'.mysql_result($resFoto,0,'imagen');
+            $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type'));
+            $resV['error'] = false;
+         }
+
+      } else {
+         $imagen = '../../imagenes/sin_img.jpg';
+
+
+         $resV['datos'] = array('imagen' => $imagen, 'type' => '');
+         $resV['error'] = false;
+      }
+
+
+      header('Content-type: application/json');
+      echo json_encode($resV);
+   }
 
    function presentardocumentacionCompleta($serviciosReferencias) {
       $id = $_POST['id'];

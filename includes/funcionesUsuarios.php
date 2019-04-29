@@ -76,6 +76,10 @@ function login($usuario,$pass) {
 			$_SESSION['idclub_aif'] = mysql_result($resppass,0,'refcountries');
 			$_SESSION['club_aif'] = mysql_result($resppass,0,'refcountries');
 
+         if ($_SESSION['idroll_aif'] == 3) {
+            $_SESSION['idarbitro_aif'] = $this->traerUsuarioArbitro($idUsua);
+         }
+
 			return 1;
 		}
 
@@ -277,12 +281,6 @@ function traerJugadoresPorId($id) {
    return $res;
 }
 
-function traerJugadoresprePorIdNuevo($id) {
-   $sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
-   $res = $this->query($sql,0);
-   return $res;
-}
-
 function traerJugadoresPorNroDocumento($nrodocumento) {
    $sql = "select idjugador,reftipodocumentos,nrodocumento,apellido,nombres,email,fechanacimiento,fechaalta,fechabaja,refcountries,observaciones from dbjugadores where nrodocumento =".$nrodocumento;
 
@@ -291,6 +289,11 @@ function traerJugadoresPorNroDocumento($nrodocumento) {
 }
 
 function traerJugadoresprePorIdNuevo($id) {
+   $sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
+   $res = $this->query($sql,0);
+   return $res;
+}
+function traerJugadoresprePorIdNuevo__($id) {
    $sql = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados from dbjugadorespre where idjugadorpre =".$id;
    $res = $this->query($sql,0);
    return $res;
@@ -589,7 +592,17 @@ function modificarJugadorEmail($id, $email) {
 	}
 }
 
+function traerUsuarioArbitro($id) {
+   $sql = "select idarbitro from dbarbitros where refusuarios = ".$id;
 
+   $res = $this->query($sql,0);
+
+   if (mysql_num_rows($res)>0) {
+      return mysql_result($res,0,0);
+   }
+
+   return 0;
+}
 
 function query($sql,$accion) {
 

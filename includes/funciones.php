@@ -1021,6 +1021,7 @@ class Servicios {
 
 	function camposTablaModificar($id,$lblid,$accion,$tabla,$lblcambio,$lblreemplazo,$refdescripcion,$refCampo) {
 
+
 		switch ($tabla) {
 			case 'dbjugadorespre':
 				$sqlMod = "select idjugadorpre,reftipodocumentos,nrodocumento,apellido,nombres,email,DATE_FORMAT(fechanacimiento, '%d-%m-%Y') as fechanacimiento,DATE_FORMAT(fechaalta, '%d-%m-%Y') as fechaalta,refcountries,observaciones,refusuarios,numeroserielote,refestados, idusuario from dbjugadorespre where idjugadorpre =".$id;
@@ -1040,12 +1041,24 @@ class Servicios {
 		$sql	=	"show columns from ".$tabla;
 		$res 	=	$this->query($sql,0);
 
+		switch ($tabla) {
+			case 'dbjugadorespre':
+				$ocultar = array("refcountries","refusuarios","idusuario","refestados","idusuario","fechaalta");
+				break;
+			case 'dbplanillasarbitros':
+				$ocultar = array("imagen","type");
+				break;
+			default:
+				$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","idusuario");
+				break;
+		}
+		/*
 		if ($tabla == 'dbjugadorespre') {
 		    $ocultar = array("refcountries","refusuarios","idusuario","refestados","idusuario","fechaalta");
 		} else {
 		    $ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi","idusuario");
 		}
-
+		*/
 		$camposEscondido = "";
 		$lblObligatorio = '';
 		/* Analizar para despues */
@@ -1304,7 +1317,16 @@ class Servicios {
 		$sql	=	"show columns from ".$tabla;
 		$res 	=	$this->query($sql,0);
 
-		$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+		switch ($tabla) {
+			case 'dbplanillasarbitros':
+				$ocultar = array("imagen","type");
+				break;
+
+			default:
+				$ocultar = array("fechacrea","fechamodi","usuacrea","usuamodi");
+				break;
+		}
+
 
 		$camposEscondido = "";
 		/* Analizar para despues */
