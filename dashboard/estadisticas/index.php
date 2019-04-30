@@ -50,12 +50,6 @@ $partidoAux = $serviciosArbitros->traerPartidosPorArbitrosPartido($_SESSION['ida
 
 $resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id, $_SESSION['idarbitro_aif']);
 
-// Ruta del directorio donde están los archivos
-$path  = '../../arbitros/'.$_SESSION['idarbitro_aif'].'/'.$id;
-
-// Arreglo con todos los nombres de los archivos
-$files = array_diff(scandir($path), array('.', '..'));
-
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Pre-Estadistica";
@@ -93,7 +87,23 @@ if (mysql_num_rows($resultado) > 0) {
 	$expulsados = 0;
 	$informados = 0;
 	$dobleamarillas = 0;
+
+	$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id, $_SESSION['idarbitro_aif']);
 }
+
+// Ruta del directorio donde están los archivos
+$path  = '../../arbitros/'.$_SESSION['idarbitro_aif'].'/'.$id;
+
+if (!file_exists('../../arbitros/'.$_SESSION['idarbitro_aif'].'/')) {
+	mkdir('../../arbitros/'.$_SESSION['idarbitro_aif'], 0777);
+}
+
+if (!file_exists($path)) {
+	mkdir($path, 0777);
+}
+// Arreglo con todos los nombres de los archivos
+$files = array_diff(scandir($path), array('.', '..'));
+
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbplanillasarbitros";
 

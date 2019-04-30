@@ -259,7 +259,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 										</div>
 										<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6">
 											<div class="form-line emailInput" align="left">
-												 <button type="button" class="btn btn-info waves-effect">
+												 <button type="button" class="btn btn-info waves-effect btnBuscarFixture">
 	                                     <i class="material-icons">search</i>
 	                                     <span>BUSCAR</span>
 	                                 </button>
@@ -573,6 +573,42 @@ if ($_SESSION['idroll_aif'] == 5) {
 
     <script>
         $(document).ready(function(){
+			<?php
+  			if ($_SESSION['idroll_aif'] == 3) {
+  				//if ($determinaTipoSocio['valor'] == 1) {
+  			?>
+			$('.btnBuscarFixture').click(function() {
+				buscarFixture($('#idfixture').val());
+			});
+
+			function buscarFixture(id) {
+				$.ajax({
+					data:  {id: id,
+							accion: 'buscarFixture'},
+					url:   '../ajax/ajax.php',
+					type:  'post',
+					beforeSend: function () {
+
+					},
+					success:  function (response) {
+							if (response == '') {
+								swal({
+										title: "Respuesta",
+										text: 'No se encontro ningun partido para cargar',
+										type: "error",
+										timer: 2500,
+										showConfirmButton: false
+								});
+							} else {
+								url = "estadisticas/index.php?id="+response;
+								$(location).attr('href',url);
+							}
+
+
+					}
+				});
+			}
+			<?php } ?>
 			<?php
 			if ($_SESSION['idroll_aif'] == 5) {
 				//if ($determinaTipoSocio['valor'] == 1) {

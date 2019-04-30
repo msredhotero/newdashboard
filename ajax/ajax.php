@@ -235,11 +235,28 @@ switch ($accion) {
       case 'modificarPlanillasarbitros':
          modificarPlanillasarbitros($serviciosArbitros);
       break;
+      case 'buscarFixture':
+         buscarFixture($serviciosArbitros);
+      break;
 
 /* Fin */
 
 }
 /* Fin */
+
+   function buscarFixture($serviciosArbitros) {
+      session_start();
+
+      $id = $_POST['id'];
+      $idarbitro = $_SESSION['idarbitro_aif'];
+
+      $res = $serviciosArbitros->traerPartidosPorArbitrosPartido($idarbitro,$id);
+
+      if (mysql_num_rows($res)>0) {
+         echo mysql_result($res,0,0);
+      }
+      echo '';
+   }
 
    function modificarPlanillasarbitros($serviciosArbitros) {
       $id = $_POST['id'];
