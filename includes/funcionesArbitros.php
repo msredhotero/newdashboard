@@ -64,7 +64,7 @@ class ServiciosArbitros {
          WHERE
              (e.visibleparaarbitros = 1
                  OR f.refestadospartidos IS NULL)
-                 AND (f.fecha BETWEEN DATE_ADD(NOW(), INTERVAL - 4 DAY) AND DATE_ADD(NOW(), INTERVAL + 1 DAY))
+                 AND (f.fecha BETWEEN DATE_ADD(NOW(), INTERVAL - 4 DAY) AND DATE_ADD(NOW(), INTERVAL + 5 DAY))
                  AND f.refconectorlocal IS NOT NULL
                  AND f.refconectorvisitante IS NOT NULL
                  and f.refarbitros = ".$idarbitro;
