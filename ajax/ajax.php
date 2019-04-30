@@ -232,11 +232,169 @@ switch ($accion) {
       case 'traerArchivoPlanillaPorArbitroFixture':
          traerArchivoPlanillaPorArbitroFixture($serviciosArbitros);
       break;
+      case 'modificarPlanillasarbitros':
+         modificarPlanillasarbitros($serviciosArbitros);
+      break;
 
 /* Fin */
 
 }
 /* Fin */
+
+   function modificarPlanillasarbitros($serviciosArbitros) {
+      $id = $_POST['id'];
+      $reffixture = $_POST['reffixture'];
+      $refarbitros = $_POST['refarbitros'];
+
+      $goleslocal = $_POST['goleslocal'];
+      $golesvisitante = $_POST['golesvisitante'];
+      $amarillas = $_POST['amarillas'];
+      $expulsados = $_POST['expulsados'];
+      $informados = $_POST['informados'];
+      $dobleamarillas = $_POST['dobleamarillas'];
+      $refestadospartidos = $_POST['refestadospartidos'];
+      $refestados = $_POST['refestados'];
+      $observaciones = $_POST['observaciones'];
+
+      $error = '';
+
+      if	($refestadospartidos != 0) {
+
+
+      	$estadoPartido	=	$serviciosArbitros->traerEstadospartidosPorId($refestadospartidos);
+
+      	$defAutomatica			= mysql_result($estadoPartido,0,'defautomatica');
+
+      	$golesLocalAuto			= mysql_result($estadoPartido,0,'goleslocalauto');
+      	$golesLocalBorra		= mysql_result($estadoPartido,0,'goleslocalborra');
+
+      	$golesvisitanteauto		= mysql_result($estadoPartido,0,'golesvisitanteauto');
+      	$golesvisitanteborra	= mysql_result($estadoPartido,0,'golesvisitanteborra');
+
+      	$puntosLocal			= mysql_result($estadoPartido,0,'puntoslocal');
+      	$puntosVisitante		= mysql_result($estadoPartido,0,'puntosvisitante');
+
+      	$finalizado				= mysql_result($estadoPartido,0,'finalizado');
+
+      	$ocultaDetallePublico	= mysql_result($estadoPartido,0,'ocultardetallepublico');
+
+      	$visibleParaArbitros	= mysql_result($estadoPartido,0,'visibleparaarbitros');
+
+      	$contabilizaLocal		= mysql_result($estadoPartido,0,'contabilizalocal');
+      	$contabilizaVisitante	= mysql_result($estadoPartido,0,'contabilizavisitante');
+
+      	// caso de ganado, perdido, empatado
+      	if (($defAutomatica == 'No') && ($finalizado == 'Si') && ($visibleParaArbitros == 'No')) {
+      		if (($goleslocal > $golesvisitante) && (($puntosLocal == 0) || ($puntosLocal == 1))) {
+      			$error = "Error: El equipo local deberia ganar";
+      			$lblerror = "alert-danger";
+      		}
+
+      		if (($goleslocal < $golesvisitante) && (($puntosVisitante == 0) || ($puntosVisitante == 1))) {
+      			$error = "Error: El equipo visitante deberia ganar";
+      			$lblerror = "alert-danger";
+      		}
+
+      		if (($goleslocal == $golesvisitante) && ($puntosVisitante != $puntosLocal)) {
+      			$error = "Error: El partido deberia ser un empate";
+      			$lblerror = "alert-danger";
+      		}
+
+
+
+      		if ($error == '') {
+      			$lblerror = "alert-success";
+      			$error = "";
+
+               $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+
+      		} else {
+
+               $error = "";
+
+      			$res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+
+      		}
+
+      		$partidoSuspendidoCompletamente = 0;
+      	} else { // else del ganado, perdido, empatado
+      		// estados donde los partidos los define el estado como W.O. Local, Perdida de puntos a Ambos, Suspendido Finalizado
+      		if (($defAutomatica == 'Si') && ($finalizado == 'Si') && ($visibleParaArbitros == 'No')) {
+
+               $error = '';
+
+               $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+
+      		} else { // else del W.O. Local, Perdida de puntos a Ambos, Suspendido Finalizado
+
+      			// para los arbitros
+      			if (($defAutomatica == 'No') && ($finalizado == 'No') && ($visibleParaArbitros == 'Si') && (($puntosLocal > 0) || ($puntosVisitante > 0))) {
+                  //echo 'asdasd';
+      				if (($goleslocal > $golesvisitante) && (($puntosLocal == 0) || ($puntosLocal == 1))) {
+      					$error = "Error: El equipo local deberia ganar";
+      					$lblerror = "alert-danger";
+
+      				}
+
+      				if (($goleslocal < $golesvisitante) && (($puntosVisitante == 0) || ($puntosVisitante == 1))) {
+      					$error = "Error: El equipo visitante deberia ganar";
+      					$lblerror = "alert-danger";
+
+      				}
+
+      				if (($goleslocal == $golesvisitante) && ($puntosVisitante != $puntosLocal)) {
+      					$error = "Error: El partido deberia ser un empate";
+      					$lblerror = "alert-danger";
+
+      				}
+
+
+
+      				if ($error == '') {
+      					$lblerror = "alert-success";
+      					$error = "";
+
+                     $error = '';
+
+                     $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+
+      				}
+
+      				$partidoSuspendidoCompletamente = 0;
+      				// arbitros
+
+
+      			} else {
+      				// if para cuando un partido se suspende y no se carga nada
+      				if (($defAutomatica == 'No') && ($finalizado == 'No') && ($golesLocalAuto == 0) && ($golesvisitanteauto == 0)) {
+                     $error = "";
+
+      					$res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+
+      				}
+      			}
+
+      		}
+      	}
+      } else { //else de si no selecciono un estado para el partido
+
+
+      	$error = 'Debe seleccionar un estado para el partido';
+
+      }
+
+
+      if ($error == '') {
+         if ($res == true) {
+            echo '';
+         } else {
+            echo 'Hubo un error al modificar datos ';
+         }
+      } else {
+         echo $error;
+      }
+
+   }
 
    function traerArchivoPlanillaPorArbitroFixture($serviciosArbitros) {
       $servidorCarpeta = 'aifzndesarrollo';
@@ -264,7 +422,7 @@ switch ($accion) {
             $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
             $resV['error'] = false;
          } else {
-            $imagen = '../../../../'.$servidorCarpeta.'/'.$idarbitro.'/'.$idfixture.'/'.mysql_result($resFoto,0,'imagen');
+            $imagen = '../../arbitros/'.$idarbitro.'/'.$idfixture.'/'.mysql_result($resFoto,0,'imagen');
             $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type'));
             $resV['error'] = false;
          }

@@ -50,6 +50,13 @@ $partidoAux = $serviciosArbitros->traerPartidosPorArbitrosPartido($_SESSION['ida
 
 $resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id, $_SESSION['idarbitro_aif']);
 
+// Ruta del directorio donde están los archivos
+$path  = '../../arbitros/'.$_SESSION['idarbitro_aif'].'/'.$id;
+
+// Arreglo con todos los nombres de los archivos
+$files = array_diff(scandir($path), array('.', '..'));
+
+
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Pre-Estadistica";
 
@@ -66,8 +73,6 @@ $tituloWeb = "Gestión: AIF";
 if (mysql_num_rows($resultado) > 0) {
 	$idPlanilla = mysql_result($resultado,0,0);
 
-	$resultadolocal = mysql_result($resultado,0,'resultadolocal');
-	$resultadovisitante = mysql_result($resultado,0,'resultadovisitante');
 	$goleslocal = mysql_result($resultado,0,'goleslocal');
 	$golesvisitante = mysql_result($resultado,0,'golesvisitante');
 	$amarillas = mysql_result($resultado,0,'amarillas');
@@ -92,22 +97,25 @@ if (mysql_num_rows($resultado) > 0) {
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbplanillasarbitros";
 
-$lblCambio	 	= array("reffixture","refarbitros","refestadospartidos","resultadolocal","resultadovisitante","goleslocal","golesvisitante","dobleamarillas");
-$lblreemplazo	= array("Partido","Arbitro","Estado","Resultado Local","Resultado Visitante","Goles Local","Goles Visitantes","Doble Amarillas");
+$lblCambio	 	= array("reffixture","refarbitros","refestadospartidos","goleslocal","golesvisitante","dobleamarillas","refestados");
+$lblreemplazo	= array("Partido","Arbitro","Estado","Goles Local","Goles Visitantes","Doble Amarillas","Estado Planilla");
 
 $resVar1 = $serviciosArbitros->traerFixturePorId($id);
 $cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resVar1,array(1),'Partido N°: ', $id);
 
 $resEstados		= $serviciosArbitros->traerEstadospartidosArbitros();
-$cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1),'', mysql_result($partido,0,'refestadospartidos'));
+$cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1),'', mysql_result($resultado,0,'refestadospartidos'));
 
 $resAr = $serviciosArbitros->traerArbitrosPorId($_SESSION['idarbitro_aif']);
 $cadAr = $serviciosFunciones->devolverSelectBoxActivo($resAr,array(1),'', $_SESSION['idarbitro_aif']);
 
+$refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('1,2');
+$cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', mysql_result($resultado,0,'refestados'));
+
 //die(var_dump($cadEstados));
 
-$refdescripcion = array(0=>$cadRef,1=>$cadAr,2=>$cadEstados);
-$refCampo 	=  array("reffixture","refarbitros","refestadospartidos");
+$refdescripcion = array(0=>$cadRef,1=>$cadAr,2=>$cadEstados, 3=>$cadEP);
+$refCampo 	=  array("reffixture","refarbitros","refestadospartidos","refestados");
 
 $idTabla = 'idplanillaarbitro';
 $tabla = 'dbplanillasarbitros';
@@ -165,8 +173,9 @@ if (mysql_num_rows($resTemporadas)>0) {
 	<!-- Dropzone Css -->
     <link href="../../plugins/dropzone/dropzone.css" rel="stylesheet">
 
-    <style>
+	 <style>
         .alert > i{ vertical-align: middle !important; }
+		  .pdfobject-container { height: 30rem; border: 1rem solid rgba(0,0,0,.1); }
 
 
 	</style>
@@ -240,37 +249,78 @@ if (mysql_num_rows($resTemporadas)>0) {
 							</ul>
 						</div>
 						<div class="body table-responsive">
-							<div class="row">
-								<div class="col-xs-12 col-md-12 col-lg-12">
-									<div class="alert alert-danger">
-										<p>Recuerda cargar todos los datos para continuar con la carga de la estadistica, por favor.</p>
+							<form class="formulario frmNuevo" role="form" id="sign_in">
+								<div class="row">
+									<div class="col-xs-12 col-md-12 col-lg-12">
+										<div class="alert alert-danger">
+											<p>Recuerda cargar todos los datos para continuar con la carga de la estadistica, por favor.</p>
+										</div>
+									</div>
+									<div class="col-xs-12 col-md-12 col-lg-12">
+										<div class="alert alert-success">
+											<?php
+											while ($row = mysql_fetch_array($partidoAux)) {
+												echo 'N°: '.$row['idfixture'].' | Fecha Juego: '.$row['fechajuego'].' | Fecha: '.$row['fecha'].' | Partido: '.$row['partido'].' | Categoria: '.$row['categoria'].' | Division: '.$row['division'];
+											}
+											?>
+										</div>
 									</div>
 								</div>
-								<div class="col-xs-12 col-md-12 col-lg-12">
-									<div class="alert alert-success">
+								<div class="row">
+									<?php echo $formulario; ?>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 col-md-6 col-lg-6">
+										<h4>Planilla Cargada</h4>
+										<a href="javascript:void(0);" class="thumbnail">
+											<img class="img-responsive">
+										</a>
+										<div id="example1"></div>
+
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-12 col-md-12 col-lg-12">
+										<div class="alert alert-info">
+											<p>Para continuar debe cambiar el estado a FINALIZADO y GUARDAR.</p>
+										</div>
+									</div>
+									<div class="col-xs-12 col-md-12 col-lg-12">
 										<?php
-										while ($row = mysql_fetch_array($partidoAux)) {
-											echo 'N°: '.$row['idfixture'].' | Fecha Juego: '.$row['fechajuego'].' | Fecha: '.$row['fecha'].' | Partido: '.$row['partido'].' | Categoria: '.$row['categoria'].' | Division: '.$row['division'];
-										}
+										if (mysql_result($resultado,0,'refestados') == 2) {
 										?>
-									</div>
+										<button type="button" class="btn btn-warning waves-effect btnEstadistica">
+											<i class="material-icons">insert_chart</i>
+											<span>CARGAR DETALLE DE ESTADISTICA</span>
+										</button>
+										<?php
+										} else {
+										?>
+											<?php
+											if (count($files)> 0) {
+											?>
+											<button type="submit" class="btn btn-info waves-effect btnGuardar">
+												<i class="material-icons">save</i>
+												<span>GUARDAR</span>
+										   </button>
+											<?php
+											} else {
+											?>
+											<div class="alert alert-warning infoPlanilla">
+												<p>Debe cargar la planilla para GUARDAR y continuar con la carga de la estadistica del partido.</p>
+											</div>
+											<button type="submit" class="btn btn-info waves-effect btnGuardar" style="display:none;">
+												<i class="material-icons">save</i>
+												<span>GUARDAR</span>
+										   </button>
+										<?php } ?>
+										<?php } ?>
+
+
+							   	</div>
 								</div>
-							</div>
-							<div class="row">
-								<?php echo $formulario; ?>
-							</div>
-							<div class="row">
-								<div class="col-xs-6 col-md-6 col-lg-6">
-									<h4>Planilla Cargada</h4>
-									<a href="javascript:void(0);" class="thumbnail">
-										<img class="img-responsive">
-									</a>
-									<div id="example1"></div>
 
-								</div>
-							</div>
-
-
+							</form>
 
 						</div>
 					</div>
@@ -280,7 +330,9 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 		</div>
 
-
+		<?php
+		if (mysql_result($resultado,0,'refestados') == 1) {
+		?>
 		<div class="row clearfix subirImagen">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="card">
@@ -324,7 +376,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 				</div>
 			</div>
 		</div>
-
+		<?php } ?>
 
 
 
@@ -420,36 +472,36 @@ if (mysql_num_rows($resTemporadas)>0) {
 <script>
 
 
-function traerImagen() {
-	$.ajax({
-		data:  {idfixture: <?php echo $id; ?>,
-				idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>,
-				accion: 'traerArchivoPlanillaPorArbitroFixture'},
-		url:   '../../ajax/ajax.php',
-		type:  'post',
-		beforeSend: function () {
+	function traerImagen() {
+		$.ajax({
+			data:  {idfixture: <?php echo $id; ?>,
+					idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>,
+					accion: 'traerArchivoPlanillaPorArbitroFixture'},
+			url:   '../../ajax/ajax.php',
+			type:  'post',
+			beforeSend: function () {
 
-		},
-		success:  function (response) {
-			var cadena = response.datos.type.toLowerCase();
+			},
+			success:  function (response) {
+				var cadena = response.datos.type.toLowerCase();
 
-			if (response.datos.type != '') {
-				if (cadena.indexOf("pdf") > -1) {
-					PDFObject.embed(response.datos.imagen, "#example1");
-					$('#example1').show();
-					$(".thumbnail").hide();
-				} else {
-					$(".thumbnail img").attr("src",response.datos.imagen);
-					$(".thumbnail").show();
-					$('#example1').hide();
+				if (response.datos.type != '') {
+					if (cadena.indexOf("pdf") > -1) {
+						PDFObject.embed(response.datos.imagen, "#example1");
+						$('#example1').show();
+						$(".thumbnail").hide();
+					} else {
+						$(".thumbnail img").attr("src",response.datos.imagen);
+						$(".thumbnail").show();
+						$('#example1').hide();
+					}
 				}
+
 			}
+		});
+	}
 
-		}
-	});
-}
-
-traerImagen();
+	traerImagen();
 
 
 
@@ -458,7 +510,7 @@ traerImagen();
 
 	Dropzone.options.frmFileUpload = {
 		maxFilesize: 30,
-		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
 		accept: function(file, done) {
 			done();
 		},
@@ -470,7 +522,8 @@ traerImagen();
 			this.on('success', function( file, resp ){
 				traerImagen();
 				swal("Correcto!", resp.replace("1", ""), "success");
-				$('.btnPresentar').show();
+				$('.btnGuardar').show();
+				$('.infoPlanilla').hide();
 			});
 
 			this.on('error', function( file, resp ){
@@ -489,7 +542,69 @@ traerImagen();
 
 	$(document).ready(function(){
 
+		$('#goleslocal').prop('required',true);
+		$('#golesvisitante').prop('required',true);
+		$('#amarillas').prop('required',true);
+		$('#expulsados').prop('required',true);
+		$('#informados').prop('required',true);
+		$('#dobleamarillas').prop('required',true);
+		$('#observaciones').prop('required',false);
 
+		$('.frmNuevo').submit(function(e){
+
+			e.preventDefault();
+         if ($('#sign_in')[0].checkValidity()) {
+				//información del formulario
+				var formData = new FormData($(".formulario")[0]);
+				var message = "";
+				//hacemos la petición ajax
+				$.ajax({
+					url: '../../ajax/ajax.php',
+					type: 'POST',
+					// Form data
+					//datos del formulario
+					data: formData,
+					//necesario para subir archivos via ajax
+					cache: false,
+					contentType: false,
+					processData: false,
+					//mientras enviamos el archivo
+					beforeSend: function(){
+
+					},
+					//una vez finalizado correctamente
+					success: function(data){
+
+						if (data == '') {
+							swal({
+									title: "Respuesta",
+									text: "Registro Creado con exito!!",
+									type: "success",
+									timer: 1500,
+									showConfirmButton: false
+							});
+
+						} else {
+							swal({
+									title: "Respuesta",
+									text: data,
+									type: "error",
+									timer: 2500,
+									showConfirmButton: false
+							});
+
+
+						}
+					},
+					//si ha ocurrido un error
+					error: function(){
+						$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+						$("#load").html('');
+					}
+				});
+			}
+
+		});
 
 
 	});
