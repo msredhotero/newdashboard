@@ -45,10 +45,10 @@ $breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
 
 $id = $_GET['id'];
 
-$partido = $serviciosArbitros->traerPartidosPorArbitrosPartido($_SESSION['idarbitro_aif'],$id);
-$partidoAux = $serviciosArbitros->traerPartidosPorArbitrosPartido($_SESSION['idarbitro_aif'],$id);
+$partido = $serviciosArbitros->traerPartidosPorArbitrosPartido($id);
+$partidoAux = $serviciosArbitros->traerPartidosPorArbitrosPartido($id);
 
-$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id, $_SESSION['idarbitro_aif']);
+$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id);
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
@@ -68,35 +68,43 @@ if (mysql_num_rows($resultado) > 0) {
 	$idPlanilla = mysql_result($resultado,0,0);
 
 	$goleslocal = mysql_result($resultado,0,'goleslocal');
+	$amarillaslocal = mysql_result($resultado,0,'amarillaslocal');
+	$expulsadoslocal = mysql_result($resultado,0,'expulsadoslocal');
+	$informadoslocal = mysql_result($resultado,0,'informadoslocal');
+	$dobleamarillaslocal = mysql_result($resultado,0,'dobleamarillaslocal');
+	$cantidadjugadoreslocal = mysql_result($resultado,0,'cantidadjugadoreslocal');
+
 	$golesvisitante = mysql_result($resultado,0,'golesvisitante');
-	$amarillas = mysql_result($resultado,0,'amarillas');
-	$expulsados = mysql_result($resultado,0,'expulsados');
-	$informados = mysql_result($resultado,0,'informados');
-	$dobleamarillas = mysql_result($resultado,0,'dobleamarillas');
+	$amarillasvisitante = mysql_result($resultado,0,'amarillasvisitante');
+	$expulsadosvisitante = mysql_result($resultado,0,'expulsadosvisitante');
+	$informadosvisitante = mysql_result($resultado,0,'informadosvisitante');
+	$dobleamarillasvisitante = mysql_result($resultado,0,'dobleamarillasvisitante');
+	$cantidadjugadoresvisitante = mysql_result($resultado,0,'cantidadjugadoresvisitante');
 
 } else {
 	//si todavia no cargue el partido
 	$idPlanilla = $serviciosArbitros->insertarPlanillasarbitrosCorto($id,$_SESSION['idarbitro_aif']);
 
 	//die(var_dump($idPlanilla));
-	$resultadolocal = 0;
-	$resultadovisitante = 0;
 	$goleslocal = 0;
-	$golesvisitante = 0;
-	$amarillas = 0;
-	$expulsados = 0;
-	$informados = 0;
-	$dobleamarillas = 0;
+	$amarillaslocal = 0;
+	$expulsadoslocal = 0;
+	$informadoslocal = 0;
+	$dobleamarillaslocal = 0;
+	$cantidadjugadoreslocal = 0;
 
-	$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id, $_SESSION['idarbitro_aif']);
+	$golesvisitante = 0;
+	$amarillasvisitante = 0;
+	$expulsadosvisitante = 0;
+	$informadosvisitante = 0;
+	$dobleamarillasvisitante = 0;
+	$cantidadjugadoresvisitante = 0;
+
+	$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id);
 }
 
 // Ruta del directorio donde están los archivos
-$path  = '../../arbitros/'.$_SESSION['idarbitro_aif'].'/'.$id;
-
-if (!file_exists('../../arbitros/'.$_SESSION['idarbitro_aif'].'/')) {
-	mkdir('../../arbitros/'.$_SESSION['idarbitro_aif'], 0777);
-}
+$path  = '../../arbitros/'.$id;
 
 if (!file_exists($path)) {
 	mkdir($path, 0777);
@@ -277,18 +285,204 @@ if (mysql_num_rows($resTemporadas)>0) {
 									</div>
 								</div>
 								<div class="row">
-									<?php echo $formulario; ?>
-								</div>
-								<div class="row">
-									<div class="col-xs-6 col-md-6 col-lg-6">
-										<h4>Planilla Cargada</h4>
-										<a href="javascript:void(0);" class="thumbnail">
-											<img class="img-responsive">
-										</a>
-										<div id="example1"></div>
+									<div class="row">
+									   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									   	<label for="reffixture" class="control-label" style="text-align:left">Partido</label>
+									   	<select class="form-control show-tick" id="reffixture" name="reffixture"><?php echo $cadRef; ?></select>
 
+									   </div>
+
+
+
+									   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									   	<label for="refarbitros" class="control-label" style="text-align:left">Arbitro</label>
+									   	<select class="form-control show-tick" id="refarbitros" name="refarbitros"><?php echo $cadAr; ?></select>
+
+									   </div>
 									</div>
+
+									   <div class="row">
+									      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="display:block">
+
+									         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg bg-blue" style="display:block">
+									         	<label class="form-label">Datos Local</label>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Goles</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $goleslocal; ?>" type="text" class="form-control" id="goleslocal" name="goleslocal" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Amarillas</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $amarillaslocal; ?>" type="text" class="form-control" id="amarillaslocal" name="amarillaslocal" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Expulsados</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $expulsadoslocal; ?>" type="text" class="form-control" id="expulsadoslocal" name="expulsadoslocal" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Informados</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $informadoslocal; ?>" type="text" class="form-control" id="informadoslocal" name="informadoslocal" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Doble Amarillas</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $dobleamarillaslocal; ?>" type="text" class="form-control" id="dobleamarillaslocal" name="dobleamarillaslocal" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Cantidad Jugadores</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $cantidadjugadoreslocal; ?>" type="text" class="form-control" id="cantidadjugadoreslocal" name="cantidadjugadoreslocal" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+									      </div>
+									      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="display:block">
+									         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg bg-red" style="display:block">
+									         	<label class="form-label">Datos Visitante</label>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Goles</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $golesvisitante; ?>" type="text" class="form-control" id="golesvisitante" name="golesvisitante" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Amarillas</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $amarillasvisitante; ?>" type="text" class="form-control" id="amarillasvisitante" name="amarillasvisitante" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Expulsados</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $expulsadosvisitante; ?>" type="text" class="form-control" id="expulsadosvisitante" name="expulsadosvisitante" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Informados</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $informadosvisitante; ?>" type="text" class="form-control" id="informadosvisitante" name="informadosvisitante" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Doble Amarillas</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $dobleamarillasvisitante; ?>" type="text" class="form-control" id="dobleamarillasvisitante" name="dobleamarillasvisitante" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+
+
+									         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									         	<label class="form-label">Cantidad Jugadores</label>
+									         	<div class="form-group">
+									         		<div class="form-line">
+									         			<input value="<?php echo $cantidadjugadoresvisitante; ?>" type="text" class="form-control" id="cantidadjugadoresvisitante" name="cantidadjugadoresvisitante" required/>
+
+									         		</div>
+									         	</div>
+									         </div>
+									      </div>
+
+									   </div>
+									   <div class="row">
+									      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									      	<label for="refestadospartidos" class="control-label" style="text-align:left">Estado</label>
+									      	<select class="form-control show-tick" id="refestadospartidos" name="refestadospartidos"><?php echo $cadEstados; ?></select>
+
+									      </div>
+
+
+
+									      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
+									      	<label for="refestados" class="control-label" style="text-align:left">Estado Planilla</label>
+									      	<select class="form-control show-tick" id="refestados" name="refestados"><?php echo $cadEP; ?></select>
+
+									      </div>
+									   </div>
+
+									   <div class="row">
+											<div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
+												<label for="tieneincidencias" class="control-label" style="text-align:left">Existen Incidencias</label>
+												<div class="switch">
+													<label><input type="checkbox" id="tieneincidencias"/><span class="lever switch-col-green"></span></label>
+												</div>
+											</div>
+									      <div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
+									      	<label for="observaciones" class="control-label" style="text-align:left">Incidencias</label>
+									      	<div class="input-group col-md-12">
+									      		<textarea type="text" rows="10" cols="6" class="form-control" id="observaciones" name="observaciones" placeholder="Ingrese el Observaciones..." required><?php echo mysql_result($resultado,0,'observaciones'); ?></textarea>
+									      	</div>
+
+									      </div>
+									   </div>
+
+									   <br><br><input type="hidden" id="accion" name="accion" value="modificarPlanillasarbitros"/><input type="hidden" id="id" name="id" value="<?php echo $id; ?>"/>
 								</div>
+
 								<div class="row">
 									<div class="col-xs-12 col-md-12 col-lg-12">
 										<div class="alert alert-info">
@@ -306,24 +500,12 @@ if (mysql_num_rows($resTemporadas)>0) {
 										<?php
 										} else {
 										?>
-											<?php
-											if (count($files)> 0) {
-											?>
+
 											<button type="submit" class="btn btn-info waves-effect btnGuardar">
 												<i class="material-icons">save</i>
 												<span>GUARDAR</span>
 										   </button>
-											<?php
-											} else {
-											?>
-											<div class="alert alert-warning infoPlanilla">
-												<p>Debe cargar la planilla para GUARDAR y continuar con la carga de la estadistica del partido.</p>
-											</div>
-											<button type="submit" class="btn btn-info waves-effect btnGuardar" style="display:none;">
-												<i class="material-icons">save</i>
-												<span>GUARDAR</span>
-										   </button>
-										<?php } ?>
+
 										<?php } ?>
 
 
@@ -340,9 +522,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 		</div>
 
-		<?php
-		if (mysql_result($resultado,0,'refestados') == 1) {
-		?>
+
 		<div class="row clearfix subirImagen">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="card">
@@ -386,7 +566,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 				</div>
 			</div>
 		</div>
-		<?php } ?>
+
 
 
 
@@ -516,49 +696,61 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 
 
-	Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
+		Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
 
-	Dropzone.options.frmFileUpload = {
-		maxFilesize: 30,
-		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
-		accept: function(file, done) {
-			done();
-		},
-		init: function() {
-			this.on("sending", function(file, xhr, formData){
-               formData.append("idfixture", '<?php echo $id; ?>');
-					formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
-         });
-			this.on('success', function( file, resp ){
-				traerImagen();
-				swal("Correcto!", resp.replace("1", ""), "success");
-				$('.btnGuardar').show();
-				$('.infoPlanilla').hide();
-			});
+		Dropzone.options.frmFileUpload = {
+			maxFilesize: 30,
+			acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
+			accept: function(file, done) {
+				done();
+			},
+			init: function() {
+				this.on("sending", function(file, xhr, formData){
+	               formData.append("idfixture", '<?php echo $id; ?>');
+						formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
+	         });
+				this.on('success', function( file, resp ){
+					traerImagen();
+					swal("Correcto!", resp.replace("1", ""), "success");
+					$('.btnGuardar').show();
+					$('.infoPlanilla').hide();
+				});
 
-			this.on('error', function( file, resp ){
-				swal("Error!", resp.replace("1", ""), "warning");
-			});
-		}
-	};
+				this.on('error', function( file, resp ){
+					swal("Error!", resp.replace("1", ""), "warning");
+				});
+			}
+		};
 
-	var myDropzone = new Dropzone("#archivos", {
-		params: {
-          idfixture: <?php echo $id; ?>,
-          idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>
-      },
-		url: 'subir.php'
-	});
+		var myDropzone = new Dropzone("#archivos", {
+			params: {
+	          idfixture: <?php echo $id; ?>,
+	          idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>
+	      },
+			url: 'subir.php'
+		});
 
 	$(document).ready(function(){
 
-		$('#goleslocal').prop('required',true);
-		$('#golesvisitante').prop('required',true);
-		$('#amarillas').prop('required',true);
-		$('#expulsados').prop('required',true);
-		$('#informados').prop('required',true);
-		$('#dobleamarillas').prop('required',true);
-		$('#observaciones').prop('required',false);
+		<?php if (mysql_result($resultado,0,'observaciones') == 'Sin novedad') { ?>
+			$('#tieneincidencias').prop('checked',false);
+			$('#observaciones').prop('readonly',true);
+		<?php } else { ?>
+			$('#tieneincidencias').prop('checked',true);
+			$('#observaciones').prop('readonly',false);
+
+		<?php } ?>
+
+		$('#tieneincidencias').change(function() {
+			if ($(this).prop('checked')) {
+				$('#observaciones').prop('readonly',false);
+			} else {
+				$('#observaciones').val('Sin novedad');
+				$('#observaciones').prop('readonly',true);
+
+			}
+		});
+
 
 		$('.frmNuevo').submit(function(e){
 

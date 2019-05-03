@@ -75,7 +75,7 @@ class ServiciosArbitros {
    }
 
 
-   function traerPartidosPorArbitrosPartido($idarbitro, $idfixture) {
+   function traerPartidosPorArbitrosPartido( $idfixture) {
       $sql = "SELECT
              f.idfixture, f.fecha as fechajuego, concat( el.nombre, ' vs ' , ev.nombre) partido, fe.fecha, cat.categoria, di.division, f.refestadospartidos
          FROM
@@ -99,8 +99,7 @@ class ServiciosArbitros {
                  OR f.refestadospartidos IS NULL)
                  AND f.idfixture = ".$idfixture."
                  AND f.refconectorlocal IS NOT NULL
-                 AND f.refconectorvisitante IS NOT NULL
-                 and f.refarbitros = ".$idarbitro;
+                 AND f.refconectorvisitante IS NOT NULL";
 
       $res = $this->query($sql,0);
       return $res;
@@ -109,8 +108,8 @@ class ServiciosArbitros {
 
 
    function insertarPlanillasarbitrosCorto($reffixture,$refarbitros) {
-      $sql = "insert into dbplanillasarbitros(idplanillaarbitro,reffixture,refarbitros,goleslocal,golesvisitante,amarillas,expulsados,informados,dobleamarillas,refestados)
-      values ('',".$reffixture.",".$refarbitros.",0,0,0,0,0,0,1)";
+      $sql = "insert into dbplanillasarbitros(idplanillaarbitro,reffixture,refarbitros,goleslocal,golesvisitante,amarillaslocal,expulsadoslocal,informadoslocal,dobleamarillaslocal,cantidadjugadoreslocal,amarillasvisitante,expulsadosvisitante,informadosvisitante,dobleamarillasvisitante,cantidadjugadoresvisitante,refestados,observaciones)
+      values ('',".$reffixture.",".$refarbitros.",0,0,0,0,0,0,0,0,0,0,0,0,1,'Sin novedad')";
 
       $res = $this->query($sql,1);
       return $res;
@@ -124,11 +123,11 @@ class ServiciosArbitros {
    }
 
 
-   function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones) {
+   function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones) {
       $sql = "update dbplanillasarbitros
       set
-      reffixture = ".$reffixture.",refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillas = ".$amarillas.",expulsados = ".$expulsados.",informados = ".$informados.",dobleamarillas = ".$dobleamarillas.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."'
-      where idplanillaarbitro =".$id;
+      refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillaslocal = ".$amarillaslocal.",expulsadoslocal = ".$expulsadoslocal.",informadoslocal = ".$informadoslocal.",dobleamarillaslocal = ".$dobleamarillaslocal.",amarillasvisitante = ".$amarillasvisitante.",expulsadosvisitante = ".$expulsadosvisitante.",informadosvisitante = ".$informadosvisitante.",dobleamarillasvisitante = ".$dobleamarillasvisitante.",cantidadjugadoreslocal = ".$cantidadjugadoreslocal.",cantidadjugadoresvisitante = ".$cantidadjugadoresvisitante.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."'
+      where reffixture =".$id;
       $res = $this->query($sql,0);
       return $res;
    }
@@ -162,7 +161,7 @@ class ServiciosArbitros {
       return $res;
    }
 
-   function traerPlanillasarbitrosPorFixtureArbitro($id, $idarbitro) {
+   function traerPlanillasarbitrosPorFixtureArbitro($id) {
       $sql = "select
       p.idplanillaarbitro,
       p.reffixture,
@@ -171,15 +170,21 @@ class ServiciosArbitros {
       p.type,
       p.goleslocal,
       p.golesvisitante,
-      p.amarillas,
-      p.expulsados,
-      p.informados,
-      p.dobleamarillas,
+      p.amarillaslocal,
+      p.expulsadoslocal,
+      p.informadoslocal,
+      p.dobleamarillaslocal,
+      p.cantidadjugadoreslocal,
+      p.amarillasvisitante,
+      p.expulsadosvisitante,
+      p.informadosvisitante,
+      p.dobleamarillasvisitante,
+      p.cantidadjugadoresvisitante,
       p.refestadospartidos,
       p.observaciones,
       p.refestados
       from dbplanillasarbitros p
-      where p.reffixture = ".$id." and p.refarbitros = ".$idarbitro;
+      where p.reffixture = ".$id;
       $res = $this->query($sql,0);
       return $res;
    }

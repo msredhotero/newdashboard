@@ -41,7 +41,7 @@
 		$idfixture = $_POST['idfixture'];
 		$idarbitro = $_POST['idarbitro'];
 
-		$resPlanilla = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture,$idarbitro);
+		$resPlanilla = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture);
 
 		$archivoAnterior = mysql_result($resPlanilla,0,'imagen');
 
@@ -50,7 +50,7 @@
 
 
 		// desarrollo
-		$dir_destino = '../../arbitros/'.$idarbitro.'/'.$idfixture.'/';
+		$dir_destino = '../../arbitros/'.$idfixture.'/';
 
 		// produccion
 		//$dir_destino = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.mysql_result($resFoto,0,'iddocumentacionjugadorimagen').'/';
@@ -62,10 +62,6 @@
 
 		// produccion
 		// $nuevo_noentrar = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.$_SESSION['idclub_aif'].'/'.'index.php';
-
-		if (!file_exists('../../arbitros/'.$idarbitro.'/')) {
-			mkdir('../../arbitros/'.$idarbitro.'/', 0777);
-		}
 
 		if (!file_exists($dir_destino)) {
 			mkdir($dir_destino, 0777);

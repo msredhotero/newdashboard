@@ -266,18 +266,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 			                        </div>
 										</div>
 									</div>
-									<div class="row">
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<div class="button-demo">
-												<?php
-												while ($row = mysql_fetch_array($resPartidos)) {
-													echo '<a href="estadisticas/index.php?id='.$row['idfixture'].'"><button type="button" class="btn btn-lg bg-green waves-effect">N°: '.$row['idfixture'].' | Fecha Juego: '.$row['fechajuego'].' | Fecha: '.$row['fecha'].' | Partido: '.$row['partido'].' | Categoria: '.$row['categoria'].' | Division: '.$row['division'].'</button></a>';
-												}
-
-												?>
-											</div>
-										</div>
-									</div>
+									
 								</div>
 							</div>
 						</div>

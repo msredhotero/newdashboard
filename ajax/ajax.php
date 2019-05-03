@@ -248,9 +248,8 @@ switch ($accion) {
       session_start();
 
       $id = $_POST['id'];
-      $idarbitro = $_SESSION['idarbitro_aif'];
 
-      $res = $serviciosArbitros->traerPartidosPorArbitrosPartido($idarbitro,$id);
+      $res = $serviciosArbitros->traerPartidosPorArbitrosPartido($id);
 
       if (mysql_num_rows($res)>0) {
          echo mysql_result($res,0,0);
@@ -264,11 +263,19 @@ switch ($accion) {
       $refarbitros = $_POST['refarbitros'];
 
       $goleslocal = $_POST['goleslocal'];
+      $amarillaslocal = $_POST['amarillaslocal'];
+      $expulsadoslocal = $_POST['expulsadoslocal'];
+      $informadoslocal = $_POST['informadoslocal'];
+      $dobleamarillaslocal = $_POST['dobleamarillaslocal'];
+      $cantidadjugadoreslocal = $_POST['cantidadjugadoreslocal'];
+
       $golesvisitante = $_POST['golesvisitante'];
-      $amarillas = $_POST['amarillas'];
-      $expulsados = $_POST['expulsados'];
-      $informados = $_POST['informados'];
-      $dobleamarillas = $_POST['dobleamarillas'];
+      $amarillasvisitante = $_POST['amarillasvisitante'];
+      $expulsadosvisitante = $_POST['expulsadosvisitante'];
+      $informadosvisitante = $_POST['informadosvisitante'];
+      $dobleamarillasvisitante = $_POST['dobleamarillasvisitante'];
+      $cantidadjugadoresvisitante = $_POST['cantidadjugadoresvisitante'];
+
       $refestadospartidos = $_POST['refestadospartidos'];
       $refestados = $_POST['refestados'];
       $observaciones = $_POST['observaciones'];
@@ -323,13 +330,13 @@ switch ($accion) {
       			$lblerror = "alert-success";
       			$error = "";
 
-               $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+               $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones);
 
       		} else {
 
                $error = "";
 
-      			$res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+      			$res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones);
 
       		}
 
@@ -340,7 +347,7 @@ switch ($accion) {
 
                $error = '';
 
-               $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+               $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones);
 
       		} else { // else del W.O. Local, Perdida de puntos a Ambos, Suspendido Finalizado
 
@@ -373,7 +380,7 @@ switch ($accion) {
 
                      $error = '';
 
-                     $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+                     $res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones);
 
       				}
 
@@ -386,7 +393,7 @@ switch ($accion) {
       				if (($defAutomatica == 'No') && ($finalizado == 'No') && ($golesLocalAuto == 0) && ($golesvisitanteauto == 0)) {
                      $error = "";
 
-      					$res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$refestados,$observaciones);
+      					$res = $serviciosArbitros->modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones);
 
       				}
       			}
