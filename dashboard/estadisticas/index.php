@@ -24,7 +24,6 @@ $serviciosReferencias 	= new ServiciosReferencias();
 $baseHTML = new BaseHTML();
 
 $serviciosArbitros 	= new ServiciosArbitros();
-$serviciosReferenciasRemoto 	= new ServiciosReferencias();
 
 //*** SEGURIDAD ****/
 include ('../../includes/funcionesSeguridad.php');
@@ -493,6 +492,11 @@ if (mysql_num_rows($resTemporadas)>0) {
 										<?php
 										if (mysql_result($resultado,0,'refestados') == 2) {
 										?>
+										<button type="submit" class="btn btn-info waves-effect btnGuardar">
+											<i class="material-icons">save</i>
+											<span>GUARDAR</span>
+									   </button>
+
 										<button type="button" class="btn btn-warning waves-effect btnEstadistica">
 											<i class="material-icons">insert_chart</i>
 											<span>CARGAR DETALLE DE ESTADISTICA</span>
@@ -501,10 +505,16 @@ if (mysql_num_rows($resTemporadas)>0) {
 										} else {
 										?>
 
-											<button type="submit" class="btn btn-info waves-effect btnGuardar">
-												<i class="material-icons">save</i>
-												<span>GUARDAR</span>
-										   </button>
+
+										<button type="submit" class="btn btn-info waves-effect btnGuardar">
+											<i class="material-icons">save</i>
+											<span>GUARDAR</span>
+									   </button>
+
+										<button type="button" class="btn btn-warning waves-effect btnEstadistica" style="display:none;">
+											<i class="material-icons">insert_chart</i>
+											<span>CARGAR DETALLE DE ESTADISTICA</span>
+										</button>
 
 										<?php } ?>
 
@@ -778,6 +788,11 @@ if (mysql_num_rows($resTemporadas)>0) {
 					success: function(data){
 
 						if (data == '') {
+							if ($('#refestados').val() == 2) {
+								$('.btnEstadistica').show();
+							} else {
+								$('.btnEstadistica').hide();
+							}
 							swal({
 									title: "Respuesta",
 									text: "Registro Creado con exito!!",
