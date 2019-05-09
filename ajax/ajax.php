@@ -238,11 +238,137 @@ switch ($accion) {
       case 'buscarFixture':
          buscarFixture($serviciosArbitros);
       break;
+      case 'validarCargaMasiva':
+         validarCargaMasiva($serviciosArbitros, $serviciosReferencias);
+      break;
 
 /* Fin */
 
 }
 /* Fin */
+
+   function validarCargaMasiva($serviciosArbitros, $serviciosReferencias) {
+      $idfixture           =  $_POST['idfixture'];
+      /*
+      $goleslocal           =  $_POST['goleslocal'];
+      $golesvisitante           =  $_POST['golesvisitante'];
+      $amarillaslocal           =  $_POST['amarillaslocal'];
+      $amarillasvisitante           =  $_POST['amarillasvisitante'];
+      $expulsadoslocal           =  $_POST['expulsadoslocal'];
+      $expulsadosvisitante           =  $_POST['expulsadosvisitante'];
+      $informadoslocal           =  $_POST['informadoslocal'];
+      $informadosvisitante           =  $_POST['informadosvisitante'];
+      $dobleamarillaslocal           =  $_POST['dobleamarillaslocal'];
+      $dobleamarillasvisitante           =  $_POST['dobleamarillasvisitante'];
+      $cantidadjugadoreslocal           =  $_POST['cantidadjugadoreslocal'];
+      $cantidadjugadoresvisitante           =  $_POST['cantidadjugadoresvisitante'];
+      */
+      $resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture);
+
+      $goleslocal = mysql_result($resultado,0,'goleslocal');
+   	$amarillaslocal = mysql_result($resultado,0,'amarillaslocal');
+   	$expulsadoslocal = mysql_result($resultado,0,'expulsadoslocal');
+   	$informadoslocal = mysql_result($resultado,0,'informadoslocal');
+   	$dobleamarillaslocal = mysql_result($resultado,0,'dobleamarillaslocal');
+   	$cantidadjugadoreslocal = mysql_result($resultado,0,'cantidadjugadoreslocal');
+
+   	$golesvisitante = mysql_result($resultado,0,'golesvisitante');
+   	$amarillasvisitante = mysql_result($resultado,0,'amarillasvisitante');
+   	$expulsadosvisitante = mysql_result($resultado,0,'expulsadosvisitante');
+   	$informadosvisitante = mysql_result($resultado,0,'informadosvisitante');
+   	$dobleamarillasvisitante = mysql_result($resultado,0,'dobleamarillasvisitante');
+   	$cantidadjugadoresvisitante = mysql_result($resultado,0,'cantidadjugadoresvisitante');
+
+      $goleslocalcalculado           =  $_POST['goleslocalcalculado'];
+      $golesvisitantecalculado           =  $_POST['golesvisitantecalculado'];
+      $amarillaslocalcalculado           =  $_POST['amarillaslocalcalculado'];
+      $amarillasvisitantecalculado           =  $_POST['amarillasvisitantecalculado'];
+      $expulsadoslocalcalculado           =  $_POST['expulsadoslocalcalculado'];
+      $expulsadosvisitantecalculado           =  $_POST['expulsadosvisitantecalculado'];
+      $informadoslocalcalculado           =  $_POST['informadoslocalcalculado'];
+      $informadosvisitantecalculado           =  $_POST['informadosvisitantecalculado'];
+      $dobleamarillaslocalcalculado           =  $_POST['dobleamarillaslocalcalculado'];
+      $dobleamarillasvisitantecalculado           =  $_POST['dobleamarillasvisitantecalculado'];
+      $cantidadjugadoreslocalcalculado           =  $_POST['cantidadjugadoreslocalcalculado'];
+      $cantidadjugadoresvisitantecalculado           =  $_POST['cantidadjugadoresvisitantecalculado'];
+
+      $error = '';
+
+      if ($goleslocal != $goleslocalcalculado) {
+         $error .= 'Los goles del equipo local no coinciden.
+         ';
+      }
+
+      if ($golesvisitante != $golesvisitantecalculado) {
+         $error .= 'Los goles del equipo visitante no coinciden.
+         ';
+      }
+
+      if ($amarillaslocal != $amarillaslocalcalculado) {
+         $error .= 'Las amarillas del equipo local no coinciden.
+         ';
+      }
+
+      if ($amarillasvisitante != $amarillasvisitantecalculado) {
+         $error .= 'Las amarillas del equipo visitante no coinciden.
+         ';
+      }
+
+      if ($expulsadoslocal != $expulsadoslocalcalculado) {
+         $error .= 'Los expulsados del equipo local no coinciden.
+         ';
+      }
+
+      if ($expulsadosvisitante != $expulsadosvisitantecalculado) {
+         $error .= 'Los expulsados del equipo visitante no coinciden.
+         ';
+      }
+
+
+      if ($informadoslocal != $informadoslocalcalculado) {
+         $error .= 'Los informados del equipo local no coinciden.
+         ';
+      }
+
+      if ($informadosvisitante != $informadosvisitantecalculado) {
+         $error .= 'Los informados del equipo visitante no coinciden.
+         ';
+      }
+
+
+      if ($dobleamarillaslocal != $dobleamarillaslocalcalculado) {
+         $error .= 'Las doble amarillas del equipo local no coinciden.
+         ';
+      }
+
+      if ($dobleamarillasvisitante != $dobleamarillasvisitantecalculado) {
+         $error .= 'Las doble amarillas del equipo visitante no coinciden.
+         ';
+      }
+
+
+      if ($cantidadjugadoreslocal != $cantidadjugadoreslocalcalculado) {
+         $error .= 'La cantidad jugadores del equipo local no coinciden.
+         ';
+      }
+
+      if ($cantidadjugadoresvisitante != $cantidadjugadoresvisitantecalculado) {
+         $error .= 'La cantidad jugadores del equipo visitante no coinciden.
+         ';
+      }
+
+      if ($error == '') {
+         $resV['error'] = false;
+         $resV['data'] = 'Puede Guardar el partido';
+      } else {
+         $resV['error'] = true;
+         $resV['data'] = $error;
+      }
+
+      header('Content-type: application/json');
+      echo json_encode($resV);
+
+   }
 
    function buscarFixture($serviciosArbitros) {
       session_start();
@@ -429,7 +555,7 @@ switch ($accion) {
       $resV['datos'] = '';
       $resV['error'] = false;
 
-      $resFoto = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture,$idarbitro);
+      $resFoto = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture);
 
       $imagen = '';
 
@@ -446,7 +572,7 @@ switch ($accion) {
             $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
             $resV['error'] = false;
          } else {
-            $imagen = '../../arbitros/'.$idarbitro.'/'.$idfixture.'/'.mysql_result($resFoto,0,'imagen');
+            $imagen = '../../arbitros/'.$idfixture.'/'.mysql_result($resFoto,0,'imagen');
             $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type'));
             $resV['error'] = false;
          }

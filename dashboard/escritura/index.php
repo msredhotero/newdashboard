@@ -502,7 +502,6 @@ if ($determinaTipoSocio['valor'] == 2) {
 	$(document).ready(function(){
 
 
-
 		<?php if ($permite == 0) { ?>
 			$('.btnPresentar').hide();
 			$('.subirImagen').hide();
@@ -547,6 +546,8 @@ if ($determinaTipoSocio['valor'] == 2) {
 		$('#btnPresentar').click(function() {
 			presentar();
 		});
+
+
 
 	});
 </script>

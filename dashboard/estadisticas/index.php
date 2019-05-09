@@ -742,6 +742,11 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 	$(document).ready(function(){
 
+		$('.btnEstadistica').click(function() {
+			url = "estadistica.php?id=<?php echo $id; ?>";
+			$(location).attr('href',url);
+		});
+
 		<?php if (mysql_result($resultado,0,'observaciones') == 'Sin novedad') { ?>
 			$('#tieneincidencias').prop('checked',false);
 			$('#observaciones').prop('readonly',true);

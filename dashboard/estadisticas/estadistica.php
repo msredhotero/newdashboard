@@ -458,7 +458,7 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 
     	<div class="cuerpoBox" style="padding-right:10px;">
 
-			<button type="button" class="btn btn-primary waves-effect">
+			<button type="button" class="btn btn-primary waves-effect btnVolver">
 				<i class="material-icons">keyboard_backspace</i>
 				<span>VOLVER</span>
 			</button>
@@ -1614,13 +1614,13 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
                 <ul class="list-inline" style="margin-top:15px;">
 
                     <li>
-                        <button type="button" class="btn btn-primary" id="cargamasiva">Guardar Masivo</button>
+								<button type="button" class="btn bg-green waves-effect" id="validarmasivo"><i class="material-icons">done_all</i> <span>VALIDAR CARGA</span></button>
                     </li>
                     <li>
-                        <button type="button" class="btn btn-success" id="calcularMinutos">Calcular Minutos</button>
+							   <button type="button" class="btn bg-indigo waves-effect" id="calcularMinutos"><i class="material-icons">alarm_on</i> <span>CALCULAR MINUTOS</span></button>
                     </li>
                     <li>
-                        <button type="button" class="btn btn-default volver">Volver</button>
+                        <button type="button" class="btn btn-primary waves-effect btnVolver"><i class="material-icons">keyboard_backspace</i> <span>VOLVER</span></button>
                     </li>
                 </ul>
                 </div>
@@ -1633,6 +1633,57 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 
 
 </div><!-- fin del boxInfoLargoEstadisticas -->
+					</div>
+				</div>
+			</div>
+
+			<div class="row clearfix subirImagen">
+				<div class="col-xs-6 col-md-6 col-lg-6">
+					<a href="javascript:void(0);" class="thumbnail">
+						<img class="img-responsive">
+					</a>
+					<div id="example1"></div>
+
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="card">
+						<div class="header">
+							<h2>
+								CARGA LA PLANILLA AQUI
+							</h2>
+							<ul class="header-dropdown m-r--5">
+								<li class="dropdown">
+									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										<i class="material-icons">more_vert</i>
+									</a>
+									<ul class="dropdown-menu pull-right">
+										<li><a href="javascript:void(0);">Action</a></li>
+										<li><a href="javascript:void(0);">Another action</a></li>
+										<li><a href="javascript:void(0);">Something else here</a></li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<div class="body">
+
+							<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
+								<div class="dz-message">
+									<div class="drag-icon-cph">
+										<i class="material-icons">touch_app</i>
+									</div>
+									<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+
+								</div>
+								<div class="fallback">
+
+									<input name="file" type="file" id="archivos" />
+									<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
+									<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+
+
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -1705,7 +1756,6 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 </script>
 </form>
 
-
   <!-- use the modal component, pass in the prop -->
   <modal v-if="showModal" @close="showModal = false">
     <!--
@@ -1718,7 +1768,7 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 
 </main>
 
-<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../DataTables/datatables.min.js"></script>
 <script src="../../bootstrap/js/dataTables.bootstrap.js"></script>
 
 <script src="../../js/fnFilterClear.js"></script>
@@ -1731,6 +1781,102 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 				/*
 				$('#goles3').number( true, 2 );
 				$('#goles3').number( true, 2 );*/
+				$('.golesEA').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.golesEB').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.golescontraEA').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.golescontraEB').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.dorsalEA').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.dorsalEB').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.minutos').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('<?php echo $minutos; ?>');
+					}
+				});
+
+				$('.minutosEB').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('<?php echo $minutos; ?>');
+					}
+				});
+
+				$('.penalesconvertidosEA').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.penalesconvertidosEB').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.penalesatajados').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.penaleserrados').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.amarillas').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.rojas').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.informados').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
+				$('.dobleamarilla').on("keyup", function() {
+					if ($(this).val() == '') {
+						$(this).val('0');
+					}
+				});
+
 				$('.golesEB').each(function(intIndex){
 					$(this).number( true, 0 );
 				});
@@ -1768,9 +1914,8 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 				});
 
 
-
-
 				$('.golesEA').change(function(e) {
+
 					var acumulado = 0;
 					$('.golesEA').each(function(intIndex){
 						acumulado += parseInt($(this).val());
@@ -2036,7 +2181,10 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 
 	$(document).ready(function(){
 
-
+		$('.btnVolver').click(function() {
+			url = "index.php?id=<?php echo $id; ?>";
+			$(location).attr('href',url);
+		});
 
 
 	});
@@ -2119,7 +2267,7 @@ $(document).ready(function(){
 	var minutosPartido = <?php echo $minutos; ?>;
 	/*var table = $('#example dataTables_filter input');*/
 
-	var table = $('#example').dataTable({
+	var table = $('#example').DataTable({
 		"lengthMenu": [[30, 60 -1], [30, 60, "All"]],
 		"order": [[ 1, "asc" ]],
 		"language": {
@@ -2148,7 +2296,7 @@ $(document).ready(function(){
 	} );
 
 
-	var table2 = $('#example2').dataTable({
+	var table2 = $('#example2').DataTable({
 		"lengthMenu": [[30, 60 -1], [30, 60, "All"]],
 		"order": [[ 1, "asc" ]],
 		"language": {
@@ -2330,6 +2478,157 @@ $(document).ready(function(){
 			acumuladoB += parseInt($(this).val());
 		});
 		$('.resultadoB').html(acumuladoB);
+	});
+
+	function validarmasivo(goleslocalcalculado, golesvisitantecalculado, amarillaslocalcalculado, amarillasvisitantecalculado, expulsadoslocalcalculado, expulsadosvisitantecalculado, informadoslocalcalculado, informadosvisitantecalculado, dobleamarillaslocalcalculado, dobleamarillasvisitantecalculado, cantidadjugadoreslocalcalculado, cantidadjugadoresvisitantecalculado) {
+		$.ajax({
+			data:  {
+				idfixture: <?php echo $id; ?>,
+				/*goleslocal: <?php echo $goleslocal; ?>,
+				golesvisitante: <?php echo $golesvisitante; ?>,
+				amarillaslocal: <?php echo $amarillaslocal; ?>,
+				amarillasvisitante: <?php echo $amarillasvisitante; ?>,
+				expulsadoslocal: <?php echo $expulsadoslocal; ?>,
+				expulsadosvisitante: <?php echo $expulsadosvisitante; ?>,
+				informadoslocal: <?php echo $informadoslocal; ?>,
+				informadosvisitante: <?php echo $informadosvisitante; ?>,
+				dobleamarillaslocal: <?php echo $dobleamarillaslocal; ?>,
+				dobleamarillasvisitante: <?php echo $dobleamarillasvisitante; ?>,
+				cantidadjugadoreslocal: <?php echo $cantidadjugadoreslocal; ?>,
+				cantidadjugadoresvisitante: <?php echo $cantidadjugadoresvisitante; ?>,*/
+				goleslocalcalculado: goleslocalcalculado,
+				golesvisitantecalculado: golesvisitantecalculado,
+				amarillaslocalcalculado: amarillaslocalcalculado,
+				amarillasvisitantecalculado: amarillasvisitantecalculado,
+				expulsadoslocalcalculado: expulsadoslocalcalculado,
+				expulsadosvisitantecalculado: expulsadosvisitantecalculado,
+				informadoslocalcalculado: informadoslocalcalculado,
+				informadosvisitantecalculado: informadosvisitantecalculado,
+				dobleamarillaslocalcalculado: dobleamarillaslocalcalculado,
+				dobleamarillasvisitantecalculado: dobleamarillasvisitantecalculado,
+				cantidadjugadoreslocalcalculado: cantidadjugadoreslocalcalculado,
+				cantidadjugadoresvisitantecalculado: cantidadjugadoresvisitantecalculado,
+				accion: 'validarCargaMasiva'},
+			url:   '../../ajax/ajax.php',
+			type:  'post',
+			beforeSend: function () {
+				$('.validarmasivo').hide();
+			},
+			success:  function (response) {
+
+				$('.validarmasivo').show();
+				if (response.error) {
+					swal("Error!", response.data, "warning");
+				} else {
+					swal("Correcto!", response.data, "success");
+				}
+
+
+			}
+		});
+	}
+
+	$('#validarmasivo').click(function() {
+		var acumuladoGolesLocal = 0;
+
+		$('.golesEA').each(function(intIndex){
+			acumuladoGolesLocal += parseInt($(this).val());
+		});
+		$('.golescontraEB').each(function(intIndex){
+			acumuladoGolesLocal += parseInt($(this).val());
+		});
+		$('.penalesconvertidosEA').each(function(intIndex){
+			acumuladoGolesLocal += parseInt($(this).val());
+		});
+
+		var acumuladoGolesVisitante = 0;
+		$('.golesEB').each(function(intIndex){
+			acumuladoGolesVisitante += parseInt($(this).val());
+		});
+		$('.golescontraEA').each(function(intIndex){
+			acumuladoGolesVisitante += parseInt($(this).val());
+		});
+		$('.penalesconvertidosEB').each(function(intIndex){
+			acumuladoGolesVisitante += parseInt($(this).val());
+		});
+
+		var acumuladoDorsalesLocal = 0;
+		$('.dorsalEA').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoDorsalesLocal += 1;
+			}
+		});
+
+		var acumuladoDorsalesVisitante = 0;
+		$('.dorsalEB').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoDorsalesVisitante += 1;
+			}
+		});
+
+		var acumuladoAmarillasLocal = 0;
+		$('#example .amarillas').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoAmarillasLocal += 1;
+			}
+		});
+
+		var acumuladoAmarillasVisitante= 0;
+		$('#example2 .amarillas').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoAmarillasVisitante += 1;
+			}
+		});
+
+
+		var acumuladoRojasLocal = 0;
+		$('#example .rojas').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoRojasLocal += 1;
+			}
+		});
+
+		var acumuladoRojasVisitante = 0;
+		$('#example2 .rojas').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoRojasVisitante += 1;
+			}
+		});
+
+
+		var acumuladoInformadosLocal = 0;
+		$('#example .informados').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoInformadosLocal += 1;
+			}
+		});
+
+		var acumuladoInformadosVisitante = 0;
+		$('#example2 .informados').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoInformadosVisitante += 1;
+			}
+		});
+
+
+		var acumuladoDoblemarillaLocal = 0;
+		$('#example .dobleamarilla').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoDoblemarillaLocal += 1;
+			}
+		});
+
+		var acumuladoDoblemarillaVisitante = 0;
+		$('#example2 .dobleamarilla').each(function(intIndex){
+			if ($(this).val() > 0) {
+				acumuladoDoblemarillaVisitante += 1;
+			}
+		});
+
+
+		validarmasivo(acumuladoGolesLocal, acumuladoGolesVisitante, acumuladoAmarillasLocal, acumuladoAmarillasVisitante, acumuladoRojasLocal, acumuladoRojasVisitante, acumuladoInformadosLocal, acumuladoInformadosVisitante, acumuladoDoblemarillaLocal, acumuladoDoblemarillaVisitante, acumuladoDorsalesLocal, acumuladoDorsalesVisitante);
+
+
 	});
 
 
