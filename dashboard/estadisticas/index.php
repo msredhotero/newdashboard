@@ -126,8 +126,10 @@ $cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1)
 $resAr = $serviciosArbitros->traerArbitrosPorId($_SESSION['idarbitro_aif']);
 $cadAr = $serviciosFunciones->devolverSelectBoxActivo($resAr,array(1),'', $_SESSION['idarbitro_aif']);
 
+$resEstadoActual = mysql_result($resultado,0,'refestados');
+
 $refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('1,2');
-$cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', mysql_result($resultado,0,'refestados'));
+$cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', $resEstadoActual);
 
 //die(var_dump($cadEstados));
 
@@ -149,6 +151,12 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = mysql_result($resTemporadas,0,0);
 } else {
     $ultimaTemporada = 0;
+}
+
+if ($resEstadoActual == 2) {
+	$readonly = 'readonly';
+} else {
+	$readonly = '';
 }
 
 
@@ -312,7 +320,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Goles</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $goleslocal; ?>" type="text" class="form-control" id="goleslocal" name="goleslocal" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $goleslocal; ?>" type="text" class="form-control txtCarga" id="goleslocal" name="goleslocal" required/>
 
 									         		</div>
 									         	</div>
@@ -323,7 +331,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Amarillas</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $amarillaslocal; ?>" type="text" class="form-control" id="amarillaslocal" name="amarillaslocal" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $amarillaslocal; ?>" type="text" class="form-control txtCarga" id="amarillaslocal" name="amarillaslocal" required/>
 
 									         		</div>
 									         	</div>
@@ -334,7 +342,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Expulsados</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $expulsadoslocal; ?>" type="text" class="form-control" id="expulsadoslocal" name="expulsadoslocal" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $expulsadoslocal; ?>" type="text" class="form-control txtCarga" id="expulsadoslocal" name="expulsadoslocal" required/>
 
 									         		</div>
 									         	</div>
@@ -345,7 +353,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Informados</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $informadoslocal; ?>" type="text" class="form-control" id="informadoslocal" name="informadoslocal" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $informadoslocal; ?>" type="text" class="form-control txtCarga" id="informadoslocal" name="informadoslocal" required/>
 
 									         		</div>
 									         	</div>
@@ -356,7 +364,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Doble Amarillas</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $dobleamarillaslocal; ?>" type="text" class="form-control" id="dobleamarillaslocal" name="dobleamarillaslocal" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $dobleamarillaslocal; ?>" type="text" class="form-control txtCarga" id="dobleamarillaslocal" name="dobleamarillaslocal" required/>
 
 									         		</div>
 									         	</div>
@@ -367,7 +375,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Cantidad Jugadores</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $cantidadjugadoreslocal; ?>" type="text" class="form-control" id="cantidadjugadoreslocal" name="cantidadjugadoreslocal" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $cantidadjugadoreslocal; ?>" type="text" class="form-control txtCarga" id="cantidadjugadoreslocal" name="cantidadjugadoreslocal" required/>
 
 									         		</div>
 									         	</div>
@@ -384,7 +392,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Goles</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $golesvisitante; ?>" type="text" class="form-control" id="golesvisitante" name="golesvisitante" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $golesvisitante; ?>" type="text" class="form-control txtCarga" id="golesvisitante" name="golesvisitante" required/>
 
 									         		</div>
 									         	</div>
@@ -395,7 +403,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Amarillas</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $amarillasvisitante; ?>" type="text" class="form-control" id="amarillasvisitante" name="amarillasvisitante" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $amarillasvisitante; ?>" type="text" class="form-control txtCarga" id="amarillasvisitante" name="amarillasvisitante" required/>
 
 									         		</div>
 									         	</div>
@@ -406,7 +414,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Expulsados</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $expulsadosvisitante; ?>" type="text" class="form-control" id="expulsadosvisitante" name="expulsadosvisitante" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $expulsadosvisitante; ?>" type="text" class="form-control txtCarga" id="expulsadosvisitante" name="expulsadosvisitante" required/>
 
 									         		</div>
 									         	</div>
@@ -417,7 +425,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Informados</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $informadosvisitante; ?>" type="text" class="form-control" id="informadosvisitante" name="informadosvisitante" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $informadosvisitante; ?>" type="text" class="form-control txtCarga" id="informadosvisitante" name="informadosvisitante" required/>
 
 									         		</div>
 									         	</div>
@@ -428,7 +436,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Doble Amarillas</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $dobleamarillasvisitante; ?>" type="text" class="form-control" id="dobleamarillasvisitante" name="dobleamarillasvisitante" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $dobleamarillasvisitante; ?>" type="text" class="form-control txtCarga" id="dobleamarillasvisitante" name="dobleamarillasvisitante" required/>
 
 									         		</div>
 									         	</div>
@@ -439,7 +447,7 @@ if (mysql_num_rows($resTemporadas)>0) {
 									         	<label class="form-label">Cantidad Jugadores</label>
 									         	<div class="form-group">
 									         		<div class="form-line">
-									         			<input value="<?php echo $cantidadjugadoresvisitante; ?>" type="text" class="form-control" id="cantidadjugadoresvisitante" name="cantidadjugadoresvisitante" required/>
+									         			<input <?php echo $readonly; ?> value="<?php echo $cantidadjugadoresvisitante; ?>" type="text" class="form-control txtCarga" id="cantidadjugadoresvisitante" name="cantidadjugadoresvisitante" required/>
 
 									         		</div>
 									         	</div>
@@ -534,6 +542,13 @@ if (mysql_num_rows($resTemporadas)>0) {
 
 
 		<div class="row clearfix subirImagen">
+			<div class="col-xs-6 col-md-6 col-lg-6">
+				<a href="javascript:void(0);" class="thumbnail">
+					<img class="img-responsive">
+				</a>
+				<div id="example1"></div>
+
+			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="card">
 					<div class="header">
@@ -795,8 +810,11 @@ if (mysql_num_rows($resTemporadas)>0) {
 						if (data == '') {
 							if ($('#refestados').val() == 2) {
 								$('.btnEstadistica').show();
+								$('.txtCarga').attr('readonly', true);
+
 							} else {
 								$('.btnEstadistica').hide();
+								$('.txtCarga').attr('readonly', false);
 							}
 							swal({
 									title: "Respuesta",

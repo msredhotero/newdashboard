@@ -559,7 +559,7 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
                 </div>
 
                 <div class="col-md-6 col-xs-offset-6">
-                	<p style="color:#F03;">* Sino se encuentra cargado el Arbitro puede dar de alta haciendo click <a href="arbitros.php?idfixture=<?php echo $idFixture; ?>">aqui</a></p>
+
                 </div>
 
                 <div class="col-md-4">
@@ -2520,7 +2520,32 @@ $(document).ready(function(){
 				if (response.error) {
 					swal("Error!", response.data, "warning");
 				} else {
-					swal("Correcto!", response.data, "success");
+					swal({
+					  title: response.data + ', Desea guardar el partido?',
+					  text: "Una vez guardado finalizara su carga",
+					  type: "success",
+					  showCancelButton: true,
+					  confirmButtonColor: "#28a745",
+					  confirmButtonText: "Si, deseo guardar el partido",
+					  cancelButtonText: "No!",
+					  closeOnConfirm: false,
+					  closeOnCancel: false,
+					  showLoaderOnConfirm: true
+					},
+					function(isConfirm) {
+					  if (isConfirm) {
+						  $( ".formulario" ).submit();
+						  setTimeout(function () {
+						    swal("Partido Cargado Correctamente!", "El partido se cargo de manera correcto.", "success");
+						 }, 20000);
+
+
+					  } else {
+					    swal("Partido Sin Cargar!", "El partido no fue guardado", "error");
+					  }
+					});
+
+					//swal("Correcto!", response.data, "success");
 				}
 
 
