@@ -215,6 +215,20 @@ if ($resEstadoActual == 2) {
         .alert > i{ vertical-align: middle !important; }
 		  .pdfobject-container { height: 30rem; border: 1rem solid rgba(0,0,0,.1); }
 
+		  .thumbnail2 {
+		    display: block;
+		    padding: 4px;
+		    margin-bottom: 20px;
+		    line-height: 1.42857143;
+		    background-color: #fff;
+		    border: 1px solid #ddd;
+		    border-radius: 4px;
+		    -webkit-transition: border .2s ease-in-out;
+		    -o-transition: border .2s ease-in-out;
+		    transition: border .2s ease-in-out;
+			 text-align: center;
+		}
+
 
 	</style>
 
@@ -712,6 +726,58 @@ if ($resEstadoActual == 2) {
 
 </section>
 
+<?php
+if (count($filesPlanilla)<1) {
+?>
+<!-- Modal -->
+<div class="modal fade" id="myModalPlanilla" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Estado de la Planilla</h4>
+			</div>
+		<div class="modal-body">
+			<h1>Aun no se cargo la imagen de la planilla</h1>
+			<h3>Recuerde que debe cargar la planilla.</h3>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		</div>
+		</div>
+
+	</div>
+</div>
+<?php }  ?>
+
+<?php
+if (count($filesComplemento)<1) {
+?>
+<!-- Modal -->
+<div class="modal fade" id="myModalComplemento" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Estado del Complemento</h4>
+			</div>
+		<div class="modal-body">
+			<h1>Aun no se cargo la imagen del Complemento</h1>
+			<h3>Recuerde que debe cargar el Complemento.</h3>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		</div>
+		</div>
+
+	</div>
+</div>
+<?php }  ?>
+
 
 <?php echo $baseHTML->cargarArchivosJS('../../'); ?>
 <!-- Wait Me Plugin Js -->
@@ -906,6 +972,18 @@ if ($resEstadoActual == 2) {
 
 	$(document).ready(function(){
 
+		<?php
+		if (count($filesPlanilla)<1) {
+		?>
+		$('#myModalPlanilla').modal();
+		<?php } ?>
+
+		<?php
+		if (count($filesComplemento)<1) {
+		?>
+		$('#myModalComplemento').modal();
+		<?php } ?>
+
 		$('.btnEstadistica').click(function() {
 			url = "estadistica.php?id=<?php echo $id; ?>";
 			$(location).attr('href',url);
@@ -929,6 +1007,8 @@ if ($resEstadoActual == 2) {
 
 			}
 		});
+
+		$('.txtCarga').attr('readonly', false);
 
 
 		$('.frmNuevo').submit(function(e){
@@ -959,11 +1039,11 @@ if ($resEstadoActual == 2) {
 						if (data == '') {
 							if ($('#refestados').val() == 2) {
 								$('.btnEstadistica').show();
-								$('.txtCarga').attr('readonly', true);
+
 
 							} else {
 								$('.btnEstadistica').hide();
-								$('.txtCarga').attr('readonly', false);
+
 							}
 							swal({
 									title: "Respuesta",

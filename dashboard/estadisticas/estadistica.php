@@ -60,6 +60,30 @@ $eliminar = "eliminarPlanillasarbitros";
 $insertar = "insertarPlanillasarbitros";
 
 $tituloWeb = "Gestión: AIF";
+
+// Ruta del directorio donde están los archivos
+$path  = '../../arbitros/'.$id;
+
+if (!file_exists($path)) {
+	mkdir($path, 0777);
+}
+
+$pathPlanilla  = '../../arbitros/'.$id.'/1';
+
+if (!file_exists($pathPlanilla)) {
+	mkdir($pathPlanilla, 0777);
+}
+
+$pathPlanillaComplemento  = '../../arbitros/'.$id.'/2';
+
+if (!file_exists($pathPlanillaComplemento)) {
+	mkdir($pathPlanillaComplemento, 0777);
+}
+// Arreglo con todos los nombres de los archivos
+$filesPlanilla = array_diff(scandir($pathPlanilla), array('.', '..'));
+$filesComplemento = array_diff(scandir($pathPlanillaComplemento), array('.', '..'));
+
+
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
 // si ya cargue el partido
@@ -286,10 +310,10 @@ if ($_SESSION['idroll_aif'] == 1) {
 	}
 } else {
 	if ($existe == 0) {
-		$resEstados		= $serviciosArbitros->traerEstadospartidosArbitros();
+		$resEstados		= $serviciosArbitros->traerEstadospartidosArbitrosPorId(mysql_result($resultado,0,'refestadospartidos'));
 		$cadEstados		= $serviciosFunciones->devolverSelectBox($resEstados,array(1),'');
 	} else {
-		$resEstados		= $serviciosArbitros->traerEstadospartidosArbitros();
+		$resEstados		= $serviciosArbitros->traerEstadospartidosArbitrosPorId(mysql_result($resultado,0,'refestadospartidos'));
 		$cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1),'', mysql_result($resFix,0,'refestadospartidos'));
 
 		$estadoPartido	=	$serviciosReferencias->traerEstadospartidosPorId(mysql_result($resFix,0,'refestadospartidos'));
@@ -330,7 +354,7 @@ if (mysql_result($resFixDetalle,0,'refcanchas') == '') {
 }
 
 
-$refArbitros	=	$serviciosReferencias->traerArbitros();
+$refArbitros	=	$serviciosArbitros->traerArbitrosPorId($_SESSION['idarbitro_aif']);
 if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 	$cadArbitros	=	$serviciosFunciones->devolverSelectBox($refArbitros,array(1),'');
 } else {
@@ -547,7 +571,7 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
                 </div>
 				<div class="col-md-3">
                 	<p>Arbitro: <select data-placeholder="selecione el Arbitro..." id="refarbitros" name="refarbitros" class="chosen-select" tabindex="2" style="width:210px;">
-            								<option value=""></option>
+            							
 											<?php echo $cadArbitros; ?>
                                             </select></p>
                 </div>
@@ -586,7 +610,6 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
                         <label for="reftipodocumentos" class="control-label" style="text-align:left">Estado Partido</label>
                         <div class="input-group col-md-12">
                             <select class="form-control" id="refestadospartidos" name="refestadospartidos">
-                                <option value="0">-- Seleccionar --</option>
                                 <?php echo $cadEstados; ?>
                             </select>
                         </div>
@@ -1694,6 +1717,58 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 
 </section>
 
+<?php
+if (count($filesPlanilla)<1) {
+?>
+<!-- Modal -->
+<div class="modal fade" id="myModalPlanilla" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Estado de la Planilla</h4>
+			</div>
+		<div class="modal-body">
+			<h1>Aun no se cargo la imagen de la planilla</h1>
+			<h3>Recuerde que debe cargar la planilla.</h3>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		</div>
+		</div>
+
+	</div>
+</div>
+<?php }  ?>
+
+<?php
+if (count($filesComplemento)<1) {
+?>
+<!-- Modal -->
+<div class="modal fade" id="myModalComplemento" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Estado del Complemento</h4>
+			</div>
+		<div class="modal-body">
+			<h1>Aun no se cargo la imagen del Complemento</h1>
+			<h3>Recuerde que debe cargar el Complemento.</h3>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		</div>
+		</div>
+
+	</div>
+</div>
+<?php }  ?>
+
 
 <?php echo $baseHTML->cargarArchivosJS('../../'); ?>
 <!-- Wait Me Plugin Js -->
@@ -2655,6 +2730,18 @@ $(document).ready(function(){
 
 
 	});
+
+	<?php
+	if (count($filesPlanilla)<1) {
+	?>
+	$('#myModalPlanilla').modal();
+	<?php } ?>
+
+	<?php
+	if (count($filesComplemento)<1) {
+	?>
+	$('#myModalComplemento').modal();
+	<?php } ?>
 
 
 	//al enviar el formulario

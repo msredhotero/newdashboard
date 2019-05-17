@@ -130,10 +130,10 @@ class ServiciosArbitros {
    }
 
 
-   function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones,$imagen2,$type2) {
+   function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones) {
       $sql = "update dbplanillasarbitros
       set
-      refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillaslocal = ".$amarillaslocal.",expulsadoslocal = ".$expulsadoslocal.",informadoslocal = ".$informadoslocal.",dobleamarillaslocal = ".$dobleamarillaslocal.",amarillasvisitante = ".$amarillasvisitante.",expulsadosvisitante = ".$expulsadosvisitante.",informadosvisitante = ".$informadosvisitante.",dobleamarillasvisitante = ".$dobleamarillasvisitante.",cantidadjugadoreslocal = ".$cantidadjugadoreslocal.",cantidadjugadoresvisitante = ".$cantidadjugadoresvisitante.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."',imagen2 = '".$imagen2."',type2 = '".$type2."'
+      refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillaslocal = ".$amarillaslocal.",expulsadoslocal = ".$expulsadoslocal.",informadoslocal = ".$informadoslocal.",dobleamarillaslocal = ".$dobleamarillaslocal.",amarillasvisitante = ".$amarillasvisitante.",expulsadosvisitante = ".$expulsadosvisitante.",informadosvisitante = ".$informadosvisitante.",dobleamarillasvisitante = ".$dobleamarillasvisitante.",cantidadjugadoreslocal = ".$cantidadjugadoreslocal.",cantidadjugadoresvisitante = ".$cantidadjugadoresvisitante.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."'
       where reffixture =".$id;
       $res = $this->query($sql,0);
       return $res;
@@ -234,6 +234,28 @@ class ServiciosArbitros {
       ,e.contabilizalocal,e.contabilizavisitante
       from tbestadospartidos e
       where e.visibleparaarbitros = 1
+      order by 1";
+      $res = $this->query($sql,0);
+      return $res;
+   }
+
+   function traerEstadospartidosArbitrosPorId($id) {
+      $sql = "select
+      e.idestadopartido,
+      e.descripcion,
+      e.defautomatica,
+      e.goleslocalauto,
+      e.goleslocalborra,
+      e.golesvisitanteauto,
+      e.golesvisitanteborra,
+      e.puntoslocal,
+      e.puntosvisitante,
+      e.finalizado,
+      e.ocultardetallepublico,
+      e.visibleparaarbitros
+      ,e.contabilizalocal,e.contabilizavisitante
+      from tbestadospartidos e
+      where e.visibleparaarbitros = 1 and e.idestadopartido = ".$id."
       order by 1";
       $res = $this->query($sql,0);
       return $res;
