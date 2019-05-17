@@ -619,14 +619,14 @@ if ($resEstadoActual == 2) {
 		<div class="row clearfix subirImagen">
 			<div class="row">
 				<div class="col-xs-6 col-md-6 col-lg-6">
-					<a href="javascript:void(0);" class="thumbnail">
+					<a href="javascript:void(0);" class="thumbnail timagen1">
 						<img class="img-responsive">
 					</a>
 					<div id="example1"></div>
 
 				</div>
 				<div class="col-xs-6 col-md-6 col-lg-6">
-					<a href="javascript:void(0);" class="thumbnail2">
+					<a href="javascript:void(0);" class="thumbnail timagen2">
 						<img class="img-responsive2">
 					</a>
 					<div id="example2"></div>
@@ -895,8 +895,8 @@ if (count($filesComplemento)<1) {
 		});
 	}
 
-	traerImagen(1,'example1','thumbnail');
-	traerImagen(2,'example2','thumbnail2');
+	traerImagen(1,'example1','timagen1');
+	traerImagen(2,'example2','timagen2');
 
 
 
@@ -914,7 +914,7 @@ if (count($filesComplemento)<1) {
 						formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
 	         });
 				this.on('success', function( file, resp ){
-					traerImagen(1,'example1','thumbnail');
+					traerImagen(1,'example1','timagen1');
 					$('.lblPlanilla').hide();
 					swal("Correcto!", resp.replace("1", ""), "success");
 					$('.btnGuardar').show();
@@ -940,7 +940,7 @@ if (count($filesComplemento)<1) {
 						formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
 	         });
 				this.on('success', function( file, resp ){
-					traerImagen(2,'example2','thumbnail2');
+					traerImagen(2,'example2','timagen2');
 					$('.lblComplemento').hide();
 					swal("Correcto!", resp.replace("1", ""), "success");
 					$('.btnGuardar').show();
