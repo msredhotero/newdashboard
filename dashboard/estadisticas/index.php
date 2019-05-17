@@ -108,8 +108,21 @@ $path  = '../../arbitros/'.$id;
 if (!file_exists($path)) {
 	mkdir($path, 0777);
 }
+
+$pathPlanilla  = '../../arbitros/'.$id.'/1';
+
+if (!file_exists($pathPlanilla)) {
+	mkdir($pathPlanilla, 0777);
+}
+
+$pathPlanillaComplemento  = '../../arbitros/'.$id.'/2';
+
+if (!file_exists($pathPlanillaComplemento)) {
+	mkdir($pathPlanillaComplemento, 0777);
+}
 // Arreglo con todos los nombres de los archivos
-$files = array_diff(scandir($path), array('.', '..'));
+$filesPlanilla = array_diff(scandir($pathPlanilla), array('.', '..'));
+$filesComplemento = array_diff(scandir($pathPlanillaComplemento), array('.', '..'));
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
 $tabla 			= "dbplanillasarbitros";
@@ -128,7 +141,7 @@ $cadAr = $serviciosFunciones->devolverSelectBoxActivo($resAr,array(1),'', $_SESS
 
 $resEstadoActual = mysql_result($resultado,0,'refestados');
 
-$refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('1,2');
+$refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('2');
 $cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', $resEstadoActual);
 
 //die(var_dump($cadEstados));
@@ -473,13 +486,18 @@ if ($resEstadoActual == 2) {
 
 									   <div class="row">
 											<div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
-												<label for="tieneincidencias" class="control-label" style="text-align:left">Existen Incidencias</label>
-												<div class="switch">
-													<label><input type="checkbox" id="tieneincidencias"/><span class="lever switch-col-green"></span></label>
+												<label for="tieneincidencias" class="control-label" style="text-align:left">Lleva informe arbitral?.</label>
+												<div class="row clearfix">
+													<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+														<input type="checkbox" id="tieneincidencias" class="filled-in">
+			                                 <label for="tieneincidencias">Si - No</label>
+			                                 <br>
+													</div>
 												</div>
+
 											</div>
 									      <div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
-									      	<label for="observaciones" class="control-label" style="text-align:left">Incidencias</label>
+									      	<label for="observaciones" class="control-label" style="text-align:left">Escriba aqui el informe:</label>
 									      	<div class="input-group col-md-12">
 									      		<textarea type="text" rows="10" cols="6" class="form-control" id="observaciones" name="observaciones" placeholder="Ingrese el Observaciones..." required><?php echo mysql_result($resultado,0,'observaciones'); ?></textarea>
 									      	</div>
@@ -493,7 +511,7 @@ if ($resEstadoActual == 2) {
 								<div class="row">
 									<div class="col-xs-12 col-md-12 col-lg-12">
 										<div class="alert alert-info">
-											<p>Para continuar debe cambiar el estado a FINALIZADO y GUARDAR.</p>
+											<p>Para continuar debe GUARDAR la planilla. (caso contrario seguira en esta parte).</p>
 										</div>
 									</div>
 									<div class="col-xs-12 col-md-12 col-lg-12">
@@ -530,6 +548,49 @@ if ($resEstadoActual == 2) {
 							   	</div>
 								</div>
 
+								<div class="row">
+									<div class="col-xs-6 col-md-6 col-lg-6">
+										<?php
+										if (count($filesPlanilla)<1) {
+											$escondeAlertPlanilla = 'block';
+										} else {
+											$escondeAlertPlanilla = 'none';
+										}?>
+										<div class="alert alert-danger lblPlanilla" style="display: <?php echo $escondeAlertPlanilla; ?>;">
+											<h4>Debe cargar la imagen de la PLANILLA aqui abajo.</h4>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+										</div>
+
+									</div>
+									<div class="col-xs-6 col-md-6 col-lg-6">
+										<?php
+										if (count($filesComplemento)<1) {
+											$escondeAlertComplemento = '';
+										} else {
+											$escondeAlertComplemento = 'none';
+										}?>
+										<div class="alert alert-danger lblComplemento" style="display: <?php echo $escondeAlertComplemento; ?>;">
+											<h4>Debe cargar la imagen del COMPLEMENTO INFORME aqui abajo.</h4>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+											<i class="material-icons">arrow_downward</i>
+										</div>
+
+							   	</div>
+								</div>
+
 							</form>
 
 						</div>
@@ -542,54 +603,101 @@ if ($resEstadoActual == 2) {
 
 
 		<div class="row clearfix subirImagen">
-			<div class="col-xs-6 col-md-6 col-lg-6">
-				<a href="javascript:void(0);" class="thumbnail">
-					<img class="img-responsive">
-				</a>
-				<div id="example1"></div>
+			<div class="row">
+				<div class="col-xs-6 col-md-6 col-lg-6">
+					<a href="javascript:void(0);" class="thumbnail">
+						<img class="img-responsive">
+					</a>
+					<div id="example1"></div>
+
+				</div>
+				<div class="col-xs-6 col-md-6 col-lg-6">
+					<a href="javascript:void(0);" class="thumbnail2">
+						<img class="img-responsive2">
+					</a>
+					<div id="example2"></div>
+
+				</div>
 
 			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<div class="card">
-					<div class="header">
-						<h2>
-							CARGA LA PLANILLA AQUI
-						</h2>
-						<ul class="header-dropdown m-r--5">
-							<li class="dropdown">
-								<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-									<i class="material-icons">more_vert</i>
-								</a>
-								<ul class="dropdown-menu pull-right">
-									<li><a href="javascript:void(0);">Action</a></li>
-									<li><a href="javascript:void(0);">Another action</a></li>
-									<li><a href="javascript:void(0);">Something else here</a></li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-					<div class="body">
+			<div class="row">
 
-						<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
-							<div class="dz-message">
-								<div class="drag-icon-cph">
-									<i class="material-icons">touch_app</i>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+					<div class="card">
+						<div class="header">
+							<h2>
+								CARGA LA PLANILLA AQUI
+							</h2>
+							<ul class="header-dropdown m-r--5">
+								<li class="dropdown">
+									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										<i class="material-icons">more_vert</i>
+									</a>
+
+								</li>
+							</ul>
+						</div>
+						<div class="body">
+
+							<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
+								<div class="dz-message">
+									<div class="drag-icon-cph">
+										<i class="material-icons">touch_app</i>
+									</div>
+									<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+
 								</div>
-								<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+								<div class="fallback">
 
-							</div>
-							<div class="fallback">
-
-								<input name="file" type="file" id="archivos" />
-								<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
-								<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+									<input name="file" type="file" id="archivos" />
+									<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
+									<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
 
 
-							</div>
-						</form>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+					<div class="card">
+						<div class="header">
+							<h2>
+								CARGA EL COMPLEMENTO INFORME AQUI
+							</h2>
+							<ul class="header-dropdown m-r--5">
+								<li class="dropdown">
+									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+										<i class="material-icons">more_vert</i>
+									</a>
+
+								</li>
+							</ul>
+						</div>
+						<div class="body">
+
+							<form action="subircomplemento.php" id="frmFileUpload2" class="dropzone" method="post" enctype="multipart/form-data">
+								<div class="dz-message">
+									<div class="drag-icon-cph">
+										<i class="material-icons">touch_app</i>
+									</div>
+									<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+
+								</div>
+								<div class="fallback">
+
+									<input name="file" type="file" id="archivos2" />
+									<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
+									<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+
+
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
+
 		</div>
 
 
@@ -687,10 +795,11 @@ if ($resEstadoActual == 2) {
 <script>
 
 
-	function traerImagen() {
+	function traerImagen(archivo, contenedorpdf, contenedor) {
 		$.ajax({
 			data:  {idfixture: <?php echo $id; ?>,
 					idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>,
+					archivo: archivo,
 					accion: 'traerArchivoPlanillaPorArbitroFixture'},
 			url:   '../../ajax/ajax.php',
 			type:  'post',
@@ -702,22 +811,26 @@ if ($resEstadoActual == 2) {
 
 				if (response.datos.type != '') {
 					if (cadena.indexOf("pdf") > -1) {
-						PDFObject.embed(response.datos.imagen, "#example1");
-						$('#example1').show();
-						$(".thumbnail").hide();
+						PDFObject.embed(response.datos.imagen, "#"+contenedorpdf);
+						$('#'+contenedorpdf).show();
+						$("."+contenedor).hide();
+
 					} else {
-						$(".thumbnail img").attr("src",response.datos.imagen);
-						$(".thumbnail").show();
-						$('#example1').hide();
+						$("." + contenedor + " img").attr("src",response.datos.imagen);
+						$("."+contenedor).show();
+						$('#'+contenedorpdf).hide();
 					}
+
 				}
+
+
 
 			}
 		});
 	}
 
-	traerImagen();
-
+	traerImagen(1,'example1','thumbnail');
+	traerImagen(2,'example2','thumbnail2');
 
 
 
@@ -735,7 +848,34 @@ if ($resEstadoActual == 2) {
 						formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
 	         });
 				this.on('success', function( file, resp ){
-					traerImagen();
+					traerImagen(1,'example1','thumbnail');
+					$('.lblPlanilla').hide();
+					swal("Correcto!", resp.replace("1", ""), "success");
+					$('.btnGuardar').show();
+					$('.infoPlanilla').hide();
+				});
+
+				this.on('error', function( file, resp ){
+					swal("Error!", resp.replace("1", ""), "warning");
+				});
+			}
+		};
+
+
+		Dropzone.options.frmFileUpload2 = {
+			maxFilesize: 30,
+			acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
+			accept: function(file, done) {
+				done();
+			},
+			init: function() {
+				this.on("sending", function(file, xhr, formData){
+	               formData.append("idfixture", '<?php echo $id; ?>');
+						formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
+	         });
+				this.on('success', function( file, resp ){
+					traerImagen(2,'example2','thumbnail2');
+					$('.lblComplemento').hide();
 					swal("Correcto!", resp.replace("1", ""), "success");
 					$('.btnGuardar').show();
 					$('.infoPlanilla').hide();
@@ -753,6 +893,15 @@ if ($resEstadoActual == 2) {
 	          idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>
 	      },
 			url: 'subir.php'
+		});
+
+
+		var myDropzone2 = new Dropzone("#archivos2", {
+			params: {
+	          idfixture: <?php echo $id; ?>,
+	          idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>
+	      },
+			url: 'subircomplemento.php'
 		});
 
 	$(document).ready(function(){

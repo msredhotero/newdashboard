@@ -551,6 +551,7 @@ switch ($accion) {
 
       $idfixture = $_POST['idfixture'];
       $idarbitro = $_POST['idarbitro'];
+      $archivo = $_POST['archivo'];
 
       $resV['datos'] = '';
       $resV['error'] = false;
@@ -565,17 +566,32 @@ switch ($accion) {
          */
 
          //desarrollo
-         if (mysql_result($resFoto,0,'type') == '') {
-            $imagen = '../../imagenes/sin_img.jpg';
+         if ($archivo == 1) {
+            if (mysql_result($resFoto,0,'type') == '') {
+               $imagen = '../../imagenes/sin_img.jpg';
 
+               $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
+               $resV['error'] = false;
+            } else {
+               $imagen = '../../arbitros/'.$idfixture.'/1/'.mysql_result($resFoto,0,'imagen');
+               $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type'));
 
-            $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
-            $resV['error'] = false;
+               $resV['error'] = false;
+            }
          } else {
-            $imagen = '../../arbitros/'.$idfixture.'/'.mysql_result($resFoto,0,'imagen');
-            $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type'));
-            $resV['error'] = false;
+            if (mysql_result($resFoto,0,'type2') == '') {
+               $imagen = '../../imagenes/sin_img.jpg';
+
+               $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
+               $resV['error'] = false;
+            } else {
+               $imagen = '../../arbitros/'.$idfixture.'/2/'.mysql_result($resFoto,0,'imagen2');
+               $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type2'));
+
+               $resV['error'] = false;
+            }
          }
+
 
       } else {
          $imagen = '../../imagenes/sin_img.jpg';

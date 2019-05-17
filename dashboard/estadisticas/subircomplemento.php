@@ -43,7 +43,7 @@
 
 		$resPlanilla = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture);
 
-		$archivoAnterior = mysql_result($resPlanilla,0,'imagen');
+		$archivoAnterior = mysql_result($resPlanilla,0,'imagen2');
 
 		$imagen = $serviciosReferencias->sanear_string(basename($archivo['name']));
 		$type = $archivo["type"];
@@ -55,7 +55,7 @@
 		// produccion
 		//$dir_destino = 'https://www.saupureinconsulting.com.ar/aifzn/data/'.mysql_result($resFoto,0,'iddocumentacionjugadorimagen').'/';
 
-		$imagen_subida = $dir_destino.'/1/'.$name;
+		$imagen_subida = $dir_destino.'/2/'.$name;
 
 		// desarrollo
 		$nuevo_noentrar = '../../arbitros/index.php';
@@ -67,8 +67,8 @@
 			mkdir($dir_destino, 0777);
 		}
 
-		if (!file_exists($dir_destino.'/1/')) {
-			mkdir($dir_destino.'/1/', 0777);
+		if (!file_exists($dir_destino.'/2/')) {
+			mkdir($dir_destino.'/2/', 0777);
 		}
 
 
@@ -83,11 +83,11 @@
 			}
 			*/
 			// update a la tabla dbplanillasarbitros
-			$serviciosArbitros->actualizarArchivoPlanilla(mysql_result($resPlanilla,0,0),$name,$type);
+			$serviciosArbitros->actualizarArchivoPlanillaComplemento(mysql_result($resPlanilla,0,0),$name,$type);
 
 			//borro el archivo anterior
 			if ($archivoAnterior != '') {
-				unlink($dir_destino.'/1/'.$archivoAnterior);
+				unlink($dir_destino.'/2/'.$archivoAnterior);
 			}
 
 

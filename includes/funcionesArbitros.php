@@ -42,6 +42,13 @@ class ServiciosArbitros {
       return $res;
    }
 
+   function actualizarArchivoPlanillaComplemento($id, $archivo, $type) {
+      $sql = "update dbplanillasarbitros set imagen2 = '".$archivo."', type2 = '".$type."' where idplanillaarbitro = ".$id;
+
+      $res = $this->query($sql,0);
+      return $res;
+   }
+
    function traerPartidosPorArbitrosFechas($idarbitro) {
       $sql = "SELECT
              f.idfixture, f.fecha as fechajuego, concat( el.nombre, ' vs ' , ev.nombre) partido, fe.fecha, cat.categoria, di.division
@@ -115,18 +122,18 @@ class ServiciosArbitros {
       return $res;
    }
 
-   function insertarPlanillasarbitros($reffixture,$refarbitros,$imagen,$type,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$observaciones) {
-      $sql = "insert into dbplanillasarbitros(idplanillaarbitro,reffixture,refarbitros,imagen,type,goleslocal,golesvisitante,amarillas,expulsados,informados,dobleamarillas,refestadospartidos,observaciones)
-      values ('',".$reffixture.",".$refarbitros.",'".$imagen."','".$type."',".$goleslocal.",".$golesvisitante.",".$amarillas.",".$expulsados.",".$informados.",".$dobleamarillas.",".$refestadospartidos.",'".$observaciones."')";
+   function insertarPlanillasarbitros($reffixture,$refarbitros,$imagen,$type,$goleslocal,$golesvisitante,$amarillas,$expulsados,$informados,$dobleamarillas,$refestadospartidos,$observaciones,$imagen2,$type2) {
+      $sql = "insert into dbplanillasarbitros(idplanillaarbitro,reffixture,refarbitros,imagen,type,goleslocal,golesvisitante,amarillas,expulsados,informados,dobleamarillas,refestadospartidos,observaciones,imagen2,type2)
+      values ('',".$reffixture.",".$refarbitros.",'".$imagen."','".$type."',".$goleslocal.",".$golesvisitante.",".$amarillas.",".$expulsados.",".$informados.",".$dobleamarillas.",".$refestadospartidos.",'".$observaciones."','".$imagen2."','".$type2."')";
       $res = $this->query($sql,1);
       return $res;
    }
 
 
-   function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones) {
+   function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones,$imagen2,$type2) {
       $sql = "update dbplanillasarbitros
       set
-      refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillaslocal = ".$amarillaslocal.",expulsadoslocal = ".$expulsadoslocal.",informadoslocal = ".$informadoslocal.",dobleamarillaslocal = ".$dobleamarillaslocal.",amarillasvisitante = ".$amarillasvisitante.",expulsadosvisitante = ".$expulsadosvisitante.",informadosvisitante = ".$informadosvisitante.",dobleamarillasvisitante = ".$dobleamarillasvisitante.",cantidadjugadoreslocal = ".$cantidadjugadoreslocal.",cantidadjugadoresvisitante = ".$cantidadjugadoresvisitante.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."'
+      refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillaslocal = ".$amarillaslocal.",expulsadoslocal = ".$expulsadoslocal.",informadoslocal = ".$informadoslocal.",dobleamarillaslocal = ".$dobleamarillaslocal.",amarillasvisitante = ".$amarillasvisitante.",expulsadosvisitante = ".$expulsadosvisitante.",informadosvisitante = ".$informadosvisitante.",dobleamarillasvisitante = ".$dobleamarillasvisitante.",cantidadjugadoreslocal = ".$cantidadjugadoreslocal.",cantidadjugadoresvisitante = ".$cantidadjugadoresvisitante.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."',imagen2 = '".$imagen2."',type2 = '".$type2."'
       where reffixture =".$id;
       $res = $this->query($sql,0);
       return $res;
@@ -154,7 +161,9 @@ class ServiciosArbitros {
       p.informados,
       p.dobleamarillas,
       p.refestadospartidos,
-      p.observaciones
+      p.observaciones,
+      p.imagen2,
+      p.type2
       from dbplanillasarbitros p
       order by 1";
       $res = $this->query($sql,0);
@@ -182,7 +191,9 @@ class ServiciosArbitros {
       p.cantidadjugadoresvisitante,
       p.refestadospartidos,
       p.observaciones,
-      p.refestados
+      p.refestados,
+      p.imagen2,
+      p.type2
       from dbplanillasarbitros p
       where p.reffixture = ".$id;
       $res = $this->query($sql,0);
@@ -191,7 +202,7 @@ class ServiciosArbitros {
 
 
    function traerPlanillasarbitrosPorId($id) {
-      $sql = "select idplanillaarbitro,reffixture,refarbitros,imagen,type,goleslocal,golesvisitante,amarillas,expulsados,informados,dobleamarillas,refestadospartidos,observaciones from dbplanillasarbitros where idplanillaarbitro =".$id;
+      $sql = "select idplanillaarbitro,reffixture,refarbitros,imagen,type,goleslocal,golesvisitante,amarillas,expulsados,informados,dobleamarillas,refestadospartidos,observaciones,imagen2,type2 from dbplanillasarbitros where idplanillaarbitro =".$id;
       $res = $this->query($sql,0);
       return $res;
    }
