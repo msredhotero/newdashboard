@@ -571,7 +571,7 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
                 </div>
 				<div class="col-md-3">
                 	<p>Arbitro: <select data-placeholder="selecione el Arbitro..." id="refarbitros" name="refarbitros" class="chosen-select" tabindex="2" style="width:210px;">
-            							
+
 											<?php echo $cadArbitros; ?>
                                             </select></p>
                 </div>
@@ -1661,55 +1661,105 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 			</div>
 
 			<div class="row clearfix subirImagen">
-				<div class="col-xs-6 col-md-6 col-lg-6">
-					<a href="javascript:void(0);" class="thumbnail">
-						<img class="img-responsive">
-					</a>
-					<div id="example1"></div>
+				<div class="row">
+					<div class="col-xs-6 col-md-6 col-lg-6">
+						<a href="javascript:void(0);" class="thumbnail timagen1">
+							<img class="img-responsive">
+						</a>
+						<div id="example1"></div>
+
+					</div>
+					<div class="col-xs-6 col-md-6 col-lg-6">
+						<a href="javascript:void(0);" class="thumbnail timagen2">
+							<img class="img-responsive2">
+						</a>
+						<div id="example2"></div>
+
+					</div>
 
 				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="card">
-						<div class="header">
-							<h2>
-								CARGA LA PLANILLA AQUI
-							</h2>
-							<ul class="header-dropdown m-r--5">
-								<li class="dropdown">
-									<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-										<i class="material-icons">more_vert</i>
-									</a>
-									<ul class="dropdown-menu pull-right">
-										<li><a href="javascript:void(0);">Action</a></li>
-										<li><a href="javascript:void(0);">Another action</a></li>
-										<li><a href="javascript:void(0);">Something else here</a></li>
-									</ul>
-								</li>
-							</ul>
-						</div>
-						<div class="body">
+				<div class="row">
 
-							<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
-								<div class="dz-message">
-									<div class="drag-icon-cph">
-										<i class="material-icons">touch_app</i>
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+						<div class="card">
+							<div class="header">
+								<h2>
+									CARGA LA PLANILLA AQUI
+								</h2>
+								<ul class="header-dropdown m-r--5">
+									<li class="dropdown">
+										<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+											<i class="material-icons">more_vert</i>
+										</a>
+
+									</li>
+								</ul>
+							</div>
+							<div class="body">
+
+								<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
+									<div class="dz-message">
+										<div class="drag-icon-cph">
+											<i class="material-icons">touch_app</i>
+										</div>
+										<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+
 									</div>
-									<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+									<div class="fallback">
 
-								</div>
-								<div class="fallback">
-
-									<input name="file" type="file" id="archivos" />
-									<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
-									<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+										<input name="file" type="file" id="archivos" />
+										<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
+										<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
 
 
-								</div>
-							</form>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+						<div class="card">
+							<div class="header">
+								<h2>
+									CARGA EL COMPLEMENTO INFORME AQUI
+								</h2>
+								<ul class="header-dropdown m-r--5">
+									<li class="dropdown">
+										<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+											<i class="material-icons">more_vert</i>
+										</a>
+
+									</li>
+								</ul>
+							</div>
+							<div class="body">
+
+								<form action="subircomplemento.php" id="frmFileUpload2" class="dropzone" method="post" enctype="multipart/form-data">
+									<div class="dz-message">
+										<div class="drag-icon-cph">
+											<i class="material-icons">touch_app</i>
+										</div>
+										<h3>Arrastre y suelte una imagen O PDF aqui o haga click y busque una imagen en su ordenador.</h3>
+
+									</div>
+									<div class="fallback">
+
+										<input name="file" type="file" id="archivos2" />
+										<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
+										<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+
+
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
+
 			</div>
+
+
+
 		</div>
 	</div>
 
@@ -2186,37 +2236,42 @@ if (count($filesComplemento)<1) {
 <script>
 
 
-	function traerImagen() {
-		$.ajax({
-			data:  {idfixture: <?php echo $id; ?>,
-					idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>,
-					accion: 'traerArchivoPlanillaPorArbitroFixture'},
-			url:   '../../ajax/ajax.php',
-			type:  'post',
-			beforeSend: function () {
+function traerImagen(archivo, contenedorpdf, contenedor) {
+	$.ajax({
+		data:  {idfixture: <?php echo $id; ?>,
+				idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>,
+				archivo: archivo,
+				accion: 'traerArchivoPlanillaPorArbitroFixture'},
+		url:   '../../ajax/ajax.php',
+		type:  'post',
+		beforeSend: function () {
 
-			},
-			success:  function (response) {
-				var cadena = response.datos.type.toLowerCase();
+		},
+		success:  function (response) {
+			var cadena = response.datos.type.toLowerCase();
 
-				if (response.datos.type != '') {
-					if (cadena.indexOf("pdf") > -1) {
-						PDFObject.embed(response.datos.imagen, "#example1");
-						$('#example1').show();
-						$(".thumbnail").hide();
-					} else {
-						$(".thumbnail img").attr("src",response.datos.imagen);
-						$(".thumbnail").show();
-						$('#example1').hide();
-					}
+			if (response.datos.type != '') {
+				if (cadena.indexOf("pdf") > -1) {
+					PDFObject.embed(response.datos.imagen, "#"+contenedorpdf);
+					$('#'+contenedorpdf).show();
+					$("."+contenedor).hide();
+
+				} else {
+					$("." + contenedor + " img").attr("src",response.datos.imagen);
+					$("."+contenedor).show();
+					$('#'+contenedorpdf).hide();
 				}
 
 			}
-		});
-	}
 
-	traerImagen();
 
+
+		}
+	});
+}
+
+traerImagen(1,'example1','timagen1');
+traerImagen(2,'example2','timagen2');
 
 
 
@@ -2234,7 +2289,34 @@ if (count($filesComplemento)<1) {
 					formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
 			});
 			this.on('success', function( file, resp ){
-				traerImagen();
+				traerImagen(1,'example1','timagen1');
+				$('.lblPlanilla').hide();
+				swal("Correcto!", resp.replace("1", ""), "success");
+				$('.btnGuardar').show();
+				$('.infoPlanilla').hide();
+			});
+
+			this.on('error', function( file, resp ){
+				swal("Error!", resp.replace("1", ""), "warning");
+			});
+		}
+	};
+
+
+	Dropzone.options.frmFileUpload2 = {
+		maxFilesize: 30,
+		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
+		accept: function(file, done) {
+			done();
+		},
+		init: function() {
+			this.on("sending", function(file, xhr, formData){
+					formData.append("idfixture", '<?php echo $id; ?>');
+					formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
+			});
+			this.on('success', function( file, resp ){
+				traerImagen(2,'example2','timagen2');
+				$('.lblComplemento').hide();
 				swal("Correcto!", resp.replace("1", ""), "success");
 				$('.btnGuardar').show();
 				$('.infoPlanilla').hide();
@@ -2252,6 +2334,15 @@ if (count($filesComplemento)<1) {
 			 idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>
 		},
 		url: 'subir.php'
+	});
+
+
+	var myDropzone2 = new Dropzone("#archivos2", {
+		params: {
+			 idfixture: <?php echo $id; ?>,
+			 idarbitro: <?php echo $_SESSION['idarbitro_aif']; ?>
+		},
+		url: 'subircomplemento.php'
 	});
 
 	$(document).ready(function(){
@@ -2732,16 +2823,18 @@ $(document).ready(function(){
 	});
 
 	<?php
+	if (count($filesComplemento)<1) {
+	?>
+	$('#myModalComplemento').modal();
+	<?php } ?>
+
+	<?php
 	if (count($filesPlanilla)<1) {
 	?>
 	$('#myModalPlanilla').modal();
 	<?php } ?>
 
-	<?php
-	if (count($filesComplemento)<1) {
-	?>
-	$('#myModalComplemento').modal();
-	<?php } ?>
+
 
 
 	//al enviar el formulario

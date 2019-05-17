@@ -65,6 +65,29 @@ $tituloWeb = "Gestión: AIF";
 
 
 $idFixture = $_POST['idfixture'];
+
+$path  = '../../arbitros/'.$idFixture;
+
+if (!file_exists($path)) {
+	mkdir($path, 0777);
+}
+
+$pathPlanilla  = '../../arbitros/'.$idFixture.'/1';
+
+if (!file_exists($pathPlanilla)) {
+	mkdir($pathPlanilla, 0777);
+}
+
+$pathPlanillaComplemento  = '../../arbitros/'.$idFixture.'/2';
+
+if (!file_exists($pathPlanillaComplemento)) {
+	mkdir($pathPlanillaComplemento, 0777);
+}
+// Arreglo con todos los nombres de los archivos
+$filesPlanilla = array_diff(scandir($pathPlanilla), array('.', '..'));
+$filesComplemento = array_diff(scandir($pathPlanillaComplemento), array('.', '..'));
+
+
 //die(var_dump($idFixture));
 $resFix = $serviciosReferencias->TraerFixturePorId($idFixture);
 
@@ -1942,7 +1965,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 					<div id="example1"></div>
 
 				</div>
-				
+
 			</div>
     </div>
 
@@ -1959,6 +1982,59 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 
 
 </section>
+
+
+<?php
+if (count($filesPlanilla)<1) {
+?>
+<!-- Modal -->
+<div class="modal fade" id="myModalPlanilla" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Estado de la Planilla</h4>
+			</div>
+		<div class="modal-body">
+			<h1>Aun no se cargo la imagen de la planilla</h1>
+			<h3>Recuerde que debe cargar la planilla.</h3>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		</div>
+		</div>
+
+	</div>
+</div>
+<?php }  ?>
+
+<?php
+if (count($filesComplemento)<1) {
+?>
+<!-- Modal -->
+<div class="modal fade" id="myModalComplemento" role="dialog">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Estado del Complemento</h4>
+			</div>
+		<div class="modal-body">
+			<h1>Aun no se cargo la imagen del Complemento</h1>
+			<h3>Recuerde que debe cargar el Complemento.</h3>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		</div>
+		</div>
+
+	</div>
+</div>
+<?php }  ?>
 
 
 <?php echo $baseHTML->cargarArchivosJS('../../'); ?>
@@ -2497,6 +2573,20 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+	<?php
+	if (count($filesComplemento)<1) {
+	?>
+	$('#myModalComplemento').modal();
+	<?php } ?>
+
+	<?php
+	if (count($filesPlanilla)<1) {
+	?>
+	$('#myModalPlanilla').modal();
+	<?php } ?>
+
+
 
 	$('#colapsarMenu').click();
 	var minutosPartido = <?php echo $minutos; ?>;

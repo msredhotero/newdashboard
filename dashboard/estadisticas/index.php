@@ -972,16 +972,18 @@ if (count($filesComplemento)<1) {
 
 	$(document).ready(function(){
 
-		<?php
-		if (count($filesPlanilla)<1) {
-		?>
-		$('#myModalPlanilla').modal();
-		<?php } ?>
+
 
 		<?php
 		if (count($filesComplemento)<1) {
 		?>
 		$('#myModalComplemento').modal();
+		<?php } ?>
+
+		<?php
+		if (count($filesPlanilla)<1) {
+		?>
+		$('#myModalPlanilla').modal();
 		<?php } ?>
 
 		$('.btnEstadistica').click(function() {
