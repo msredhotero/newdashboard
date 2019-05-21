@@ -1673,7 +1673,7 @@ $resCambioVisitante = $serviciosReferencias->traerCambiosPorFixtureEquipo($idFix
 						<a href="javascript:void(0);" class="thumbnail timagen2">
 							<img class="img-responsive2">
 						</a>
-						<div id="example2"></div>
+						<div id="example3"></div>
 
 					</div>
 
@@ -2271,7 +2271,7 @@ function traerImagen(archivo, contenedorpdf, contenedor) {
 }
 
 traerImagen(1,'example1','timagen1');
-traerImagen(2,'example2','timagen2');
+traerImagen(2,'example3','timagen2');
 
 
 
@@ -2315,7 +2315,7 @@ traerImagen(2,'example2','timagen2');
 					formData.append("idarbitro", '<?php echo $_SESSION['idarbitro_aif']; ?>');
 			});
 			this.on('success', function( file, resp ){
-				traerImagen(2,'example2','timagen2');
+				traerImagen(2,'example3','timagen2');
 				$('.lblComplemento').hide();
 				swal("Correcto!", resp.replace("1", ""), "success");
 				$('.btnGuardar').show();

@@ -664,8 +664,8 @@ if ($resEstadoActual == 2) {
 								<div class="fallback">
 
 									<input name="file" type="file" id="archivos" />
-									<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
-									<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+									<input type="hidden" id="idfixture" name="idfixture" value="<?php echo $id; ?>" />
+
 
 
 								</div>
@@ -701,8 +701,8 @@ if ($resEstadoActual == 2) {
 								<div class="fallback">
 
 									<input name="file" type="file" id="archivos2" />
-									<input type="hidden" id="idjugador" name="idjugador" value="<?php echo mysql_result($resResultado,0,'idjugador'); ?>" />
-									<input type="hidden" id="iddocumentacion" name="iddocumentacion" value="<?php echo $idDocumentacion; ?>" />
+									<input type="hidden" id="idfixture" name="idfixture" value="<?php echo $id; ?>" />
+
 
 
 								</div>
