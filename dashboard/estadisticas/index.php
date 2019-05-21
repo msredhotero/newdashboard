@@ -855,7 +855,7 @@ if (count($filesComplemento)<1) {
 
 </main>
 
-
+<script src="../../js/jquery.number.js"></script>
 
 
 <script>
@@ -999,6 +999,10 @@ if (count($filesComplemento)<1) {
 			$('#observaciones').prop('readonly',false);
 
 		<?php } ?>
+
+		$('.txtCarga').each(function(intIndex){
+			$(this).number( true, 0 ,'','');
+		});
 
 		$('#tieneincidencias').change(function() {
 			if ($(this).prop('checked')) {
