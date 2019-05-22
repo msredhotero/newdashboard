@@ -1014,6 +1014,12 @@ if (count($filesComplemento)<1) {
 			}
 		});
 
+		function validaCantidadJugadores(estado) {
+			var errorEstado = 0;
+
+			
+		}
+
 		$('.txtCarga').attr('readonly', false);
 
 
