@@ -1014,78 +1014,130 @@ if (count($filesComplemento)<1) {
 			}
 		});
 
-		function validaCantidadJugadores(estado) {
+		function validaCantidadJugadores(idestado) {
 			var errorEstado = 0;
+			var lblError = '';
 
+			if (idestado < 15) {
+				if ($('#cantidadjugadoreslocal').val() == 0) {
+					errorEstado = 1;
+					lblError += 'La cantidad de jugadores local debe ser mayor a cero. \n\
+					\
+					';
+				}
+
+				if ($('#cantidadjugadoresvisitante').val() == 0) {
+					errorEstado = 1;
+					lblError += 'La cantidad de jugadores vistante debe ser mayor a cero. \
+					\
+					';
+				}
+			}
+
+			if (errorEstado == 1) {
+				swal({
+						title: "Respuesta",
+						text: lblError,
+						type: "error",
+						timer: 2500,
+						showConfirmButton: false
+				});
+
+				return false;
+			} else {
+				return true;
+			}
 
 		}
 
 		$('.txtCarga').attr('readonly', false);
 
+		$('.btnGuardar44').click(function() {
+			/*
+			if (validaCantidadJugadores($('#refestadospartidos').val())) {
 
-		$('.frmNuevo').submit(function(e){
+				$("#sign_in").submit(function() {
+
+				});
+			}
+			*/
+			guardar();
+		});
+
+
+		$('#sign_in').submit(function(e){
 
 			e.preventDefault();
-         if ($('#sign_in')[0].checkValidity()) {
-				//información del formulario
-				var formData = new FormData($(".formulario")[0]);
-				var message = "";
-				//hacemos la petición ajax
-				$.ajax({
-					url: '../../ajax/ajax.php',
-					type: 'POST',
-					// Form data
-					//datos del formulario
-					data: formData,
-					//necesario para subir archivos via ajax
-					cache: false,
-					contentType: false,
-					processData: false,
-					//mientras enviamos el archivo
-					beforeSend: function(){
+			if (validaCantidadJugadores($('#refestadospartidos').val())) {
 
-					},
-					//una vez finalizado correctamente
-					success: function(data){
 
-						if (data == '') {
-							if ($('#refestados').val() == 2) {
-								$('.btnEstadistica').show();
+				if ($('#sign_in')[0].checkValidity()) {
 
+
+					//información del formulario
+					var formData = new FormData($(".formulario")[0]);
+					var message = "";
+					//hacemos la petición ajax
+					$.ajax({
+						url: '../../ajax/ajax.php',
+						type: 'POST',
+						// Form data
+						//datos del formulario
+						data: formData,
+						//necesario para subir archivos via ajax
+						cache: false,
+						contentType: false,
+						processData: false,
+						//mientras enviamos el archivo
+						beforeSend: function(){
+
+						},
+						//una vez finalizado correctamente
+						success: function(data){
+
+							if (data == '') {
+								if ($('#refestados').val() == 2) {
+									$('.btnEstadistica').show();
+
+
+								} else {
+									$('.btnEstadistica').hide();
+
+								}
+								swal({
+										title: "Respuesta",
+										text: "Registro Creado con exito!!",
+										type: "success",
+										timer: 1500,
+										showConfirmButton: false
+								});
 
 							} else {
-								$('.btnEstadistica').hide();
+								swal({
+										title: "Respuesta",
+										text: data,
+										type: "error",
+										timer: 2500,
+										showConfirmButton: false
+								});
+
 
 							}
-							swal({
-									title: "Respuesta",
-									text: "Registro Creado con exito!!",
-									type: "success",
-									timer: 1500,
-									showConfirmButton: false
-							});
-
-						} else {
-							swal({
-									title: "Respuesta",
-									text: data,
-									type: "error",
-									timer: 2500,
-									showConfirmButton: false
-							});
-
-
+						},
+						//si ha ocurrido un error
+						error: function(){
+							$(".alert").html('<strong>Error!</strong> Actualice la pagina');
+							$("#load").html('');
 						}
-					},
-					//si ha ocurrido un error
-					error: function(){
-						$(".alert").html('<strong>Error!</strong> Actualice la pagina');
-						$("#load").html('');
-					}
-				});
+					});
+
+				}
+			} else {
+				e.preventDefault();
 			}
 
 		});
+
 
 
 	});

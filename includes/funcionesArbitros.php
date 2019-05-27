@@ -233,7 +233,7 @@ class ServiciosArbitros {
       e.visibleparaarbitros
       ,e.contabilizalocal,e.contabilizavisitante
       from tbestadospartidos e
-      where e.visibleparaarbitros = 1
+      where e.visibleparaarbitros = 1 and e.idestadopartido <> 16
       order by 1";
       $res = $this->query($sql,0);
       return $res;
