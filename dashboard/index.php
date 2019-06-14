@@ -33,7 +33,12 @@ $configuracion = $serviciosReferencias->traerConfiguracion();
 
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
-$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
+if ($_SESSION['idroll_aif'] == 3) {
+	$breadCumbs = '<a class="navbar-brand" href="../index.php">Partidos</a>';
+} else {
+	$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
+}
+
 
 
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
@@ -225,7 +230,16 @@ if ($_SESSION['idroll_aif'] == 5) {
     <!-- Top Bar -->
     <?php echo $baseHTML->cargarNAV($breadCumbs); ?>
     <!-- #Top Bar -->
-    <?php echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../'); ?>
+
+    <?php
+	 if ($_SESSION['idroll_aif'] == 3) {
+		 echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../partidos',$resMenu),'../');
+	 } else {
+		 echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../');
+	 }
+
+
+	 ?>
     <main id="app">
     <section class="content" style="margin-top:-35px;">
 
@@ -266,7 +280,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 			                        </div>
 										</div>
 									</div>
-									
+
 								</div>
 							</div>
 						</div>

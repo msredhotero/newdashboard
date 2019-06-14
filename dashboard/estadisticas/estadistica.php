@@ -2435,7 +2435,7 @@ $(document).ready(function(){
 
 	var table = $('#example').DataTable({
 		"lengthMenu": [[30, 60 -1], [30, 60, "All"]],
-		"order": [[ 1, "asc" ]],
+		"order": [],
 		"language": {
 			"emptyTable":     "No hay datos cargados",
 			"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
@@ -2464,7 +2464,7 @@ $(document).ready(function(){
 
 	var table2 = $('#example2').DataTable({
 		"lengthMenu": [[30, 60 -1], [30, 60, "All"]],
-		"order": [[ 1, "asc" ]],
+		"order": [],
 		"language": {
 			"emptyTable":     "No hay datos cargados",
 			"info":           "Mostrar _START_ hasta _END_ del total de _TOTAL_ filas",
