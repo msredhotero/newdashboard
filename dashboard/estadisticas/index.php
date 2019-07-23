@@ -976,8 +976,8 @@ if (count($filesComplemento)<1) {
 	$(document).ready(function(){
 
 		$('.btnImprmirInforme').click(function() {
-			
-			window.open("informe.php?informe=" + $('#observaciones').val() + "&categoria=" + '<?php echo mysql_result($partido,0,'categoria'); ?>' + "&division=" + '<?php echo mysql_result($partido,0,'division'); ?>' + "&partido=" + '<?php echo mysql_result($partido,0,'partido'); ?>' + "&fecha=" + '<?php echo mysql_result($partido,0,'fecha'); ?>' + "&arbitro=" + $('#refarbitros').text(),'_blank');
+
+			window.open("informe.php?informe=" + <?php echo $id; ?> + "&arbitro=" + $('#refarbitros').text(),'_blank');
 		});
 
 		<?php
