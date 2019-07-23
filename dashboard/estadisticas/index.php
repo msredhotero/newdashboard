@@ -508,6 +508,10 @@ if ($resEstadoActual == 2) {
 			                                 <br>
 													</div>
 												</div>
+												<button type="button" class="btn bg-green waves-effect btnImprmirInforme">
+													<i class="material-icons">print</i>
+													<span>IMPRIMIR</span>
+												</button>
 
 											</div>
 									      <div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
@@ -860,7 +864,6 @@ if (count($filesComplemento)<1) {
 
 <script>
 
-
 	function traerImagen(archivo, contenedorpdf, contenedor) {
 		$.ajax({
 			data:  {idfixture: <?php echo $id; ?>,
@@ -972,7 +975,10 @@ if (count($filesComplemento)<1) {
 
 	$(document).ready(function(){
 
-
+		$('.btnImprmirInforme').click(function() {
+			
+			window.open("informe.php?informe=" + $('#observaciones').val() + "&categoria=" + '<?php echo mysql_result($partido,0,'categoria'); ?>' + "&division=" + '<?php echo mysql_result($partido,0,'division'); ?>' + "&partido=" + '<?php echo mysql_result($partido,0,'partido'); ?>' + "&fecha=" + '<?php echo mysql_result($partido,0,'fecha'); ?>' + "&arbitro=" + $('#refarbitros').text(),'_blank');
+		});
 
 		<?php
 		if (count($filesComplemento)<1) {

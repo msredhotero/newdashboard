@@ -180,7 +180,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 
     <!-- VUE JS -->
 	<script src="../../js/vue.min.js"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
     <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
