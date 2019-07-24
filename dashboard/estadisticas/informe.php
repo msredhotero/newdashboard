@@ -28,8 +28,9 @@ if (!isset($_SESSION['usua_aif']))
    $informe = str_replace(PHP_EOL, '******************', mysql_result($resultado,0,'observaciones'));
    $categoria = mysql_result($partido,0,'categoria');
    $division = mysql_result($partido,0,'division');
+	$fecha = mysql_result($partido,0,'fecha');
    $partido = mysql_result($partido,0,'partido');
-   $fecha = mysql_result($partido,0,'fechajuego');
+
    $arbitro = $_GET['arbitro'];
 
    ?>
