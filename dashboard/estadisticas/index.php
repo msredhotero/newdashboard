@@ -508,6 +508,7 @@ if ($resEstadoActual == 2) {
 			                                 <br>
 													</div>
 												</div>
+												<p style="color: #F00;">** Recuerde que primero debera guardar el partido sino perdera lo escrito</p>
 												<button type="button" class="btn bg-green waves-effect btnImprmirInforme">
 													<i class="material-icons">print</i>
 													<span>IMPRIMIR</span>

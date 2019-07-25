@@ -172,16 +172,16 @@ $numero = count($_POST);
 			//////////////		logica GOLEADORES		///////////////////////////////////////////////////////
 			$existeGoleadores = $serviciosReferencias->existeFixturePorGoleadores($idJugador, $idFixture);
 
-			$golesRealesLocal += $valores[$i];
+			$golesRealesLocal += $_POST['goles'.$idJugador];
 			$golesRealesVisitantes += $_POST['encontra'.$idJugador];
 
 			if ($existeGoleadores == 0) {
 				//inserto
-				$serviciosReferencias->insertarGoleadores($idJugador, $idFixture, $equipoLocal, $idCategoria, $idDivisiones,$valores[$i], $_POST['encontra'.$idJugador]);
+				$serviciosReferencias->insertarGoleadores($idJugador, $idFixture, $equipoLocal, $idCategoria, $idDivisiones,$_POST['goles'.$idJugador], $_POST['encontra'.$idJugador]);
 			} else {
 				//modifico
 
-				$serviciosReferencias->modificarGoleadores($existeGoleadores, $idJugador, $idFixture, $equipoLocal, $idCategoria, $idDivisiones,$valores[$i], $_POST['encontra'.$idJugador]);
+				$serviciosReferencias->modificarGoleadores($existeGoleadores, $idJugador, $idFixture, $equipoLocal, $idCategoria, $idDivisiones,$_POST['goles'.$idJugador], $_POST['encontra'.$idJugador]);
 			}
 			//////////////			fin logica			/////////////////////////////////////////////////////////
 
@@ -192,8 +192,10 @@ $numero = count($_POST);
 			$golesRealesLocal += $_POST['penalesconvertidos'.$idJugador];
 
 			if ($existePenales == 0) {
+				if (($_POST['penalesconvertidos'.$idJugador] > 0) || ($_POST['penaleserrados'.$idJugador] > 0) || ($_POST['penalesatajados'.$idJugador] > 0)) {
 				//inserto
-				$serviciosReferencias->insertarPenalesjugadores($idJugador, $idFixture, $equipoLocal, $idCategoria, $idDivisiones,$_POST['penalesconvertidos'.$idJugador], $_POST['penaleserrados'.$idJugador], $_POST['penalesatajados'.$idJugador]);
+					$serviciosReferencias->insertarPenalesjugadores($idJugador, $idFixture, $equipoLocal, $idCategoria, $idDivisiones,$_POST['penalesconvertidos'.$idJugador], $_POST['penaleserrados'.$idJugador], $_POST['penalesatajados'.$idJugador]);
+				}
 			} else {
 				//modifico
 
@@ -274,17 +276,18 @@ $numero = count($_POST);
 
 			/***********		ROJAS			*************************************************************/
 			$existeRojas	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,2,$idFixture);
-			if ($_POST['roLjas'.$idJugador] > 0) {
-				if ($existeRojas == 0) {
-					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(2,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['roLjas'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
 
+				if ($existeRojas == 0) {
+					if ($_POST['roLjas'.$idJugador] > 0) {
+					//inserto
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(2,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['roLjas'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeRojas,2,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['roLjas'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 
@@ -292,35 +295,36 @@ $numero = count($_POST);
 			/***********		INFORMADOS			*************************************************************/
 			$existeInformados	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,3,$idFixture);
 
-			if ($_POST['inforLmados'.$idJugador] > 0) {
 				if ($existeInformados == 0) {
+					if ($_POST['inforLmados'.$idJugador] > 0) {
 					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(3,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['inforLmados'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
-
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(3,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['inforLmados'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeInformados,3,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['inforLmados'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 
 
 			/***********		DOBLE AMARILLAS			*************************************************************/
 			$existeDobleAmarillas	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,4,$idFixture);
-			if ($_POST['dobleLamarilla'.$idJugador] > 0) {
-				if ($existeDobleAmarillas == 0) {
-					//inserto
+
+			if ($existeDobleAmarillas == 0) {
+				//inserto
+				if ($_POST['dobleLamarilla'.$idJugador] > 0) {
 					$idsancion = $serviciosReferencias->insertarSancionesjugadores(4,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['dobleLamarilla'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
-
-
-				} else {
-					//modifico
-
-					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeDobleAmarillas,4,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['dobleLamarilla'.$idJugador], $idCategoria, $idDivisiones);
 				}
+
+			} else {
+				//modifico
+
+				$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeDobleAmarillas,4,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['dobleLamarilla'.$idJugador], $idCategoria, $idDivisiones);
 			}
+
 			/***********		FIN					*************************************************************/
 
 
@@ -328,17 +332,18 @@ $numero = count($_POST);
 			/***********		CD TD			*************************************************************/
 			$existeCDTD	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,5,$idFixture);
 
-			if ($_POST['cdLtd'.$idJugador] > 0) {
-				if ($existeCDTD == 0) {
-					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(5,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['cdLtd'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
 
+				if ($existeCDTD == 0) {
+					if ($_POST['cdLtd'.$idJugador] > 0) {
+					//inserto
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(5,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['cdLtd'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeCDTD,5,$idJugador, $equipoLocal, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['cdLtd'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 
@@ -378,8 +383,12 @@ $numero = count($_POST);
 				$existeGoleadores = $serviciosReferencias->existeFixturePorGoleadores($idJugador, $idFixture);
 
 				if ($existeGoleadores == 0) {
-					//inserto
-					$serviciosReferencias->insertarGoleadores($idJugador, $idFixture, $equipoVisitante, $idCategoria, $idDivisiones,$valores[$i], $_POST['enbcontra'.$idJugador]);
+
+					if ($valores[$i] > 0) {
+						//inserto
+						$serviciosReferencias->insertarGoleadores($idJugador, $idFixture, $equipoVisitante, $idCategoria, $idDivisiones,$valores[$i], $_POST['enbcontra'.$idJugador]);
+					}
+
 				} else {
 					//modifico
 
@@ -394,8 +403,12 @@ $numero = count($_POST);
 				$golesRealesVisitantes += $_POST['penalesbconvertidos'.$idJugador];
 
 				if ($existePenales == 0) {
-					//inserto
-					$serviciosReferencias->insertarPenalesjugadores($idJugador, $idFixture, $equipoVisitante, $idCategoria, $idDivisiones,$_POST['penalesbconvertidos'.$idJugador], $_POST['penalesberrados'.$idJugador], $_POST['penalesbatajados'.$idJugador]);
+
+					if (($_POST['penalesbconvertidos'.$idJugador] > 0) || ($_POST['penalesberrados'.$idJugador] > 0) || ($_POST['penalesbatajados'.$idJugador] > 0)) {
+						//inserto
+						$serviciosReferencias->insertarPenalesjugadores($idJugador, $idFixture, $equipoVisitante, $idCategoria, $idDivisiones,$_POST['penalesbconvertidos'.$idJugador], $_POST['penalesberrados'.$idJugador], $_POST['penalesbatajados'.$idJugador]);
+					}
+
 				} else {
 					//modifico
 
@@ -474,17 +487,18 @@ $numero = count($_POST);
 			/***********		ROJAS			*************************************************************/
 			$existeRojas	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,2,$idFixture);
 
-			if ($_POST['roVjas'.$idJugador] > 0) {
-				if ($existeRojas == 0) {
-					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(2,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['roVjas'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
 
+				if ($existeRojas == 0) {
+					if ($_POST['roVjas'.$idJugador] > 0) {
+					//inserto
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(2,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['roVjas'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeRojas,2,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['roVjas'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 
@@ -492,17 +506,18 @@ $numero = count($_POST);
 			/***********		INFORMADOS			*************************************************************/
 			$existeInformados	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,3,$idFixture);
 
-			if ($_POST['inforVmados'.$idJugador] > 0) {
-				if ($existeInformados == 0) {
-					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(3,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['inforVmados'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
 
+				if ($existeInformados == 0) {
+					if ($_POST['inforVmados'.$idJugador] > 0) {
+					//inserto
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(3,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['inforVmados'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeInformados,3,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['inforVmados'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 
@@ -510,17 +525,18 @@ $numero = count($_POST);
 			/***********		DOBLE AMARILLAS			*************************************************************/
 			$existeDobleAmarillas	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,4,$idFixture);
 
-			if ($_POST['dobleVamarilla'.$idJugador] > 0) {
-				if ($existeDobleAmarillas == 0) {
-					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(4,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['dobleVamarilla'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
 
+				if ($existeDobleAmarillas == 0) {
+					if ($_POST['dobleVamarilla'.$idJugador] > 0) {
+					//inserto
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(4,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['dobleVamarilla'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeDobleAmarillas,4,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['dobleVamarilla'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 
@@ -528,17 +544,18 @@ $numero = count($_POST);
 			/***********		CD TD			*************************************************************/
 			$existeCDTD	=	$serviciosReferencias->existeFixturePorSanciones($idJugador,5,$idFixture);
 
-			if ($_POST['cdVtd'.$idJugador] > 0) {
-				if ($existeCDTD == 0) {
-					//inserto
-					$idsancion = $serviciosReferencias->insertarSancionesjugadores(5,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['cdVtd'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
 
+				if ($existeCDTD == 0) {
+					if ($_POST['cdVtd'.$idJugador] > 0) {
+					//inserto
+						$idsancion = $serviciosReferencias->insertarSancionesjugadores(5,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['cdVtd'.$idJugador], $idCategoria, $idDivisiones, 'NULL');
+					}
 				} else {
 					//modifico
 
 					$serviciosReferencias->modificarSancionesjugadoresSinAlterarFallo($existeCDTD,5,$idJugador, $equipoVisitante, $idFixture, mysql_result($resFix,0,'fecha'),$_POST['cdVtd'.$idJugador], $idCategoria, $idDivisiones);
 				}
-			}
+
 			/***********		FIN					*************************************************************/
 
 			}

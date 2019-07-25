@@ -5824,11 +5824,11 @@ function estaFechaYaFueCumplida($idJugador, $idFixture) {
 function modificarFixturePorCancha($id,$refCanchas, $refArbitros, $juez1, $juez2, $calificacioncancha) {
 $sql = "update dbfixture
 set
-refcanchas = ".$refCanchas.",
+refcanchas = ".($refCanchas == '' ? 'null' : $refCanchas).",
 refarbitros = ".$refArbitros.",
 juez1 = '".$juez1."',
 juez2 = '".$juez2."',
-calificacioncancha = ".$calificacioncancha."
+calificacioncancha = ".($calificacioncancha == '' ? 'null' : $calificacioncancha)."
 where idfixture =".$id;
 $res = $this->query($sql,0);
 return $res;
