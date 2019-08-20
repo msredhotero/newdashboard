@@ -229,6 +229,9 @@ switch ($accion) {
       generarPlantelTemporadaAnteriorExcepciones($serviciosReferencias);
       break;
 
+      /*
+      nuevo 30/04/2019
+      */
       case 'traerArchivoPlanillaPorArbitroFixture':
          traerArchivoPlanillaPorArbitroFixture($serviciosArbitros);
       break;
@@ -242,10 +245,59 @@ switch ($accion) {
          validarCargaMasiva($serviciosArbitros, $serviciosReferencias);
       break;
 
-/* Fin */
+      /* Fin */
+
+      /*
+      nuevo 20/08/2019
+      */
+
+      case 'traerPartidosCargados':
+         traerPartidosCargados($serviciosArbitros);
+      break;
+
+      /* Fin */
 
 }
 /* Fin */
+
+   /*
+   nuevo 20/08/2019
+   */
+   function traerPartidosCargados($serviciosArbitros) {
+      $res = $serviciosArbitros->traerPartidosCargados();
+
+      $resV['datos'] = '';
+      $resV['error'] = false;
+
+      $ar = array();
+
+      while ($row = mysql_fetch_assoc($res)) {
+
+         $arNuevo = array('idfixture'=> $row['idfixture'],
+                          'fechajuego'=>$row['fechajuego'],
+                          'partido'=> utf8_encode($row['partido']),
+                          'categoria'=>$row['categoria'],
+                          'division'=>$row['division'],
+                          'descripcion'=>utf8_encode($row['descripcion']),
+                          'imagen'=> ($row['imagen'] == '' ? 'Falta Cargar' : 'Cargado'),
+                          'imagen2'=>($row['imagen2'] == '' ? 'Falta Cargar' : 'Cargado')
+         );
+
+         array_push($ar, $arNuevo);
+
+      }
+
+      $resV['datos'] = $ar;
+
+
+      header('Content-type: application/json');
+      echo json_encode($resV);
+   }
+   /* Fin */
+
+    /*
+    nuevo 30/04/2019
+    */
 
    function validarCargaMasiva($serviciosArbitros, $serviciosReferencias) {
       $idfixture           =  $_POST['idfixture'];
@@ -606,7 +658,11 @@ switch ($accion) {
       echo json_encode($resV);
    }
 
-   function presentardocumentacionCompleta($serviciosReferencias) {
+   /*
+   fin 30/04/2019
+   */
+
+function presentardocumentacionCompleta($serviciosReferencias) {
       $id = $_POST['id'];
       $tipo = $_POST['tipo'];
 
@@ -665,7 +721,7 @@ switch ($accion) {
    }
 
    function presentarDocumentacion($serviciosReferencias, $serviciosNotificaciones) {
-      $servidorCarpeta = 'aifzndesarrollo';
+      $servidorCarpeta = 'aifzn';
 
       $idjugador = $_POST['idjugador'];
       $iddocumentacion = $_POST['iddocumentacion'];
@@ -721,7 +777,7 @@ switch ($accion) {
    }
 
    function traerImgenJugadorPorJugadorDocumentacion($serviciosReferencias) {
-      $servidorCarpeta = 'aifzndesarrollo';
+      $servidorCarpeta = 'aifzn';
 
       $idjugador = $_POST['idjugador'];
       $iddocumentacion = $_POST['iddocumentacion'];
@@ -929,15 +985,26 @@ switch ($accion) {
       $res = $serviciosReferencias->traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria);
       $ar = array();
 
-		while ($row = mysql_fetch_assoc($res)) {
+      if (mysql_num_rows($res) > 0) {
+         while ($row = mysql_fetch_assoc($res)) {
 
-			$arNuevo = array('division'=> utf8_encode($row['division']),
-						'iddivision'=>$row['iddivision']
+   			$arNuevo = array('division'=> utf8_encode($row['division']),
+   						'iddivision'=>$row['iddivision']
+   			);
+
+   			array_push($ar, $arNuevo);
+
+   		}
+      } else {
+
+			$arNuevo = array('division'=> 'Primera A',
+						'iddivision'=>1
 			);
 
 			array_push($ar, $arNuevo);
 
-		}
+      }
+
 
       $resV['datos'] = $ar;
 
@@ -1130,7 +1197,7 @@ switch ($accion) {
 
 					echo $cad;
 				} else {
-					echo 'Huvo un error al insertar datos';
+					echo 'Hubo un error al insertar datos';
 				}
 			} else {
 				echo 'El jugador no cumple con la edad';
@@ -1883,7 +1950,7 @@ function insertarJugadorespre($serviciosReferencias) {
 			if ((integer)$res > 0) {
 				echo $res;
 			} else {
-				echo 'Huvo un error al insertar datos ';
+				echo 'Hubo un error al insertar datos ';
 			}
 		} else {
 			echo 'Ya existe ese numero de documento';
@@ -2039,7 +2106,7 @@ function insertarDelegados($serviciosReferencias) {
 	if ((integer)$res > 0) {
 	echo '';
 	} else {
-	echo 'Huvo un error al insertar datos';
+	echo 'Hubo un error al insertar datos';
 	}
 }
 
@@ -2156,7 +2223,7 @@ function guardarJugadorClubSimple($serviciosReferencias) {
 		if ($res == true) {
 		echo '';
 		} else {
-		echo 'Huvo un error al modificar datos';
+		echo 'Hubo un error al modificar datos';
 		}
 	}
 

@@ -307,7 +307,7 @@ function traerJugadoresprePorNroDocumento($nrodocumento) {
 
 function registrarSocio($email, $password,$idjugador, $tipo) {
 
-   $nrodocumento = 0;
+	$nrodocumento = 0;
 
    if ($tipo == 1) {
       $resJugador = $this->traerJugadoresprePorIdNuevo($idjugador);
@@ -328,7 +328,7 @@ function registrarSocio($email, $password,$idjugador, $tipo) {
 	$fechaprogramada =  date_format($fecha, 'Y-m-d');
 
 	$cuerpo .= '<p>Antes que nada por favor no responda este mail ya que no recibirá respuesta.</p>';
-	$cuerpo .= '<p>Recibimos su solicitud de alta como socio/jugador en la Asociación Intercountry de Fútbol Zona Norte. Para verificar(activar) tu casilla de correo por favor ingresá al siguiente link: <a href="http://www.saupureinconsulting.com.ar/aifzncountriesdesarrollo/activacion.php?token='.$token.'" target="_blank">AQUI</a>.</p>';
+	$cuerpo .= '<p>Recibimos su solicitud de alta como socio/jugador en la Asociación Intercountry de Fútbol Zona Norte. Para verificar(activar) tu casilla de correo por favor ingresá al siguiente link: <a href="http://www.saupureinconsulting.com.ar/aifzncountries/activacion.php?token='.$token.'" target="_blank">AQUI</a>.</p>';
 	$cuerpo .= '<p>Este link estara vigente hasta la fecha '.$fechaprogramada.', pasada esta fecha deberá solicitar mas tiempo para activar su cuenta.</p>';
 	$cuerpo .= '<p>Una vez hecho esto, el personal administrativo se pondrá en contacto mediante esta misma via para notificarle si su estado de alta se encuentra aprobado, de no ser así se detallará la causa.</p>';
 

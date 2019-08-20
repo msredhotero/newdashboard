@@ -9,6 +9,99 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosArbitros {
 
+   function traerPartidosCargados() {
+      $sql = "SELECT
+                   f.idfixture,
+                   f.fecha AS fechajuego,
+                   CONCAT(el.nombre, ' vs ', ev.nombre) partido,
+                   fe.fecha,
+                   cat.categoria,
+                   di.division,
+                   e.descripcion,
+                   ar.imagen,
+                   ar.imagen2
+               FROM
+                   dbfixture f
+                       LEFT JOIN
+                   tbestadospartidos e ON f.refestadospartidos = e.idestadopartido
+                       INNER JOIN
+                   dbequipos el ON el.idequipo = f.refconectorlocal
+                       INNER JOIN
+                   dbequipos ev ON ev.idequipo = f.refconectorvisitante
+                       INNER JOIN
+                   tbfechas fe ON fe.idfecha = f.reffechas
+                       INNER JOIN
+                   dbtorneos t ON t.idtorneo = f.reftorneos
+                       INNER JOIN
+                   tbcategorias cat ON cat.idtcategoria = t.refcategorias
+                       INNER JOIN
+                   tbdivisiones di ON di.iddivision = t.refdivisiones
+                       INNER JOIN
+                   dbplanillasarbitros ar ON ar.reffixture = f.idfixture
+               WHERE
+                   (e.visibleparaarbitros = 1 or f.refestadospartidos is null)
+                       AND (f.fecha BETWEEN DATE_ADD(NOW(), INTERVAL - 400 DAY) AND DATE_ADD(NOW(), INTERVAL + 8 DAY))
+                       AND f.refconectorlocal IS NOT NULL
+                       AND f.refconectorvisitante IS NOT NULL
+               order by f.idfixture";
+
+      $res = $this->query($sql,0);
+      return $res;
+   }
+
+   function sanear_string($string)
+	{
+
+		$string = trim($string);
+
+		$string = str_replace(
+			array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
+			array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
+			$string
+		);
+
+		$string = str_replace(
+			array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
+			array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'),
+			$string
+		);
+
+		$string = str_replace(
+			array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
+			array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'),
+			$string
+		);
+
+		$string = str_replace(
+			array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
+			array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
+			$string
+		);
+
+		$string = str_replace(
+			array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
+			array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'),
+			$string
+		);
+
+		$string = str_replace(
+			array('ñ', 'Ñ', 'ç', 'Ç'),
+			array('n', 'N', 'c', 'C',),
+			$string
+		);
+
+		$string = str_replace(
+			array(' ',"'"),
+			array('',''),
+			$string
+		);
+
+
+
+		return $string;
+	}
+
+
    function traerEstadospartidosPorId($id) {
       $sql = "select idestadopartido,descripcion,
       (case when defautomatica = 1 then 'Si' else 'No' end) as defautomatica,
@@ -131,6 +224,9 @@ class ServiciosArbitros {
 
 
    function modificarPlanillasarbitros($id,$reffixture,$refarbitros,$goleslocal,$golesvisitante,$amarillaslocal,$expulsadoslocal,$informadoslocal,$dobleamarillaslocal,$cantidadjugadoreslocal,$amarillasvisitante,$expulsadosvisitante,$informadosvisitante,$dobleamarillasvisitante,$cantidadjugadoresvisitante,$refestadospartidos,$refestados,$observaciones) {
+
+      $observaciones = $this->sanear_string($observaciones);
+
       $sql = "update dbplanillasarbitros
       set
       refarbitros = ".$refarbitros.",goleslocal = ".$goleslocal.",golesvisitante = ".$golesvisitante.",amarillaslocal = ".$amarillaslocal.",expulsadoslocal = ".$expulsadoslocal.",informadoslocal = ".$informadoslocal.",dobleamarillaslocal = ".$dobleamarillaslocal.",amarillasvisitante = ".$amarillasvisitante.",expulsadosvisitante = ".$expulsadosvisitante.",informadosvisitante = ".$informadosvisitante.",dobleamarillasvisitante = ".$dobleamarillasvisitante.",cantidadjugadoreslocal = ".$cantidadjugadoreslocal.",cantidadjugadoresvisitante = ".$cantidadjugadoresvisitante.",refestadospartidos = ".$refestadospartidos.",refestados = ".$refestados.",observaciones = '".$observaciones."'

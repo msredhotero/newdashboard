@@ -41,6 +41,7 @@ if ($_SESSION['idroll_aif'] == 3) {
 
 
 
+
 /////////////////////// Opciones pagina ///////////////////////////////////////////////
 $singular = "Socio";
 
@@ -56,10 +57,12 @@ $insertar = "insertarDelegados";
 $idSocioNuevo = 0;
 
 /////////////////////// Opciones para la creacion del formulario  /////////////////////
+
 if ($_SESSION['idroll_aif'] == 3) {
 	$resPartidos = $serviciosArbitros->traerPartidosPorArbitrosFechas($_SESSION['idarbitro_aif']);
 
 }
+
 
 if ($_SESSION['idroll_aif'] == 4) {
 	$club = $serviciosReferencias->traerNombreCountryPorId($_SESSION['idclub_aif']);
@@ -265,6 +268,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 								</div>
 								<div class="body table-responsive">
 									<div class="row">
+
 										<div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
 											<div class="form-line emailInput">
 			                            <input type="number" class="form-control" name="idfixture" id="idfixture" placeholder="Partido" required autofocus>
@@ -284,6 +288,82 @@ if ($_SESSION['idroll_aif'] == 5) {
 								</div>
 							</div>
 						</div>
+
+						<?php
+						if (($_SESSION['usuaid_aif'] == 1521) || ($_SESSION['usuaid_aif'] == 1522)) {
+						?>
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="card ">
+								<div class="header bg-green">
+									<h2>
+										Partidos a cargados
+									</h2>
+									<ul class="header-dropdown m-r--5">
+										<li class="dropdown">
+											<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+												<i class="material-icons">more_vert</i>
+											</a>
+											<ul class="dropdown-menu pull-right">
+												<li><a href="javascript:void(0);" @click="showModal = true">Realizar Consulta</a></li>
+											</ul>
+										</li>
+									</ul>
+								</div>
+								<div class="body table-responsive">
+									<div class="row">
+										<table class="table table-striped table-bordered">
+											<thead>
+												<tr>
+													<th>Partido</th>
+													<th>Fecha de Juego</th>
+													<th>Equipos</th>
+													<th>Categoria</th>
+													<th>Division</th>
+													<th>Estado</th>
+													<th>Planilla</th>
+													<th>Complemento</th>
+													<th>Ver</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr v-for="partido in activePartidos" :key="partido.idfixture">
+													<td>{{ partido.idfixture }}</td>
+													<td>{{ partido.fechajuego }}</td>
+													<td>{{ partido.partido }}</td>
+													<td>{{ partido.categoria }}</td>
+													<td>{{ partido.division }}</td>
+													<td>{{ partido.descripcion }}</td>
+													<td>
+														<div v-if="partido.imagen == 'Cargado'">
+															<button type="button" class="btn bg-green btn-block btn-sm waves-effect">{{ partido.imagen }}</button>
+														</div>
+														<div v-else>
+															<button type="button" class="btn bg-red btn-block btn-sm waves-effect">{{ partido.imagen }}</button>
+														</div>
+													</td>
+													<td>
+														<div v-if="partido.imagen2 == 'Cargado'">
+															<button type="button" class="btn bg-green btn-block btn-sm waves-effect">{{ partido.imagen2 }}</button>
+														</div>
+														<div v-else>
+															<button type="button" class="btn bg-red btn-block btn-sm waves-effect">{{ partido.imagen2 }}</button>
+														</div>
+													</td>
+													<td>
+														<button type="button" @click="buscarPartido( partido.idfixture)" class="btn bg-blue btn-block btn-sm waves-effect">Ingresar</button>
+													</td>
+												</tr>
+
+											</tbody>
+
+										</table>
+
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<?php } ?>
 
 					<?php } ?>
 					<?php if ($_SESSION['idroll_aif'] == 4) { ?>
@@ -744,18 +824,23 @@ if ($_SESSION['idroll_aif'] == 5) {
         paramsGetDelegado.append('accion','VtraerDelegadosPorId');
         paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
 
+		  const paramsGetPartidos = new URLSearchParams();
+        paramsGetPartidos.append('accion','traerPartidosCargados');
+
 		const app = new Vue({
 			el: "#app",
 			data () {
                 return {
                     activeDelegados: {},
                     errorMensaje: '',
-                    successMensaje: ''
+                    successMensaje: '',
+						  activePartidos: []
                 }
 
 			},
 			mounted () {
-				this.getDelegado()
+				this.getDelegado(),
+				this.getPartidos()
 			},
 			computed: {
 
@@ -785,20 +870,30 @@ if ($_SESSION['idroll_aif'] == 5) {
 					})
 				},
 				guardarDelegado (e) {
-                    axios.post('../ajax/ajax.php', new FormData(e.target))
-                    .then(res => {
-                        //this.setMensajes(res)
+                 axios.post('../ajax/ajax.php', new FormData(e.target))
+                 .then(res => {
+                     //this.setMensajes(res)
 
-                        if (!res.data.error) {
-                            this.$swal("Ok!", res.data.mensaje, "success")
-                        } else {
-                            this.$swal("Error!", res.data.mensaje, "error")
-                        }
+                     if (!res.data.error) {
+                         this.$swal("Ok!", res.data.mensaje, "success")
+                     } else {
+                         this.$swal("Error!", res.data.mensaje, "error")
+                     }
 
-                    });
+                 });
 
 
-                }
+            },
+				getPartidos () {
+					axios.post('../ajax/ajax.php', paramsGetPartidos)
+					.then(res => {
+						 //this.setMensajes(res)
+						 this.activePartidos = res.data.datos
+					});
+				},
+				buscarPartido : function(id) {
+					window.location.href = 'estadisticas/index.php?id=' + id;
+				}
 			}
 		})
     </script>

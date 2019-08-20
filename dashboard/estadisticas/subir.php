@@ -75,13 +75,13 @@
 
 		if (move_uploaded_file($templocation, $imagen_subida)) {
 			$pos = strpos( strtolower($type), 'pdf');
-			/*
+
 			if ($pos === false) {
 				$image = new \Gumlet\ImageResize($imagen_subida);
 				$image->scale(50);
 				$image->save($imagen_subida);
 			}
-			*/
+			
 			// update a la tabla dbplanillasarbitros
 			$serviciosArbitros->actualizarArchivoPlanilla(mysql_result($resPlanilla,0,0),$name,$type);
 

@@ -839,11 +839,19 @@ function devolverImagen($name, $type, $nombrenuevo) {
 	}
 
 	function traerDocumentacionjugadorimagenesPorJugadorDocumentacionID($idJugador, $idDocumentacion, $idJugadorPre=0) {
-		$sql = "select
-		                dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado, concat('data','/',dj.iddocumentacionjugadorimagen) as archivo
-		            from dbdocumentacionjugadorimagenes dj
-		            inner join tbestados e ON e.idestado = dj.refestados
-		        where (dj.idjugador =".$idJugador." or dj.refjugadorespre = ".$idJugadorPre.") and dj.refdocumentaciones = ".$idDocumentacion;
+		if ($idJugador > 0) {
+      $sql = "select
+                          dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado
+                      from dbdocumentacionjugadorimagenes dj
+                      inner join tbestados e ON e.idestado = dj.refestados
+                  where (dj.idjugador =".$idJugador.") and dj.refdocumentaciones = ".$idDocumentacion;
+       } else {
+          $sql = "select
+                          dj.iddocumentacionjugadorimagen,dj.refdocumentaciones,dj.refjugadorespre,dj.imagen,dj.type,dj.refestados, e.estado
+                      from dbdocumentacionjugadorimagenes dj
+                      inner join tbestados e ON e.idestado = dj.refestados
+                  where (dj.refjugadorespre = ".$idJugadorPre.") and dj.refdocumentaciones = ".$idDocumentacion;
+       }
 
 		$res = $this->query($sql,0);
 		return $res;
@@ -905,8 +913,8 @@ function devolverImagen($name, $type, $nombrenuevo) {
 		);
 
 		$string = str_replace(
-			array(' '),
-			array(''),
+			array(' ',"'"),
+			array('',''),
 			$string
 		);
 
@@ -4145,6 +4153,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 	/* /* Fin de la Tabla: tbmeses*/
 
 
+
 	function enviarMailAdjuntoPlantel($idequipo,$referente,$asunto,$cuerpo, $referencia) {
 		require('../reportes/fpdf.php');
 
@@ -4617,7 +4626,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		require_once('AttachMailer.php');
 
-		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
+		$ruta = "https://saupureinconsulting.com.ar/aifzncountries/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "AIF";
 		$mi_email = $referente;
@@ -4956,7 +4965,7 @@ function insertarDelegados($refusuarios,$apellidos,$nombres,$direccion,$localida
 
 		require_once('AttachMailer.php');
 
-		$ruta = "https://saupureinconsulting.com.ar/aifzncountriesdesarrollo/ajax/";
+		$ruta = "https://www.saupureinconsulting.com.ar/aifzncountries/ajax/";
 		$mi_archivo = $nombreTurno;
 		$mi_nombre = "AIF";
 		$mi_email = $email;
@@ -6732,7 +6741,7 @@ function traerSancionesJugadoresConFallosPorSancion($idFallo, $idTipoTorneo) {
 }
 
 
-   function query($sql,$accion) {
+	function query($sql,$accion) {
 
 
 
