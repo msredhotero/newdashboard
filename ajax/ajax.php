@@ -288,7 +288,9 @@ switch ($accion) {
    }
 
    function traerPartidosCargados($serviciosArbitros) {
-      $res = $serviciosArbitros->traerPartidosCargados();
+      $busqueda = $_POST['busqueda'];
+      $res = $serviciosArbitros->traerPartidosCargados($busqueda);
+
 
       $resV['datos'] = '';
       $resV['error'] = false;
@@ -304,7 +306,9 @@ switch ($accion) {
                           'division'=>$row['division'],
                           'descripcion'=>utf8_encode($row['descripcion']),
                           'imagen'=> ($row['imagen'] == '' ? 'Falta Cargar' : 'Cargado'),
-                          'imagen2'=>($row['imagen2'] == '' ? 'Falta Cargar' : 'Cargado')
+                          'imagen2'=>($row['imagen2'] == '' ? 'Falta Cargar' : 'Cargado'),
+                          'imagenNombre'=> $row['imagen'],
+                          'imagen2Nombre'=>$row['imagen2']
          );
 
          array_push($ar, $arNuevo);

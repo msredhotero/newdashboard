@@ -9,7 +9,13 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosArbitros {
 
-   function traerPartidosCargados() {
+   function traerPartidosCargados($busqueda) {
+
+      $cadWhere = '';
+
+      if ($busqueda != '') {
+         $cadWhere .= " and (f.idfixture like '%".$busqueda."%' or f.fecha like '%".$busqueda."%' or CONCAT(el.nombre, ' vs ', ev.nombre) like '%".$busqueda."%' or cat.categoria like '%".$busqueda."%' or di.division like '%".$busqueda."%' or e.descripcion like '%".$busqueda."%' )";
+      }
       $sql = "SELECT
                    f.idfixture,
                    f.fecha AS fechajuego,
@@ -43,8 +49,9 @@ class ServiciosArbitros {
                        AND (f.fecha BETWEEN DATE_ADD(NOW(), INTERVAL - 40000 DAY) AND DATE_ADD(NOW(), INTERVAL + 800 DAY))
                        AND f.refconectorlocal IS NOT NULL
                        AND f.refconectorvisitante IS NOT NULL
+                       ".$cadWhere."
                order by f.idfixture";
-
+               //die(var_dump($sql));
       $res = $this->query($sql,0);
       return $res;
    }

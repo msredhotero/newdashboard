@@ -310,6 +310,18 @@ if ($_SESSION['idroll_aif'] == 5) {
 									</ul>
 								</div>
 								<div class="body table-responsive">
+									<div class="row clearfix">
+										<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+											<label for="email_address_2">Buscar:</label>
+										</div>
+										<div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+											<div class="form-group">
+												<div class="form-line">
+													<input type="text" id="buscar" class="form-control" placeholder="Ingrese los datos de la busqueda y presiona Enter" v-model="busqueda" v-on:keyup.enter="filtarPartido" />
+												</div>
+											</div>
+										</div>
+									</div>
 									<div class="row">
 										<table class="table table-striped table-bordered">
 											<thead>
@@ -317,20 +329,8 @@ if ($_SESSION['idroll_aif'] == 5) {
 													<th>Partido</th>
 													<th>Fecha de Juego</th>
 													<th>Equipos</th>
-													<th>
-														<select class="form-control" id="refcategorias">
-															<option v-for="item in activeCategorias" :value="item.idcategoria" :key="item.idcategoria" >
-																{{ item.categoria }}
-															</option>
-														</select>
-													</th>
-													<th>
-														<select class="form-control" id="refdivisiones">
-															<option v-for="item in activeDivisiones" :value="item.iddivision" :key="item.idcategoria" >
-																{{ item.division }}
-															</option>
-														</select>
-													</th>
+													<th>Categoria</th>
+													<th>Division</th>
 													<th>Estado</th>
 													<th>Planilla</th>
 													<th>Complemento</th>
@@ -347,7 +347,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 													<td>{{ partido.descripcion }}</td>
 													<td>
 														<div v-if="partido.imagen == 'Cargado'">
-															<button type="button" class="btn bg-green btn-block btn-sm waves-effect">{{ partido.imagen }}</button>
+															<button @click="mostrarPlanilla(partido.idfixture,partido.imagenNombre)" type="button" class="btn bg-green btn-block btn-sm waves-effect">{{ partido.imagen }}</button>
 														</div>
 														<div v-else>
 															<button type="button" class="btn bg-red btn-block btn-sm waves-effect">{{ partido.imagen }}</button>
@@ -355,7 +355,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 													</td>
 													<td>
 														<div v-if="partido.imagen2 == 'Cargado'">
-															<button type="button" class="btn bg-green btn-block btn-sm waves-effect">{{ partido.imagen2 }}</button>
+															<button @click="mostrarComplemento(partido.idfixture,partido.imagen2Nombre)" type="button" class="btn bg-green btn-block btn-sm waves-effect">{{ partido.imagen2 }}</button>
 														</div>
 														<div v-else>
 															<button type="button" class="btn bg-red btn-block btn-sm waves-effect">{{ partido.imagen2 }}</button>
@@ -838,12 +838,8 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 		  const paramsGetPartidos = new URLSearchParams();
         paramsGetPartidos.append('accion','traerPartidosCargados');
+		  paramsGetPartidos.append('busqueda','');
 
-		  const paramsGetCategorias = new URLSearchParams();
-        paramsGetCategorias.append('accion','traerCategorias');
-
-		  const paramsGetDivisiones = new URLSearchParams();
-        paramsGetDivisiones.append('accion','traerDivisiones');
 
 		const app = new Vue({
 			el: "#app",
@@ -853,27 +849,16 @@ if ($_SESSION['idroll_aif'] == 5) {
                     errorMensaje: '',
                     successMensaje: '',
 						  activePartidos: [],
-						  activeCategorias: [],
-						  activeDivisiones: []
+						  busqueda: ''
                 }
 
 			},
 			mounted () {
 				this.getDelegado(),
-				this.getPartidos(),
-				this.getCategorias(),
-				this.getDivisiones()
+				this.getPartidos(this.busqueda)
 			},
 			computed: {
 
-			},
-			watch: {
-				activeCategorias: function(newValues, oldValues){
-					this.$nextTick(function(){ $('#refcategorias').selectpicker('refresh'); });
-				},
-				activeDivisiones: function(newValues, oldValues){
-					this.$nextTick(function(){ $('#refdivisiones').selectpicker('refresh'); });
-				}
 			},
 			methods: {
 				setMensajes (res) {
@@ -914,30 +899,26 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 
             },
-				getCategorias() {
-					axios.post('../ajax/ajax.php', paramsGetCategorias)
-					.then(res => {
-						 //this.setMensajes(res)
-						 this.activeCategorias = res.data.datos
-					});
+				getPartidos (filtro) {
+					paramsGetPartidos.set('busqueda', filtro)
 
-				},
-				getDivisiones() {
-					axios.post('../ajax/ajax.php', paramsGetDivisiones)
-					.then(res => {
-						 //this.setMensajes(res)
-						 this.activeDivisiones = res.data.datos
-					});
-				},
-				getPartidos () {
 					axios.post('../ajax/ajax.php', paramsGetPartidos)
 					.then(res => {
 						 //this.setMensajes(res)
 						 this.activePartidos = res.data.datos
 					});
 				},
+				mostrarPlanilla : function(id, imagen) {
+					window.open('../../aifzn/arbitros/' + id + '/1/' + imagen, '_blank');
+				},
+				mostrarComplemento : function(id, imagen) {
+					window.open('../../aifzn/arbitros/' + id + '/1/' + imagen, '_blank');
+				},
 				buscarPartido : function(id) {
-					window.location.href = 'estadisticas/index.php?id=' + id;
+					window.open('estadisticas/index.php?id=' + id, '_blank');
+				},
+				filtarPartido () {
+					this.getPartidos(this.busqueda)
 				}
 			}
 		})
