@@ -181,8 +181,8 @@ if ($_SESSION['idroll_aif'] == 5) {
 
     <?php echo $baseHTML->cargarArchivosCSS('../'); ?>
 
-    <!-- VUE JS -->
-	<script src="../../js/vue.min.js"></script>
+    <!-- VUE JS
+	<script src="../../js/vue.min.js"></script>-->
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
     <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -317,8 +317,20 @@ if ($_SESSION['idroll_aif'] == 5) {
 													<th>Partido</th>
 													<th>Fecha de Juego</th>
 													<th>Equipos</th>
-													<th>Categoria</th>
-													<th>Division</th>
+													<th>
+														<select class="form-control" id="refcategorias">
+															<option v-for="item in activeCategorias" :value="item.idcategoria" :key="item.idcategoria" >
+																{{ item.categoria }}
+															</option>
+														</select>
+													</th>
+													<th>
+														<select class="form-control" id="refdivisiones">
+															<option v-for="item in activeDivisiones" :value="item.iddivision" :key="item.idcategoria" >
+																{{ item.division }}
+															</option>
+														</select>
+													</th>
 													<th>Estado</th>
 													<th>Planilla</th>
 													<th>Complemento</th>
@@ -827,6 +839,12 @@ if ($_SESSION['idroll_aif'] == 5) {
 		  const paramsGetPartidos = new URLSearchParams();
         paramsGetPartidos.append('accion','traerPartidosCargados');
 
+		  const paramsGetCategorias = new URLSearchParams();
+        paramsGetCategorias.append('accion','traerCategorias');
+
+		  const paramsGetDivisiones = new URLSearchParams();
+        paramsGetDivisiones.append('accion','traerDivisiones');
+
 		const app = new Vue({
 			el: "#app",
 			data () {
@@ -834,16 +852,28 @@ if ($_SESSION['idroll_aif'] == 5) {
                     activeDelegados: {},
                     errorMensaje: '',
                     successMensaje: '',
-						  activePartidos: []
+						  activePartidos: [],
+						  activeCategorias: [],
+						  activeDivisiones: []
                 }
 
 			},
 			mounted () {
 				this.getDelegado(),
-				this.getPartidos()
+				this.getPartidos(),
+				this.getCategorias(),
+				this.getDivisiones()
 			},
 			computed: {
 
+			},
+			watch: {
+				activeCategorias: function(newValues, oldValues){
+					this.$nextTick(function(){ $('#refcategorias').selectpicker('refresh'); });
+				},
+				activeDivisiones: function(newValues, oldValues){
+					this.$nextTick(function(){ $('#refdivisiones').selectpicker('refresh'); });
+				}
 			},
 			methods: {
 				setMensajes (res) {
@@ -884,6 +914,21 @@ if ($_SESSION['idroll_aif'] == 5) {
 
 
             },
+				getCategorias() {
+					axios.post('../ajax/ajax.php', paramsGetCategorias)
+					.then(res => {
+						 //this.setMensajes(res)
+						 this.activeCategorias = res.data.datos
+					});
+
+				},
+				getDivisiones() {
+					axios.post('../ajax/ajax.php', paramsGetDivisiones)
+					.then(res => {
+						 //this.setMensajes(res)
+						 this.activeDivisiones = res.data.datos
+					});
+				},
 				getPartidos () {
 					axios.post('../ajax/ajax.php', paramsGetPartidos)
 					.then(res => {

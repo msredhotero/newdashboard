@@ -254,6 +254,9 @@ switch ($accion) {
       case 'traerPartidosCargados':
          traerPartidosCargados($serviciosArbitros);
       break;
+      case 'traerDivisiones':
+         traerDivisiones($serviciosReferencias);
+      break;
 
       /* Fin */
 
@@ -263,6 +266,27 @@ switch ($accion) {
    /*
    nuevo 20/08/2019
    */
+
+   function traerDivisiones($serviciosReferencias) {
+      $res = $serviciosReferencias->traerDivisiones();
+      $ar = array();
+
+		while ($row = mysql_fetch_assoc($res)) {
+
+			$arNuevo = array('division'=> utf8_encode($row['division']),
+						'iddivision'=>$row['iddivision']
+			);
+
+			array_push($ar, $arNuevo);
+
+		}
+
+      $resV['datos'] = $ar;
+
+		header('Content-type: application/json');
+		echo json_encode($resV);
+   }
+
    function traerPartidosCargados($serviciosArbitros) {
       $res = $serviciosArbitros->traerPartidosCargados();
 

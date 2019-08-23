@@ -36,11 +36,11 @@ class ServiciosArbitros {
                    tbcategorias cat ON cat.idtcategoria = t.refcategorias
                        INNER JOIN
                    tbdivisiones di ON di.iddivision = t.refdivisiones
-                       INNER JOIN
+                       LEFT JOIN
                    dbplanillasarbitros ar ON ar.reffixture = f.idfixture
                WHERE
                    (e.visibleparaarbitros = 1 or f.refestadospartidos is null)
-                       AND (f.fecha BETWEEN DATE_ADD(NOW(), INTERVAL - 400 DAY) AND DATE_ADD(NOW(), INTERVAL + 8 DAY))
+                       AND (f.fecha BETWEEN DATE_ADD(NOW(), INTERVAL - 40000 DAY) AND DATE_ADD(NOW(), INTERVAL + 800 DAY))
                        AND f.refconectorlocal IS NOT NULL
                        AND f.refconectorvisitante IS NOT NULL
                order by f.idfixture";
