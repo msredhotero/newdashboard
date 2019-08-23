@@ -1209,7 +1209,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 
 	 					             <?php
 
-	 					      if ($_SESSION['idroll_predio'] == 1) {
+	 					      if ($_SESSION['idroll_aif'] == 1) {
 
 	 					      ?>
 	 					             <th style="text-align:center">Fallo</th>
@@ -1379,7 +1379,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 	 					              <?php
 
 
-	 					            if (($_SESSION['idroll_predio'] == 1) || ($_SESSION['idroll_predio'] == 2)) {
+	 					            if (($_SESSION['idroll_aif'] == 1) || ($_SESSION['idroll_aif'] == 2)) {
 	 					               if ($falloA > 0) {
 	 					                  $resFallo = $serviciosReferencias->traerSancionesJugadoresConFallosPorSancion($falloA, $idTipoTorneo);
 
@@ -1509,7 +1509,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 
 	 					         <?php
 
-	 					      if ($_SESSION['idroll_predio'] == 1) {
+	 					      if ($_SESSION['idroll_aif'] == 1) {
 	 					         if ($falloA > 0) {
 	 					            $resFallo = $serviciosReferencias->traerSancionesJugadoresConFallosPorSancion($falloA, $idTipoTorneo);
 
@@ -1598,7 +1598,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 
 	 					             <?php
 
-	 					      if (($_SESSION['idroll_predio'] == 1) || ($_SESSION['idroll_predio'] == 2)) {
+	 					      if (($_SESSION['idroll_aif'] == 1) || ($_SESSION['idroll_aif'] == 2)) {
 
 	 					      ?>
 	 					             <th style="text-align:center">Fallo</th>
@@ -1769,7 +1769,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 
 	 					     <?php
 
-	 					 if (($_SESSION['idroll_predio'] == 1) || ($_SESSION['idroll_predio'] == 2)) {
+	 					 if (($_SESSION['idroll_aif'] == 1) || ($_SESSION['idroll_aif'] == 2)) {
 	 					 if ($falloB > 0) {
 	 					    $resFallo = $serviciosReferencias->traerSancionesJugadoresConFallosPorSancion($falloB, $idTipoTorneo);
 
@@ -1898,7 +1898,7 @@ if (mysql_result($resFixDetalle,0,'refarbitros') == '') {
 	 					         <?php
 
 
-	 					      if (($_SESSION['idroll_predio'] == 1) || ($_SESSION['idroll_predio'] == 2)) {
+	 					      if (($_SESSION['idroll_aif'] == 1) || ($_SESSION['idroll_aif'] == 2)) {
 	 					         if ($falloB > 0) {
 	 					            $resFallo = $serviciosReferencias->traerSancionesJugadoresConFallosPorSancion($falloB, $idTipoTorneo);
 

@@ -2,7 +2,7 @@
 
 	session_start();
 
-	$servidorCarpeta = 'aifzndesarrollo';
+	$servidorCarpeta = 'aifzn';
 
 	if (!isset($_SESSION['usua_aif']))
 	{
@@ -71,7 +71,10 @@
 			mkdir($dir_destino.'/1/', 0777);
 		}
 
-
+		//borro el archivo anterior
+		if ($archivoAnterior != '') {
+			unlink($dir_destino.'/1/'.$archivoAnterior);
+		}
 
 		if (move_uploaded_file($templocation, $imagen_subida)) {
 			$pos = strpos( strtolower($type), 'pdf');
@@ -81,18 +84,12 @@
 				$image->scale(50);
 				$image->save($imagen_subida);
 			}
-			
+
 			// update a la tabla dbplanillasarbitros
 			$serviciosArbitros->actualizarArchivoPlanilla(mysql_result($resPlanilla,0,0),$name,$type);
-
-			//borro el archivo anterior
-			if ($archivoAnterior != '') {
-				unlink($dir_destino.'/1/'.$archivoAnterior);
-			}
-
-
-
+			
 			echo "Archivo guardado correctamente";
+
 		} else {
 			echo "Error al guardar el archivo";
 		}
