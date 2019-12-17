@@ -1973,13 +1973,21 @@ function insertarJugadorespre($serviciosReferencias) {
 		echo 'Formato de fecha incorrecto';
 	} else {
 		if (($serviciosReferencias->existeJugador($nrodocumento) == 0) && ($serviciosReferencias->existeJugadorPre($nrodocumento) == 0)) {
-			$res = $serviciosReferencias->insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
 
-			if ((integer)$res > 0) {
-				echo $res;
-			} else {
-				echo 'Hubo un error al insertar datos ';
-			}
+         $existeEmail = $serviciosUsuarios->existeUsuarioPreRegistrado($email);
+
+         if ($existeEmail == '') {
+            $res = $serviciosReferencias->insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
+
+   			if ((integer)$res > 0) {
+   				echo $res;
+   			} else {
+   				echo 'Hubo un error al insertar datos ';
+   			}
+         } else {
+            echo 'Ya existe ese email';
+         }
+
 		} else {
 			echo 'Ya existe ese numero de documento';
 		}
