@@ -83,6 +83,7 @@ if (mysql_num_rows($resPermiteRegistrar)>0) {
 }
 
 
+
 $resTemporadas = $serviciosReferencias->traerUltimaTemporada();
 
 if (mysql_num_rows($resTemporadas)>0) {
@@ -100,6 +101,8 @@ if (mysql_num_rows($resHabilitado)>0) {
 } else {
 	$habilitado = 1;
 }
+
+
 /////////////////////// Opciones para la creacion del view  apellido,nombre,nrodocumento,fechanacimiento,direccion,telefono,email/////////////////////
 
 

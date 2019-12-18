@@ -20,7 +20,7 @@ $fecha = date('Y-m-d');
 
 $determinaTipoSocio = $serviciosReferencias->determinaSocioNuevoViejo($_SESSION['email_aif']);
 
-if ($determinaTipoSocio['valor'] == 1) {
+if (($determinaTipoSocio['valor'] == 1) || ($determinaTipoSocio['valor'] == 2)) {
 	// idjugadorpre
 	$idJug = mysql_result($determinaTipoSocio['datos'],0,0);
 
@@ -35,20 +35,35 @@ if ($determinaTipoSocio['valor'] == 1) {
 	$servidorCarpeta = 'aifzndesarrollo';
 	/////////////////////////////  fin parametross  ///////////////////////////
 
+	if ($determinaTipoSocio['valor'] == 1) {
+		$resSocio = $serviciosReferencias->traerJugadoresprePorIdCompleto($id);
 
-	$resSocio = $serviciosReferencias->traerJugadoresprePorIdCompleto($id);
+		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,1,$id);
+		$urlImg1 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFoto,0,0)."/".mysql_result($resFoto,0,'imagen');
+		$urlImgType1 = mysql_result($resFoto,0,'type');
 
-	$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,1,$id);
-	$urlImg1 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFoto,0,0)."/".mysql_result($resFoto,0,'imagen');
-	$urlImgType1 = mysql_result($resFoto,0,'type');
+		$resFotoDocumento = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,2,$id);
+		$urlImg2 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumento,0,0)."/".mysql_result($resFotoDocumento,0,'imagen');
+		$urlImgType2 = mysql_result($resFotoDocumento,0,'type');
 
-	$resFotoDocumento = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,2,$id);
-	$urlImg2 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumento,0,0)."/".mysql_result($resFotoDocumento,0,'imagen');
-	$urlImgType2 = mysql_result($resFotoDocumento,0,'type');
+		$resFotoDocumentoDorso = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,99,$id);
+		$urlImg3 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumentoDorso,0,0)."/".mysql_result($resFotoDocumentoDorso,0,'imagen');
+		$urlImgType3 = mysql_result($resFotoDocumentoDorso,0,'type');
+	} else {
+		$resSocio = $serviciosReferencias->traerJugadoresPorId($id);
 
-	$resFotoDocumentoDorso = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion(0,99,$id);
-	$urlImg3 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumentoDorso,0,0)."/".mysql_result($resFotoDocumentoDorso,0,'imagen');
-	$urlImgType3 = mysql_result($resFotoDocumentoDorso,0,'type');
+		$resFoto = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,1,0);
+		$urlImg1 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFoto,0,0)."/".mysql_result($resFoto,0,'imagen');
+		$urlImgType1 = mysql_result($resFoto,0,'type');
+
+		$resFotoDocumento = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,2,0);
+		$urlImg2 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumento,0,0)."/".mysql_result($resFotoDocumento,0,'imagen');
+		$urlImgType2 = mysql_result($resFotoDocumento,0,'type');
+
+		$resFotoDocumentoDorso = $serviciosReferencias->traerDocumentacionjugadorimagenesPorJugadorDocumentacion($id,99,0);
+		$urlImg3 = $_SERVER['DOCUMENT_ROOT']."/".$servidorCarpeta."/data/".mysql_result($resFotoDocumentoDorso,0,0)."/".mysql_result($resFotoDocumentoDorso,0,'imagen');
+		$urlImgType3 = mysql_result($resFotoDocumentoDorso,0,'type');
+	}
 
 	$pdf = new FPDF();
 

@@ -115,7 +115,7 @@ switch ($accion) {
 		break;
 
 		case 'insertarJugadorespre':
-			insertarJugadorespre($serviciosReferencias);
+			insertarJugadorespre($serviciosReferencias, $serviciosUsuarios);
 			break;
 		case 'modificarJugadorespre':
 			modificarJugadorespre($serviciosReferencias);
@@ -1956,7 +1956,7 @@ function modificarJugadorNuevo($serviciosReferencias, $serviciosFunciones, $serv
 
 
 
-function insertarJugadorespre($serviciosReferencias) {
+function insertarJugadorespre($serviciosReferencias,$serviciosUsuarios) {
 	$reftipodocumentos = $_POST['reftipodocumentos'];
 	$nrodocumento = $_POST['nrodocumento'];
 	$apellido = $_POST['apellido'];
@@ -1975,8 +1975,9 @@ function insertarJugadorespre($serviciosReferencias) {
 		if (($serviciosReferencias->existeJugador($nrodocumento) == 0) && ($serviciosReferencias->existeJugadorPre($nrodocumento) == 0)) {
 
          $existeEmail = $serviciosUsuarios->existeUsuarioPreRegistrado($email);
+         $existeEmailPre = $serviciosReferencias->existeUsuarioPreRegistrado($email);
 
-         if ($existeEmail == '') {
+         if (($existeEmail == '') && ($existeEmailPre == '')) {
             $res = $serviciosReferencias->insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
 
    			if ((integer)$res > 0) {
