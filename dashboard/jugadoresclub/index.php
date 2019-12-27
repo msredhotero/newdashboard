@@ -484,8 +484,9 @@ if ($_SESSION['refroll_aif'] != 1) {
 							</select>
 						</div>
 						<div class="button-demo">
+							<div v-if="permiteImprimir == 0">
 							<button type="button" class="btn bg-brown" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
-
+							</div>
 							<button type="button" class="btn bg-brown" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
 						</div>
 					</div>
@@ -895,6 +896,11 @@ if ($_SESSION['refroll_aif'] != 1) {
 
 
 <script>
+
+	const paramsGetPermiteImprimir = new URLSearchParams();
+	 paramsGetPermiteImprimir.append('accion','VpermiteImprimir');
+	paramsGetPermiteImprimir.append('idclub',<?php echo $refClub; ?>);
+
 	const paramsGetDelegado = new URLSearchParams();
     paramsGetDelegado.append('accion','VtraerDelegadosPorId');
 	paramsGetDelegado.append('iddelegado',<?php echo $_SESSION['usuaid_aif']; ?>);
@@ -966,14 +972,16 @@ if ($_SESSION['refroll_aif'] != 1) {
 			baja: '',
 			art: '',
 			showModal: false,
-			jugadorClubId: ''
+			jugadorClubId: '',
+			permiteImprimir: 0
 
 		},
 		mounted () {
 			this.getJugadoresPorClub(this.busqueda),
 			this.getPaginasJC(this.busqueda),
 			this.getActivePagina(),
-			this.getDelegado()
+			this.getDelegado(),
+			this.getPermiteImprimir()
 		},
 		computed: {
 
@@ -1002,6 +1010,14 @@ if ($_SESSION['refroll_aif'] != 1) {
 					this.successMensaje = ''
 				}, 3000);
 
+			},
+			getPermiteImprimir() {
+
+				axios.post('../../ajax/ajax.php',paramsGetPermiteImprimir)
+				.then(res => {
+					//console.log(res.data.datos[0].cantidad);
+					this.permiteImprimir = res.data.datos[0].cantidad
+				})
 			},
 			getJugadoresPorClub (filtro) {
 				paramsGetjugadores.set('busqueda', filtro)

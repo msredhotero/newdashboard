@@ -9,6 +9,26 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosReferencias {
 
+	function permiteImprimirPadron($idclub) {
+		$resTemporadas = $this->traerUltimaTemporada();
+
+		if (mysql_num_rows($resTemporadas)>0) {
+		    $ultimaTemporada = mysql_result($resTemporadas,0,1);
+		} else {
+		    $ultimaTemporada = 0;
+		}
+
+		$sql = "SELECT 
+				    count(*) as cantidad
+				FROM
+				    dbjugadoresclub
+				WHERE
+				    temporada = ".$ultimaTemporada." AND refcountries = ".$idclub." and (numeroserielote = '' or numeroserielote is null) and fechabaja = 0 and articulo = 0";
+		$res = $this->query($sql,0);
+
+		return $res;
+	}
+
    function traerEstadoEstudioMedico($id) {
       $sql = "SELECT
                    idjugadordocumentacion

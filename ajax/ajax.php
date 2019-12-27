@@ -260,8 +260,36 @@ switch ($accion) {
 
       /* Fin */
 
+      /*
+      nuevo 27/12/2019
+      */
+      case 'VpermiteImprimir':
+         VpermiteImprimir($serviciosReferencias);
+      break;
+
 }
 /* Fin */
+
+   /*
+   nuevo 27/12/2019
+   */
+   function VpermiteImprimir($serviciosReferencias) {
+      $idclub = $_POST['idclub'];
+      $res = $serviciosReferencias->permiteImprimirPadron($idclub);
+
+      $ar = array();
+
+      while ($row = mysql_fetch_assoc($res)) {
+
+         array_push($ar, $row);
+
+      }
+
+      $resV['datos'] = $ar;
+
+		header('Content-type: application/json');
+		echo json_encode($resV);
+   }
 
    /*
    nuevo 20/08/2019
