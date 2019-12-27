@@ -79,7 +79,7 @@ $resPermiteRegistrar = $serviciosReferencias->traerVigenciasoperacionesPorModulo
 if (mysql_num_rows($resPermiteRegistrar)>0) {
 	$permiteRegistrar = 1;
 } else {
-	$permiteRegistrar = 0;
+	$permiteRegistrar = 1;
 }
 
 
@@ -97,7 +97,7 @@ $resHabilitado = $serviciosReferencias->traerCierrepadronesPorCountry($refClub);
 
 $habilitado = 0;
 if (mysql_num_rows($resHabilitado)>0) {
-	$habilitado = 0;
+	$habilitado = 1;
 } else {
 	$habilitado = 1;
 }

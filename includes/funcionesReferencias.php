@@ -3454,7 +3454,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 			$sql .= " and concat(j.nrodocumento,' ', j.apellido, ' ', j.nombres) like '%".$busqueda."%'";
 		}
 		$sql .= "
-		order by concat(j.apellido, ' ', j.nombres)
+		order by jc.articulo,jc.fechabaja,concat(j.apellido, ' ', j.nombres)
 		";
 		//die(var_dump($sql));
 		$res = $this->query($sql,0);
