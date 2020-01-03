@@ -278,6 +278,11 @@ if ($_SESSION['refroll_aif'] != 1) {
 							</ul>
 						</div>
 						<div class="body table-responsive">
+							<div class="row">
+								<div class="alert bg-orange">
+									<b>IMPORTANTE!!</b> Recuerde presionar el boton "GUARDAR" para aplicar los cambios. Al dar de baja a un jugador automáticamente se borrará el Nro de LOTE
+								</div>
+							</div>
 							<div class="row clearfix">
 								<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
 									<label for="email_address_2">Buscar:</label>
@@ -486,6 +491,9 @@ if ($_SESSION['refroll_aif'] != 1) {
 						<div class="button-demo">
 							<div v-if="permiteImprimir == 0">
 							<button type="button" class="btn bg-brown" id="btnImprimir" style="margin-left:0px;">Imprimir</button>
+							</div>
+							<div v-else>
+								<p>Falta completar datos de los Jugadores como ser Numero de Socio/Lote, Baja o Art 2 Inciso D</p>
 							</div>
 							<button type="button" class="btn bg-brown" id="btnCondicionJugador" style="margin-left:0px;">Reporte Condicion de Jugadores</button>
 						</div>
@@ -1089,6 +1097,8 @@ if ($_SESSION['refroll_aif'] != 1) {
 					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
+						this.buscarJugadoresPorClub()
+						this.getPermiteImprimir()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
 					}

@@ -18,7 +18,7 @@ class ServiciosReferencias {
 		    $ultimaTemporada = 0;
 		}
 
-		$sql = "SELECT 
+		$sql = "SELECT
 				    count(*) as cantidad
 				FROM
 				    dbjugadoresclub
@@ -3420,7 +3420,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		$resTemporada = $this->traerUltimaTemporada();
 		$temporada = mysql_result($resTemporada,0,1);
 
-		$sql = "select
+		$sql = "select r.* from (select
 		j.idjugador,
 		tip.tipodocumento,
 		j.nrodocumento,
@@ -3429,7 +3429,6 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 		j.email,
 		date_format(j.fechanacimiento, '%d/%m/%Y') as fechanacimiento,
 		j.fechaalta,
-		j.fechabaja,
 		cou.nombre as countrie,
 		j.observaciones,
 		j.reftipodocumentos,
@@ -3454,7 +3453,7 @@ function insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombre
 			$sql .= " and concat(j.nrodocumento,' ', j.apellido, ' ', j.nombres) like '%".$busqueda."%'";
 		}
 		$sql .= "
-		order by jc.articulo,jc.fechabaja,concat(j.apellido, ' ', j.nombres)
+		order by jc.articulo,jc.fechabaja,concat(j.apellido, ' ', j.nombres)) as r order by r.articulo,r.fechabaja,r.apyn
 		";
 		//die(var_dump($sql));
 		$res = $this->query($sql,0);
