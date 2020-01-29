@@ -2005,7 +2005,7 @@ function insertarJugadorespre($serviciosReferencias,$serviciosUsuarios) {
          $existeEmail = $serviciosUsuarios->existeUsuarioPreRegistrado($email);
          $existeEmailPre = $serviciosReferencias->existeUsuarioPreRegistrado($email);
 
-         if (($existeEmail == '') && ($existeEmailPre == '')) {
+         if ((($existeEmail == '') && ($existeEmailPre == '') || ($email == ''))) {
             $res = $serviciosReferencias->insertarJugadorespre($reftipodocumentos,$nrodocumento,$apellido,$nombres,$email,$fechanacimiento,$fechaalta,$numeroserielote,$refcountries,$observaciones,$refusuarios);
 
    			if ((integer)$res > 0) {
