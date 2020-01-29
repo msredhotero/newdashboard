@@ -2071,10 +2071,14 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 
 	function traerEstadosFusionesAceptadasPorCountrie($idcountrie) {
 
+		$resTemporada = $this->traerUltimaTemporada();
+		$idtemporada = mysql_result($resTemporada,0,0);
+
 		$sql = "select
 					coalesce(min(fe.refestados),1) as idestado
 				from dbfusionequipos fe
 				inner join dbequiposdelegados ed on ed.idequipodelegado = fe.refequiposdelegados
+				 and ed.reftemporadas = ".$idtemporada."
 				where ed.refcountries = ".$idcountrie;
 
 		$res = $this->existeDevuelveId($sql);

@@ -2245,6 +2245,9 @@ function guardarJugadorClubSimple($serviciosReferencias) {
          if ($fechabaja == 1) {
             $numeroSerie = '';
          }
+         if ($articulo == 1) {
+            $numeroSerie = '';
+         }
 			$res = $serviciosReferencias->modificarJugadoresclub($existe,$idJugador,$fechabaja,$articulo,$numeroSerie,$temporada,$idClub);
 			if ($res == true) {
 				$resV['mensaje'] = 'Registro Modificado con exito!.';

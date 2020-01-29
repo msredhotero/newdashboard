@@ -1097,7 +1097,7 @@ if ($_SESSION['refroll_aif'] != 1) {
 					//this.$refs['ref_nombres'].value = res.data.datos[0].nombres
 					if (!res.data.error) {
 						this.$swal("Ok!", res.data.mensaje, "success")
-						this.buscarJugadoresPorClub()
+						this.activarPagina(this.pag)
 						this.getPermiteImprimir()
 					} else {
 						this.$swal("Error!", res.data.mensaje, "error")
