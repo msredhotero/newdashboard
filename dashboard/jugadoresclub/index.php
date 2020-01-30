@@ -284,18 +284,18 @@ if ($_SESSION['refroll_aif'] != 1) {
 									<b>IMPORTANTE!!</b> Recuerde presionar el boton "GUARDAR" para aplicar los cambios. Al dar de baja a un jugador automáticamente se borrará el Nro de LOTE
 								</div>
 							</div>
+							<?php if (mysql_num_rows($resJugadoresIncompletos)>0) { ?>
 							<div class="row">
 								<div class="col-xs-12">
-									<p>Esta nomina de jugadores tiene inconsistencias en alguna documentacion</p>
+									<p>Esta nomina de jugadores tiene inconsistencias en alguna documentacion, por favor corregirlas para imprimir el listado.</p>
 									<ul class="list-group">
 									<?php while ($rowI = mysql_fetch_array($resJugadoresIncompletos)) { ?>
-										
-
-
+										<li>Socio: <?php echo $rowI['apyn']; ?> - Nro Doc: <?php echo $rowI['nrodocumento']; ?></li>
 									<?php } ?>
 									</ul>
 								</div>
 							</div>
+							<?php } ?>
 							<div class="row clearfix">
 								<div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
 									<label for="email_address_2">Buscar:</label>
