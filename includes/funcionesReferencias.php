@@ -9,13 +9,39 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosReferencias {
 
+	function traerJugadoresClubIncompletos($idcountrie) {
+		$resTemporadas = $this->traerUltimaTemporada();
+
+		if (mysql_num_rows($resTemporadas)>0) {
+		    $ultimaTemporada = mysql_result($resTemporadas,0,1);
+		} else {
+		    $ultimaTemporada = date('Y');
+		}
+
+		$sql = "SELECT
+				    concat( j.apellido, ' ', j.nombres) as apyn,
+				    j.nrodocumento
+				FROM
+				    dbjugadoresclub jc
+				    left join dbjugadores j on jc.refjugadores = j.idjugador
+				WHERE
+				    jc.temporada = ".$ultimaTemporada."
+				        AND jc.refcountries = ".$idcountrie."
+				        AND (jc.numeroserielote = ''
+				        OR jc.numeroserielote IS NULL)
+				        AND jc.fechabaja = 0
+				        AND jc.articulo = 0";
+		$res = $this->query($sql,0);
+		return $res;
+	}
+
 	function permiteImprimirPadron($idclub) {
 		$resTemporadas = $this->traerUltimaTemporada();
 
 		if (mysql_num_rows($resTemporadas)>0) {
 		    $ultimaTemporada = mysql_result($resTemporadas,0,1);
 		} else {
-		    $ultimaTemporada = 0;
+		    $ultimaTemporada = date('Y');
 		}
 
 		$sql = "SELECT

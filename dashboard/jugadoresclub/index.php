@@ -161,6 +161,7 @@ $refCampo 	=  array("refusuarios");
 
 $frmPerfil 	= $serviciosFunciones->camposTabla("insertarDelegados" ,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
 
+$resJugadoresIncompletos = $serviciosReferencias->traerJugadoresClubIncompletos($refClub);
 if ($_SESSION['refroll_aif'] != 1) {
 
 } else {
@@ -281,6 +282,18 @@ if ($_SESSION['refroll_aif'] != 1) {
 							<div class="row">
 								<div class="alert bg-orange">
 									<b>IMPORTANTE!!</b> Recuerde presionar el boton "GUARDAR" para aplicar los cambios. Al dar de baja a un jugador automáticamente se borrará el Nro de LOTE
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12">
+									<p>Esta nomina de jugadores tiene inconsistencias en alguna documentacion</p>
+									<ul class="list-group">
+									<?php while ($rowI = mysql_fetch_array($resJugadoresIncompletos)) { ?>
+										
+
+
+									<?php } ?>
+									</ul>
 								</div>
 							</div>
 							<div class="row clearfix">
