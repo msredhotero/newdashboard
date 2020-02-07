@@ -1000,7 +1000,7 @@ function devolverImagen($name, $type, $nombrenuevo) {
 					0 as refjugadorespre
 					FROM
 					    dbconector c
-		where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie." and c.activo = 1";
+		where	c.refequipos = ".$idequipo." and c.refcountries = ".$idcountrie." and c.activo = 1 and c.reftemporadas = ".($idtemporada - 1);
 		//die(var_dump($sql));
 		$res = $this->query($sql,0);
 

@@ -308,7 +308,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 											</div>
 
 											<div class="body">
-												<h4 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>PLANTEL</b></h4>
+												<h4 style="border-bottom: 2px solid #555; transition: .3s ease-in-out;"><b>PLANTEL</b> - Cantidad Jugadores <span class="cantJugadoresPlnatel"></span></h4>
 												<div class="lstPlantel">
 
 												</div>
@@ -325,6 +325,9 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										<div class="col-lg-12 col-md-12">
 											<div class="alert bg-red animated shake">
 												<strong>Importante!</strong> Los jugadores deben cumplir esta regla para ingresar: <span class="regla">{{ activeDefinicion }}</span>
+											</div>
+											<div class="alert bg-red animated shake">
+												<strong>Importante!</strong> La cantidad de jugadores minima y maxima es 17 y 30</span>
 											</div>
 										</div>
 										</div>
@@ -716,6 +719,17 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 				success:  function (response) {
 
 					$('.lstPlantel').html(response);
+					var wordCount = $('.lstPlantel').html().trim().replace(/\s+/gi, ' ').split('remove_circle').length - 1;
+
+					if (wordCount < 17) {
+						alert('Su plantel no cumple con el minimo de Jugadores');
+					}
+					if (wordCount > 30) {
+						alert('Su plantel supera el maximo de Jugadores');
+					}
+
+					$('.cantJugadoresPlnatel').html(wordCount);
+
 
 				}
 			});
