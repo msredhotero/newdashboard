@@ -423,7 +423,7 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 										<span>IMPRIMIR LISTA DE BUENA FE</span>
 									</button>
 
-									<button v-if="(idestadoequipodelegado == 3 || idestadoequipodelegado == 4) && verificarFusion >= 3" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect">
+									<button v-if="(idestadoequipodelegado == 3 || idestadoequipodelegado == 4) && verificarFusion >= 3" data-toggle="modal" data-target="#largeModal" class="btn bg-orange waves-effect btnPresentarFinal">
 										<i class="material-icons">assignment_turned_in</i>
 										<span>PRESENTAR</span>
 									</button>
@@ -722,11 +722,17 @@ $cadRefJugadores 	= $serviciosFunciones->devolverSelectBox($lstJugadoresPorCount
 					var wordCount = $('.lstPlantel').html().trim().replace(/\s+/gi, ' ').split('remove_circle').length - 1;
 
 					if (wordCount < 17) {
+						$('.btnPresentarFinal').hide();
 						alert('Su plantel no cumple con el minimo de Jugadores');
+					} else {
+						if (wordCount > 30) {
+							$('.btnPresentarFinal').hide();
+							alert('Su plantel supera el maximo de Jugadores');
+						} else {
+							$('.btnPresentarFinal').show();
+						}
 					}
-					if (wordCount > 30) {
-						alert('Su plantel supera el maximo de Jugadores');
-					}
+
 
 					$('.cantJugadoresPlnatel').html(wordCount);
 
