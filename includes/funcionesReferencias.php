@@ -2046,7 +2046,7 @@ function traerUltimaDivisionPorTemporadaCategoria($idtemporada, $idcategoria) {
 
 	function devolverNuevoIdEquipo() {
 		$sql = "select
-				sum(r.idequipo) from (
+				max(r.idequipo) + 1 from (
 						select max(idequipo) as idequipo from dbequipos
 						union all
 						select coalesce( max(idequipo),0) as idequipo from dbequiposdelegados
