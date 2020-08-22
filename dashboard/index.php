@@ -33,7 +33,7 @@ $configuracion = $serviciosReferencias->traerConfiguracion();
 
 $tituloWeb = mysql_result($configuracion,0,'sistema');
 
-if ($_SESSION['idroll_aif'] == 3) {
+if (($_SESSION['idroll_aif'] == 3) || ($_SESSION['idroll_aif'] == 6)) {
 	$breadCumbs = '<a class="navbar-brand" href="../index.php">Partidos</a>';
 } else {
 	$breadCumbs = '<a class="navbar-brand" href="../index.php">Dashboard</a>';
@@ -235,7 +235,7 @@ if ($_SESSION['idroll_aif'] == 5) {
     <!-- #Top Bar -->
 
     <?php
-	 if ($_SESSION['idroll_aif'] == 3) {
+	 if (($_SESSION['idroll_aif'] == 3) || ($_SESSION['idroll_aif'] == 6)) {
 		 echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../partidos',$resMenu),'../');
 	 } else {
 		 echo $baseHTML->cargarSECTION($_SESSION['usua_aif'], $_SESSION['nombre_aif'], str_replace('..','../dashboard',$resMenu),'../');
@@ -248,7 +248,7 @@ if ($_SESSION['idroll_aif'] == 5) {
 
         <div class="container-fluid">
             <div class="row clearfix">
-					<?php if ($_SESSION['idroll_aif'] == 3) { ?>
+					<?php if (($_SESSION['idroll_aif'] == 3) || ($_SESSION['idroll_aif'] == 6)) { ?>
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="card ">
 								<div class="header bg-blue">
@@ -669,7 +669,7 @@ if ($_SESSION['idroll_aif'] == 5) {
     <script>
         $(document).ready(function(){
 			<?php
-  			if ($_SESSION['idroll_aif'] == 3) {
+  			if (($_SESSION['idroll_aif'] == 3) || ($_SESSION['idroll_aif'] == 6)) {
   				//if ($determinaTipoSocio['valor'] == 1) {
   			?>
 			$('.btnBuscarFixture').click(function() {

@@ -266,10 +266,94 @@ switch ($accion) {
       case 'VpermiteImprimir':
          VpermiteImprimir($serviciosReferencias);
       break;
+      case 'modificarObservacionesPLanilla':
+         modificarObservacionesPLanilla($serviciosArbitros);
+      break;
+      case 'traerArchivoPlanillaPorArbitroFixtureDelegados':
+         traerArchivoPlanillaPorArbitroFixtureDelegados($serviciosArbitros);
+      break;
 
 }
-/* Fin */
+/* Finfinfin */
 
+   /* nuevo 21/08/2020 */
+
+   function traerArchivoPlanillaPorArbitroFixtureDelegados($serviciosArbitros) {
+      $servidorCarpeta = 'aifzndesarrollo';
+
+      $idfixture = $_POST['idfixture'];
+      $archivo = $_POST['archivo'];
+
+      $resV['datos'] = '';
+      $resV['error'] = false;
+
+      $resFoto = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($idfixture);
+
+      $imagen = '';
+
+      if (mysql_num_rows($resFoto) > 0) {
+         /* produccion
+         $imagen = 'https://www.saupureinconsulting.com.ar/aifzn/'.mysql_result($resFoto,0,'archivo').'/'.mysql_result($resFoto,0,'imagen');
+         */
+
+         //desarrollo
+         if ($archivo == 3) {
+            if (mysql_result($resFoto,0,'type3') == '') {
+               $imagen = '../../imagenes/sin_img.jpg';
+
+               $resV['datos'] = array('imagen3' => $imagen, 'type' => 'imagen');
+               $resV['error'] = false;
+            } else {
+               $imagen = '../../arbitros/'.$idfixture.'/3/'.mysql_result($resFoto,0,'imagen3');
+               $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type3'));
+
+               $resV['error'] = false;
+            }
+         } else {
+            if (mysql_result($resFoto,0,'type4') == '') {
+               $imagen = '../../imagenes/sin_img.jpg';
+
+               $resV['datos'] = array('imagen' => $imagen, 'type' => 'imagen');
+               $resV['error'] = false;
+            } else {
+               $imagen = '../../arbitros/'.$idfixture.'/4/'.mysql_result($resFoto,0,'imagen4');
+               $resV['datos'] = array('imagen' => $imagen, 'type' => mysql_result($resFoto,0,'type4'));
+
+               $resV['error'] = false;
+            }
+         }
+
+
+      } else {
+         $imagen = '../../imagenes/sin_img.jpg';
+
+
+         $resV['datos'] = array('imagen' => $imagen, 'type' => '');
+         $resV['error'] = false;
+      }
+
+
+      header('Content-type: application/json');
+      echo json_encode($resV);
+   }
+
+   function modificarObservacionesPLanilla($serviciosArbitros) {
+      $id = $_POST['idfixture'];
+      $observaciones = $_POST['observaciones'];
+      $campo 	= $_POST['campo'];
+
+      $res = $serviciosArbitros->modificarObservacionesPLanilla($id,$campo, $observaciones);
+
+      if ($res) {
+         $resV['error'] = false;
+      } else {
+         $resV['error'] = true;
+      }
+
+      header('Content-type: application/json');
+		echo json_encode($resV);
+   }
+   /* fin */
    /*
    nuevo 27/12/2019
    */

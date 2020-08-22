@@ -9,6 +9,14 @@ date_default_timezone_set('America/Buenos_Aires');
 
 class ServiciosArbitros {
 
+   function modificarObservacionesPLanilla($id, $campo,$observaciones) {
+      $sql = "update dbplanillasarbitros set ".$campo." = '".$observaciones."' where reffixture = ".$id;
+
+      $res = $this->query($sql,0);
+
+      return $res;
+   }
+
    function traerPartidosCargados($busqueda) {
 
       $cadWhere = '';
@@ -184,7 +192,7 @@ class ServiciosArbitros {
 
    function traerPartidosPorArbitrosPartido( $idfixture) {
       $sql = "SELECT
-             f.idfixture, f.fecha as fechajuego, concat( el.nombre, ' vs ' , ev.nombre) partido, fe.fecha, cat.categoria, di.division, f.refestadospartidos
+             f.idfixture, f.fecha as fechajuego, concat( el.nombre, ' vs ' , ev.nombre) partido, fe.fecha, cat.categoria, di.division, f.refestadospartidos, el.refcountries as clublocal, ev.refcountries as clubvisitante, f.refarbitros
          FROM
              dbfixture f
                  LEFT JOIN
@@ -296,7 +304,13 @@ class ServiciosArbitros {
       p.observaciones,
       p.refestados,
       p.imagen2,
-      p.type2
+      p.type2,
+      p.imagen3,
+      p.type3,
+      p.imagen4,
+      p.type4,
+      p.observaciones2,
+      p.observaciones3
       from dbplanillasarbitros p
       where p.reffixture = ".$id;
       $res = $this->query($sql,0);

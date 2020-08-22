@@ -62,6 +62,10 @@ $insertar = "insertarPlanillasarbitros";
 $tituloWeb = "Gestión: AIF";
 //////////////////////// Fin opciones ////////////////////////////////////////////////
 
+$urlSubir = 'subir.php';
+$readonly2 = '';
+$readonly3 = '';
+
 // si ya cargue el partido
 if (mysql_num_rows($resultado) > 0) {
 	$idPlanilla = mysql_result($resultado,0,0);
@@ -80,26 +84,65 @@ if (mysql_num_rows($resultado) > 0) {
 	$dobleamarillasvisitante = mysql_result($resultado,0,'dobleamarillasvisitante');
 	$cantidadjugadoresvisitante = mysql_result($resultado,0,'cantidadjugadoresvisitante');
 
+	$planillaSinGenerar = 0;
+
 } else {
-	//si todavia no cargue el partido
-	$idPlanilla = $serviciosArbitros->insertarPlanillasarbitrosCorto($id,$_SESSION['idarbitro_aif']);
+	if ($_SESSION['idroll_aif'] == 3) {
+		//si todavia no cargue el partido
+		$idPlanilla = $serviciosArbitros->insertarPlanillasarbitrosCorto($id,$_SESSION['idarbitro_aif']);
 
-	//die(var_dump($idPlanilla));
-	$goleslocal = 0;
-	$amarillaslocal = 0;
-	$expulsadoslocal = 0;
-	$informadoslocal = 0;
-	$dobleamarillaslocal = 0;
-	$cantidadjugadoreslocal = 0;
+		//die(var_dump($idPlanilla));
+		$goleslocal = 0;
+		$amarillaslocal = 0;
+		$expulsadoslocal = 0;
+		$informadoslocal = 0;
+		$dobleamarillaslocal = 0;
+		$cantidadjugadoreslocal = 0;
 
-	$golesvisitante = 0;
-	$amarillasvisitante = 0;
-	$expulsadosvisitante = 0;
-	$informadosvisitante = 0;
-	$dobleamarillasvisitante = 0;
-	$cantidadjugadoresvisitante = 0;
+		$golesvisitante = 0;
+		$amarillasvisitante = 0;
+		$expulsadosvisitante = 0;
+		$informadosvisitante = 0;
+		$dobleamarillasvisitante = 0;
+		$cantidadjugadoresvisitante = 0;
 
-	$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id);
+		$resultado = $serviciosArbitros->traerPlanillasarbitrosPorFixtureArbitro($id);
+
+	}
+
+	if ($_SESSION['idroll_aif'] == 6) {
+		$planillaSinGenerar = 1;
+	}
+}
+
+$archivoDelegado = 0;
+if ($_SESSION['idroll_aif'] == 6) {
+	if ($_SESSION['idclub_aif'] == mysql_result($partido,0,'clublocal')) {
+		$puedeEntrarDelegado = 1;
+		$observaciones = 'observaciones2';
+		$delegado = 'local';
+		$readonly3 = 'readonly';
+		$readonly2 = '';
+		$archivoDelegado = 3;
+		$urlSubir = 'subirdelegadolocal.php';
+	} else {
+		if ($_SESSION['idclub_aif'] == mysql_result($partido,0,'clubvisitante')) {
+			$puedeEntrarDelegado = 1;
+			$observaciones = 'observaciones3';
+			$delegado = 'visitante';
+			$readonly3 = '';
+			$readonly2 = 'readonly';
+			$archivoDelegado = 4;
+			$urlSubir = 'subirdelegadovisitante.php';
+		} else {
+			$puedeEntrarDelegado = 0;
+			$observaciones = '';
+			$delegado = '';
+			$readonly3 = '';
+			$readonly2 = '';
+			header('Location: ../index.php');
+		}
+	}
 }
 
 // Ruta del directorio donde están los archivos
@@ -124,37 +167,107 @@ if (!file_exists($pathPlanillaComplemento)) {
 $filesPlanilla = array_diff(scandir($pathPlanilla), array('.', '..'));
 $filesComplemento = array_diff(scandir($pathPlanillaComplemento), array('.', '..'));
 
-/////////////////////// Opciones para la creacion del formulario  /////////////////////
-$tabla 			= "dbplanillasarbitros";
+$readonly4 = 'readonly';
 
-$lblCambio	 	= array("reffixture","refarbitros","refestadospartidos","goleslocal","golesvisitante","dobleamarillas","refestados");
-$lblreemplazo	= array("Partido","Arbitro","Estado","Goles Local","Goles Visitantes","Doble Amarillas","Estado Planilla");
+if ($_SESSION['idroll_aif'] == 3) {
+	// usuario arbitro
 
-$resVar1 = $serviciosArbitros->traerFixturePorId($id);
-$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resVar1,array(1),'Partido N°: ', $id);
+	/////////////////////// Opciones para la creacion del formulario  /////////////////////
+	$tabla 			= "dbplanillasarbitros";
 
-$resEstados		= $serviciosArbitros->traerEstadospartidosArbitros();
-$cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1),'', mysql_result($resultado,0,'refestadospartidos'));
+	$lblCambio	 	= array("reffixture","refarbitros","refestadospartidos","goleslocal","golesvisitante","dobleamarillas","refestados");
+	$lblreemplazo	= array("Partido","Arbitro","Estado","Goles Local","Goles Visitantes","Doble Amarillas","Estado Planilla");
 
-$resAr = $serviciosArbitros->traerArbitrosPorId($_SESSION['idarbitro_aif']);
-$cadAr = $serviciosFunciones->devolverSelectBoxActivo($resAr,array(1),'', $_SESSION['idarbitro_aif']);
+	$resVar1 = $serviciosArbitros->traerFixturePorId($id);
+	$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resVar1,array(1),'Partido N°: ', $id);
 
-$resEstadoActual = mysql_result($resultado,0,'refestados');
+	$resEstados		= $serviciosArbitros->traerEstadospartidosArbitros();
+	$cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1),'', mysql_result($resultado,0,'refestadospartidos'));
 
-$refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('2');
-$cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', $resEstadoActual);
 
-//die(var_dump($cadEstados));
+	$resAr = $serviciosArbitros->traerArbitrosPorId($_SESSION['idarbitro_aif']);
+	$cadAr = $serviciosFunciones->devolverSelectBoxActivo($resAr,array(1),'', $_SESSION['idarbitro_aif']);
 
-$refdescripcion = array(0=>$cadRef,1=>$cadAr,2=>$cadEstados, 3=>$cadEP);
-$refCampo 	=  array("reffixture","refarbitros","refestadospartidos","refestados");
+	$resEstadoActual = mysql_result($resultado,0,'refestados');
 
-$idTabla = 'idplanillaarbitro';
-$tabla = 'dbplanillasarbitros';
-$modificar = 'modificarPlanillasarbitros';
+	$refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('2');
+	$cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', $resEstadoActual);
 
-$formulario 	= $serviciosFunciones->camposTablaModificar($idPlanilla, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
-//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+	//die(var_dump($cadEstados));
+
+	$refdescripcion = array(0=>$cadRef,1=>$cadAr,2=>$cadEstados, 3=>$cadEP);
+	$refCampo 	=  array("reffixture","refarbitros","refestadospartidos","refestados");
+
+	$idTabla = 'idplanillaarbitro';
+	$tabla = 'dbplanillasarbitros';
+	$modificar = 'modificarPlanillasarbitros';
+
+	$formulario 	= $serviciosFunciones->camposTablaModificar($idPlanilla, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+	//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+
+	if ($_SESSION['idroll_aif'] == 6) {
+		$readonly = 'readonly';
+		$readonly4 = 'readonly';
+	} else {
+		if ($resEstadoActual == 2) {
+			$readonly = 'readonly';
+		} else {
+			$readonly = '';
+		}
+		$readonly4 = '';
+	}
+
+
+} else {
+	// delegado del countrie , verificar local visitante
+
+	if ($planillaSinGenerar == 1) {
+		// todavia no puedo ver
+	} else {
+
+		/////////////////////// Opciones para la creacion del formulario  /////////////////////
+		$tabla 			= "dbplanillasarbitros";
+
+		$lblCambio	 	= array("reffixture","refarbitros","refestadospartidos","goleslocal","golesvisitante","dobleamarillas","refestados");
+		$lblreemplazo	= array("Partido","Arbitro","Estado","Goles Local","Goles Visitantes","Doble Amarillas","Estado Planilla");
+
+		$resVar1 = $serviciosArbitros->traerFixturePorId($id);
+		$cadRef 	= $serviciosFunciones->devolverSelectBoxActivo($resVar1,array(1),'Partido N°: ', $id);
+
+		$resEstados		= $serviciosArbitros->traerEstadospartidosArbitros();
+		$cadEstados		= $serviciosFunciones->devolverSelectBoxActivo($resEstados,array(1),'', mysql_result($resultado,0,'refestadospartidos'));
+
+
+		$resAr = $serviciosArbitros->traerArbitrosPorId(mysql_result($partido,0,'refarbitros'));
+		$cadAr = $serviciosFunciones->devolverSelectBox($resAr,array(1),'');
+
+
+
+		$resEstadoActual = mysql_result($resultado,0,'refestados');
+
+		$refEstadoPlanilla = $serviciosArbitros->traerEstadosPorIn('2');
+		$cadEP = $serviciosFunciones->devolverSelectBoxActivo($refEstadoPlanilla,array(1),'', $resEstadoActual);
+
+		//die(var_dump($cadEstados));
+
+		$refdescripcion = array(0=>$cadRef,1=>$cadAr,2=>$cadEstados, 3=>$cadEP);
+		$refCampo 	=  array("reffixture","refarbitros","refestadospartidos","refestados");
+
+		$idTabla = 'idplanillaarbitro';
+		$tabla = 'dbplanillasarbitros';
+		$modificar = 'modificarPlanillasarbitros';
+
+		$formulario 	= $serviciosFunciones->camposTablaModificar($idPlanilla, $idTabla, $modificar,$tabla,$lblCambio,$lblreemplazo,$refdescripcion,$refCampo);
+		//////////////////////////////////////////////  FIN de los opciones //////////////////////////
+
+		$readonly = 'readonly';
+	}
+
+
+
+}
+
+
 
 
 
@@ -166,11 +279,7 @@ if (mysql_num_rows($resTemporadas)>0) {
     $ultimaTemporada = 0;
 }
 
-if ($resEstadoActual == 2) {
-	$readonly = 'readonly';
-} else {
-	$readonly = '';
-}
+
 
 
 ?>
@@ -304,7 +413,7 @@ if ($resEstadoActual == 2) {
 							<form class="formulario frmNuevo" role="form" id="sign_in">
 								<div class="row">
 									<div class="col-xs-12 col-md-12 col-lg-12">
-										<div class="alert alert-danger">
+										<div class="alert alert-warning">
 											<p>Recuerda cargar todos los datos para continuar con la carga de la estadistica, por favor.</p>
 										</div>
 									</div>
@@ -318,6 +427,15 @@ if ($resEstadoActual == 2) {
 										</div>
 									</div>
 								</div>
+
+				<?php if ($planillaSinGenerar == 1) { ?>
+								<div class="row">
+									<div class="col-xs-12 col-md-12 col-lg-12">
+									<div class="alert alert-danger"><p>Todavia no se genero el registro, debe esperar la carga del <b>Arbitro Primero</b></p></div>
+									</div>
+								</div>
+				<?php } else { ?>
+
 								<div class="row">
 									<div class="row">
 									   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 margTop" style="display:block">
@@ -518,13 +636,36 @@ if ($resEstadoActual == 2) {
 									      <div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
 									      	<label for="observaciones" class="control-label" style="text-align:left">Escriba aqui el informe:</label>
 									      	<div class="input-group col-md-12">
-									      		<textarea type="text" rows="10" cols="6" class="form-control" id="observaciones" name="observaciones" placeholder="Ingrese el Observaciones..." required><?php echo mysql_result($resultado,0,'observaciones'); ?></textarea>
+									      		<textarea type="text" <?php echo $readonly4; ?> rows="10" cols="6" class="form-control" id="observaciones" name="observaciones" placeholder="Ingrese el Observaciones..." required><?php echo mysql_result($resultado,0,'observaciones'); ?></textarea>
 									      	</div>
 
 									      </div>
 									   </div>
 
-									   <br><br><input type="hidden" id="accion" name="accion" value="modificarPlanillasarbitros"/><input type="hidden" id="id" name="id" value="<?php echo $id; ?>"/>
+										<div class="row">
+
+									      <div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
+									      	<label for="observaciones" class="control-label" style="text-align:left">Escriba aqui el informe Delegado Local:</label>
+									      	<div class="input-group col-md-12">
+									      		<textarea type="text" <?php echo $readonly2; ?> rows="10" cols="6" class="form-control" id="observaciones2" name="observaciones2" placeholder="Ingrese las Observaciones..." required><?php echo mysql_result($resultado,0,'observaciones2'); ?></textarea>
+									      	</div>
+
+									      </div>
+
+											<div class="form-group col-md-12 col-lg-12 col-sm-12 col-xs-12" style="display:block">
+									      	<label for="observaciones" class="control-label" style="text-align:left">Escriba aqui el informe Delegado Visitantes:</label>
+									      	<div class="input-group col-md-12">
+									      		<textarea type="text" <?php echo $readonly3; ?> rows="10" cols="6" class="form-control" id="observaciones3" name="observaciones3" placeholder="Ingrese las Observaciones..." required><?php echo mysql_result($resultado,0,'observaciones3'); ?></textarea>
+									      	</div>
+
+									      </div>
+									   </div>
+
+									   <br><br>
+
+										<input type="hidden" id="accion" name="accion" value="modificarPlanillasarbitros"/>
+										<input type="hidden" id="id" name="id" value="<?php echo $id; ?>"/>
+
 								</div>
 
 								<div class="row">
@@ -534,6 +675,7 @@ if ($resEstadoActual == 2) {
 										</div>
 									</div>
 									<div class="col-xs-12 col-md-12 col-lg-12">
+										<?php if ($_SESSION['idroll_aif'] == 3) { ?>
 										<?php
 										if (mysql_result($resultado,0,'refestados') == 2) {
 										?>
@@ -562,7 +704,14 @@ if ($resEstadoActual == 2) {
 										</button>
 
 										<?php } ?>
-
+									<?php } else { ?>
+										<?php if (($_SESSION['idroll_aif'] == 6) || ($planillaSinGenerar == 0)) { ?>
+											<button type="button" class="btn btn-info waves-effect btnModificarObservaciones">
+												<i class="material-icons">save</i>
+												<span>GUARDAR</span>
+										   </button>
+										<?php } ?>
+									<?php } ?>
 
 							   	</div>
 								</div>
@@ -588,6 +737,7 @@ if ($resEstadoActual == 2) {
 										</div>
 
 									</div>
+									<?php if ($_SESSION['idroll_aif'] == 3) { ?>
 									<div class="col-xs-6 col-md-6 col-lg-6">
 										<?php
 										if (count($filesComplemento)<1) {
@@ -606,9 +756,11 @@ if ($resEstadoActual == 2) {
 											<i class="material-icons">arrow_downward</i>
 											<i class="material-icons">arrow_downward</i>
 										</div>
+										<?php }  ?>
 
 							   	</div>
 								</div>
+								<?php }  ?>
 
 							</form>
 
@@ -620,7 +772,7 @@ if ($resEstadoActual == 2) {
 
 		</div>
 
-
+		<?php if ($planillaSinGenerar == 0) { ?>
 		<div class="row clearfix subirImagen">
 			<div class="row">
 				<div class="col-xs-6 col-md-6 col-lg-6">
@@ -630,6 +782,7 @@ if ($resEstadoActual == 2) {
 					<div id="example1"></div>
 
 				</div>
+				<?php if ($_SESSION['idroll_aif'] == 3) { ?>
 				<div class="col-xs-6 col-md-6 col-lg-6">
 					<a href="javascript:void(0);" class="thumbnail timagen2">
 						<img class="img-responsive2">
@@ -637,6 +790,7 @@ if ($resEstadoActual == 2) {
 					<div id="example2"></div>
 
 				</div>
+				<?php } ?>
 
 			</div>
 			<div class="row">
@@ -658,7 +812,7 @@ if ($resEstadoActual == 2) {
 						</div>
 						<div class="body">
 
-							<form action="subir.php" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
+							<form action="<?php echo $urlSubir; ?>" id="frmFileUpload" class="dropzone" method="post" enctype="multipart/form-data">
 								<div class="dz-message">
 									<div class="drag-icon-cph">
 										<i class="material-icons">touch_app</i>
@@ -678,6 +832,7 @@ if ($resEstadoActual == 2) {
 						</div>
 					</div>
 				</div>
+				<?php if ($_SESSION['idroll_aif'] == 3) { ?>
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 					<div class="card">
 						<div class="header">
@@ -715,10 +870,11 @@ if ($resEstadoActual == 2) {
 						</div>
 					</div>
 				</div>
+				<?php } ?>
 			</div>
 
 		</div>
-
+	<?php }  ?>
 
 
 
@@ -732,6 +888,7 @@ if ($resEstadoActual == 2) {
 </section>
 
 <?php
+if ($_SESSION['idroll_aif'] == 3) {
 if (count($filesPlanilla)<1) {
 ?>
 <!-- Modal -->
@@ -781,7 +938,7 @@ if (count($filesComplemento)<1) {
 
 	</div>
 </div>
-<?php }  ?>
+<?php }  } ?>
 
 
 <?php echo $baseHTML->cargarArchivosJS('../../'); ?>
@@ -865,6 +1022,7 @@ if (count($filesComplemento)<1) {
 
 <script>
 
+	<?php if ($_SESSION['idroll_aif'] == 3) { ?>
 	function traerImagen(archivo, contenedorpdf, contenedor) {
 		$.ajax({
 			data:  {idfixture: <?php echo $id; ?>,
@@ -974,7 +1132,78 @@ if (count($filesComplemento)<1) {
 			url: 'subircomplemento.php'
 		});
 
+	<?php } else { ?>
+		function traerImagen( contenedorpdf, contenedor) {
+			$.ajax({
+				data:  {idfixture: <?php echo $id; ?>,
+						archivo: <?php echo $archivoDelegado; ?>,
+						accion: 'traerArchivoPlanillaPorArbitroFixtureDelegados'},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+
+				},
+				success:  function (response) {
+					var cadena = response.datos.type.toLowerCase();
+
+					if (response.datos.type != '') {
+						if (cadena.indexOf("pdf") > -1) {
+							PDFObject.embed(response.datos.imagen, "#"+contenedorpdf);
+							$('#'+contenedorpdf).show();
+							$("."+contenedor).hide();
+
+						} else {
+							$("." + contenedor + " img").attr("src",response.datos.imagen);
+							$("."+contenedor).show();
+							$('#'+contenedorpdf).hide();
+						}
+
+					}
+
+
+
+				}
+			});
+		}
+
+		traerImagen('example1','timagen1');
+
+		Dropzone.prototype.defaultOptions.dictFileTooBig = "Este archivo es muy grande ({{filesize}}MiB). Peso Maximo: {{maxFilesize}}MiB.";
+
+		Dropzone.options.frmFileUpload = {
+			maxFilesize: 30,
+			acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg,.pdf",
+			accept: function(file, done) {
+				done();
+			},
+			init: function() {
+				this.on("sending", function(file, xhr, formData){
+	               formData.append("idfixture", '<?php echo $id; ?>');
+	         });
+				this.on('success', function( file, resp ){
+					traerImagen('example1','timagen1');
+				});
+
+				this.on('error', function( file, resp ){
+					swal("Error!", resp.replace("1", ""), "warning");
+				});
+			}
+		};
+
+		var myDropzone = new Dropzone("#archivos", {
+			params: {
+	          idfixture: <?php echo $id; ?>
+	      },
+			url: '<?php echo $urlSubir; ?>'
+		});
+	<?php } ?>
+
 	$(document).ready(function(){
+
+	<?php
+	// si es el arbitro quien entra
+	if ($_SESSION['idroll_aif'] == 3) {
+	?>
 
 		$('.btnImprmirInforme').click(function() {
 
@@ -1145,7 +1374,52 @@ if (count($filesComplemento)<1) {
 
 		});
 
+		<?php } ?>
 
+		<?php
+		if ($_SESSION['idroll_aif'] == 6) {
+		?>
+
+		$('.btnModificarObservaciones').click(function() {
+			modificarObservacionesPLanilla();
+		});
+
+		function modificarObservacionesPLanilla() {
+			$.ajax({
+				data:  {
+					idfixture: <?php echo $id; ?>,
+					observaciones: $('#<?php echo $observaciones; ?>').val(),
+					campo: '<?php echo $observaciones; ?>',
+					accion: 'modificarObservacionesPLanilla'
+				},
+				url:   '../../ajax/ajax.php',
+				type:  'post',
+				beforeSend: function () {
+
+				},
+				success:  function (response) {
+					if (response.error) {
+						swal({
+								title: "Respuesta",
+								text: "Se genero un error y no se pudo guardar la observacion!!",
+								type: "error",
+								timer: 1500,
+								showConfirmButton: false
+						});
+
+					} else {
+						swal({
+								title: "Respuesta",
+								text: "Se guardo correctamente la orbservacion!!",
+								type: "success",
+								timer: 1500,
+								showConfirmButton: false
+						});
+					}
+				}
+			});
+		}
+		<?php } ?>
 
 	});
 </script>
